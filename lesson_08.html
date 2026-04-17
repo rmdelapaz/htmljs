@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Understand JavaScript scope — block scope, function scope, global scope, the scope chain, hoisting rules, and an introduction to closures.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 8: Scope &amp; Hoisting - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2</a></li>
+            <li aria-current="page">Lesson 8: Scope &amp; Hoisting</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔍 Lesson 8: Scope &amp; Hoisting</h1>
+                <p class="lead">Understand where your variables live, which code can see them, and how JavaScript moves declarations behind the scenes.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain the difference between global, function, and block scope</li>
+                        <li>Predict where a variable is accessible and where it isn't</li>
+                        <li>Understand how the scope chain resolves variable lookups</li>
+                        <li>Describe how hoisting works differently for <code>var</code>, <code>let</code>, <code>const</code>, and functions</li>
+                        <li>Recognize and explain the Temporal Dead Zone</li>
+                        <li>Understand what closures are and see a basic example</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Debug scope-related bugs and build a simple counter with closures</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#global-scope" class="toc-link">Global Scope</a></li>
+                        <li><a href="#function-scope" class="toc-link">Function Scope</a></li>
+                        <li><a href="#block-scope" class="toc-link">Block Scope</a></li>
+                        <li><a href="#scope-chain" class="toc-link">The Scope Chain</a></li>
+                        <li><a href="#hoisting" class="toc-link">Hoisting in Detail</a></li>
+                        <li><a href="#closures" class="toc-link">Introduction to Closures</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p><strong>Scope</strong> answers one simple question: <em>"Can I use this variable here?"</em> Every variable in JavaScript lives in a specific scope, and that scope determines which parts of your code can read or modify it.</p>
+                <p>Understanding scope is what separates beginners from developers who can confidently debug tricky bugs. Most "why is this undefined?" mysteries come down to scope.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Global Scope"] --> B["Function Scope"]
+                    A --> C["Function Scope"]
+                    B --> D["Block Scope"]
+                    B --> E["Block Scope"]
+                    C --> F["Block Scope"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style E fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style F fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="global-scope" class="lesson-section">
+                <h2>Global Scope</h2>
+                <p>Variables declared <strong>outside of any function or block</strong> are in the global scope. They're accessible from anywhere in your code.</p>
+
+                <pre><code class="language-javascript">
+// Global scope
+const appName = "My Cool App";
+let userCount = 0;
+
+function showApp() {
+    // ✅ Can access global variables inside functions
+    console.log(appName);  // "My Cool App"
+    userCount++;
+}
+
+showApp();
+console.log(userCount);  // 1 — global was modified
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Avoid Global Variables</h4>
+                    <p>Global variables are accessible everywhere, which sounds convenient — but it means <em>any</em> code can change them. In larger programs, this leads to hard-to-track bugs. Limit globals to things that truly need to be app-wide (like configuration constants). Keep everything else inside functions or blocks.</p>
+                </div>
+
+                <pre><code class="language-javascript">
+// ❌ Too many globals — anyone can break these
+let score = 0;
+let lives = 3;
+let level = 1;
+let playerName = "Hero";
+
+// ✅ Better — encapsulate in a function or object
+function createGameState() {
+    return {
+        score: 0,
+        lives: 3,
+        level: 1,
+        playerName: "Hero"
+    };
+}
+
+const game = createGameState();
+                </code></pre>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="function-scope" class="lesson-section">
+                <h2>Function Scope</h2>
+                <p>Variables declared <strong>inside a function</strong> are only accessible within that function. This applies to <code>var</code>, <code>let</code>, and <code>const</code>.</p>
+
+                <pre><code class="language-javascript">
+function calculateTotal() {
+    const taxRate = 0.08;    // Only exists inside this function
+    let subtotal = 50;
+    let total = subtotal + (subtotal * taxRate);
+    console.log(total);      // 54
+}
+
+calculateTotal();
+// console.log(taxRate);  // ❌ ReferenceError: taxRate is not defined
+// console.log(subtotal); // ❌ ReferenceError: subtotal is not defined
+                </code></pre>
+
+                <p>This is a feature, not a limitation. Function scope keeps variables <strong>private</strong> — they can't accidentally interfere with other parts of your code.</p>
+
+                <pre><code class="language-javascript">
+// Each function has its own scope
+function greetEnglish() {
+    const greeting = "Hello";   // Only in greetEnglish
+    console.log(greeting);
+}
+
+function greetSpanish() {
+    const greeting = "Hola";    // Different variable, different scope
+    console.log(greeting);
+}
+
+greetEnglish();  // "Hello"
+greetSpanish();  // "Hola"
+// No conflict — each 'greeting' is independent
+                </code></pre>
+
+                <h3>Parameters Are Function-Scoped Too</h3>
+                <pre><code class="language-javascript">
+function double(number) {
+    return number * 2;
+}
+
+double(5);  // 10
+// console.log(number);  // ❌ ReferenceError — 'number' only exists inside double()
+                </code></pre>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="block-scope" class="lesson-section">
+                <h2>Block Scope</h2>
+                <p>A <strong>block</strong> is any code between curly braces <code>{ }</code> — if/else blocks, loops, or even standalone braces. Variables declared with <code>let</code> and <code>const</code> are <strong>block-scoped</strong>.</p>
+
+                <pre><code class="language-javascript">
+if (true) {
+    let blockVar = "I'm inside the block";
+    const alsoBlock = "Me too";
+    console.log(blockVar);   // ✅ "I'm inside the block"
+}
+
+// console.log(blockVar);   // ❌ ReferenceError
+// console.log(alsoBlock);  // ❌ ReferenceError
+                </code></pre>
+
+                <h3>var Is NOT Block-Scoped</h3>
+                <p>This is one of the most important differences between <code>var</code> and <code>let</code>/<code>const</code>. The <code>var</code> keyword ignores block boundaries — it's only scoped to functions.</p>
+
+                <pre><code class="language-javascript">
+if (true) {
+    var leaked = "I escaped the block!";
+    let contained = "I stayed inside.";
+}
+
+console.log(leaked);      // ✅ "I escaped the block!" — var leaks out!
+// console.log(contained); // ❌ ReferenceError — let stays in the block
+                </code></pre>
+
+                <h3>Loops and Block Scope</h3>
+                <pre><code class="language-javascript">
+// let creates a new binding for each iteration
+for (let i = 0; i &lt; 3; i++) {
+    // Each iteration has its own 'i'
+}
+// console.log(i);  // ❌ ReferenceError — i doesn't exist here
+
+// var leaks the loop variable
+for (var j = 0; j &lt; 3; j++) {
+    // All iterations share the same 'j'
+}
+console.log(j);  // 3 — var leaked out of the loop!
+                </code></pre>
+
+                <div class="card card-danger">
+                    <h4>❌ The Classic var Loop Bug</h4>
+                    <p>This is one of the most famous JavaScript gotchas. With <code>var</code>, delayed callbacks all share the same variable.</p>
+                    <pre><code class="language-javascript">
+// ❌ Bug with var
+for (var i = 0; i &lt; 3; i++) {
+    setTimeout(() => console.log(i), 100);
+}
+// Prints: 3, 3, 3  (not 0, 1, 2!)
+// All callbacks see the SAME 'i', which is 3 after the loop
+
+// ✅ Fixed with let
+for (let i = 0; i &lt; 3; i++) {
+    setTimeout(() => console.log(i), 100);
+}
+// Prints: 0, 1, 2  (each callback has its own 'i')
+                    </code></pre>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th><code>var</code></th>
+                                <th><code>let</code></th>
+                                <th><code>const</code></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Scope</td><td>Function</td><td>Block</td><td>Block</td></tr>
+                            <tr><td>Hoisted?</td><td>Yes (initialized to <code>undefined</code>)</td><td>Yes (but in TDZ)</td><td>Yes (but in TDZ)</td></tr>
+                            <tr><td>Re-declarable?</td><td>Yes</td><td>No</td><td>No</td></tr>
+                            <tr><td>Reassignable?</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="scope-chain" class="lesson-section">
+                <h2>The Scope Chain</h2>
+                <p>When JavaScript encounters a variable, it looks for it in the current scope first. If it doesn't find it, it looks in the <strong>outer scope</strong>, then the next outer scope, all the way up to the global scope. This is the <strong>scope chain</strong>.</p>
+
+                <pre><code class="language-javascript">
+const globalVar = "I'm global";
+
+function outer() {
+    const outerVar = "I'm in outer";
+
+    function inner() {
+        const innerVar = "I'm in inner";
+
+        // inner can see everything above it
+        console.log(innerVar);   // ✅ "I'm in inner"
+        console.log(outerVar);   // ✅ "I'm in outer"
+        console.log(globalVar);  // ✅ "I'm global"
+    }
+
+    inner();
+
+    // outer can see its own scope and global, but NOT inner
+    console.log(outerVar);   // ✅ "I'm in outer"
+    console.log(globalVar);  // ✅ "I'm global"
+    // console.log(innerVar); // ❌ ReferenceError
+}
+
+outer();
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Global Scope<br/>globalVar = 'I'm global'"] --> B["outer() Scope<br/>outerVar = 'I'm in outer'"]
+                    B --> C["inner() Scope<br/>innerVar = 'I'm in inner'"]
+                    C -->|"Looks up for outerVar"| B
+                    C -->|"Looks up for globalVar"| A
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Variable Shadowing</h3>
+                <p>When an inner scope declares a variable with the same name as an outer scope variable, the inner one <strong>shadows</strong> (hides) the outer one within that scope.</p>
+
+                <pre><code class="language-javascript">
+const color = "blue";  // Global
+
+function paint() {
+    const color = "red";  // Shadows the global 'color'
+    console.log(color);   // "red" — uses the local one
+}
+
+paint();
+console.log(color);  // "blue" — global is unchanged
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Shadowing Is Usually Accidental</h4>
+                    <p>Reusing variable names across scopes makes code confusing. If you find yourself shadowing a variable, consider using a more descriptive name instead. Most linters will warn you about this.</p>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="hoisting" class="lesson-section">
+                <h2>Hoisting in Detail</h2>
+                <p><strong>Hoisting</strong> is JavaScript's behavior of moving declarations to the top of their scope <em>before</em> code execution. But different declarations are hoisted differently.</p>
+
+                <h3>var Hoisting</h3>
+                <p><code>var</code> declarations are hoisted and initialized to <code>undefined</code>. This means you can reference a <code>var</code> before its declaration — you'll get <code>undefined</code> instead of an error.</p>
+
+                <pre><code class="language-javascript">
+console.log(name);  // undefined (not an error!)
+var name = "Ray";
+console.log(name);  // "Ray"
+
+// JavaScript sees it as:
+// var name;           // Declaration hoisted, initialized to undefined
+// console.log(name);  // undefined
+// name = "Ray";       // Assignment stays in place
+// console.log(name);  // "Ray"
+                </code></pre>
+
+                <h3>let and const Hoisting (Temporal Dead Zone)</h3>
+                <p><code>let</code> and <code>const</code> are hoisted too, but they're <strong>not initialized</strong>. Accessing them before their declaration causes a <code>ReferenceError</code>. The zone between the start of the scope and the declaration is called the <strong>Temporal Dead Zone (TDZ)</strong>.</p>
+
+                <pre><code class="language-javascript">
+// console.log(age);  // ❌ ReferenceError: Cannot access 'age' before initialization
+let age = 25;
+console.log(age);     // 25
+
+// The TDZ exists from scope start to declaration
+{
+    // --- TDZ for 'myVar' starts here ---
+    // console.log(myVar);  // ❌ ReferenceError (TDZ!)
+    // --- TDZ for 'myVar' ends here ---
+    let myVar = "safe";
+    console.log(myVar);     // ✅ "safe"
+}
+                </code></pre>
+
+                <h3>Function Hoisting</h3>
+                <pre><code class="language-javascript">
+// Function DECLARATIONS are fully hoisted (name + body)
+sayHello();  // ✅ "Hello!" — works before definition
+
+function sayHello() {
+    console.log("Hello!");
+}
+
+// Function EXPRESSIONS are NOT fully hoisted
+// greet();  // ❌ TypeError: greet is not a function
+
+const greet = function() {
+    console.log("Hi!");
+};
+
+greet();  // ✅ "Hi!" — works after definition
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Hoisting Behavior"] --> B["var"]
+                    A --> C["let / const"]
+                    A --> D["function declaration"]
+                    A --> E["function expression"]
+                    B --> F["Hoisted + initialized to undefined"]
+                    C --> G["Hoisted but NOT initialized<br/>Temporal Dead Zone"]
+                    D --> H["Fully hoisted<br/>name + body"]
+                    E --> I["Variable hoisted per its keyword<br/>function body NOT hoisted"]
+                    style F fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style G fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style H fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style I fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: Don't Rely on Hoisting</h4>
+                    <p>Even though function declarations are hoisted, writing code that depends on hoisting makes it harder to follow. Declare your variables at the top of their scope and define functions before you call them. Let hoisting be something you <em>understand</em>, not something you <em>depend on</em>.</p>
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="closures" class="lesson-section">
+                <h2>Introduction to Closures</h2>
+                <p>A <strong>closure</strong> is when a function "remembers" the variables from its outer scope, even after the outer function has finished executing. This is one of JavaScript's most powerful features.</p>
+
+                <pre><code class="language-javascript">
+function createGreeter(greeting) {
+    // The inner function "closes over" the greeting variable
+    return function(name) {
+        console.log(`${greeting}, ${name}!`);
+    };
+}
+
+const sayHello = createGreeter("Hello");
+const sayHola = createGreeter("Hola");
+
+sayHello("Ray");    // "Hello, Ray!"
+sayHola("María");   // "Hola, María!"
+
+// createGreeter has finished running, but the returned
+// functions still remember their 'greeting' values!
+                </code></pre>
+
+                <h3>Practical Example: Counter</h3>
+                <pre><code class="language-javascript">
+function createCounter() {
+    let count = 0;  // Private variable — only the returned functions can access it
+
+    return {
+        increment() { count++; },
+        decrement() { count--; },
+        getCount() { return count; }
+    };
+}
+
+const counter = createCounter();
+counter.increment();
+counter.increment();
+counter.increment();
+counter.decrement();
+console.log(counter.getCount());  // 2
+
+// count is truly private — no one can access it directly
+// console.log(counter.count);  // undefined — not a property
+// console.log(count);          // ❌ ReferenceError
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["createCounter() runs"] --> B["count = 0 created"]
+                    B --> C["Returns object with<br/>increment, decrement, getCount"]
+                    C --> D["createCounter finishes"]
+                    D --> E["But count SURVIVES<br/>in closure memory!"]
+                    E --> F["counter.increment()<br/>count becomes 1"]
+                    F --> G["counter.getCount()<br/>returns 1"]
+                    style E fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style G fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Why Closures Matter</h4>
+                    <p>Closures are the foundation of many JavaScript patterns: data privacy, event handlers, callbacks, and module patterns. You don't need to master them right now — just understand the concept. You'll see them everywhere as you progress, and they'll make more sense each time.</p>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Scope Detective &amp; Closure Counter</h3>
+                    <p><strong>Objective:</strong> Debug scope issues and build a closure-based counter.</p>
+
+                    <h4>Part 1: Scope Detective</h4>
+                    <p>Predict the output of each <code>console.log</code> before running the code. Then run it and check.</p>
+                    <pre><code class="language-javascript">
+// What does each console.log output? Predict first!
+
+let a = "global a";
+var b = "global b";
+
+function test() {
+    let a = "function a";
+    var c = "function c";
+
+    if (true) {
+        let a = "block a";
+        var d = "function d";  // var is function-scoped!
+        console.log("1:", a);  // ???
+        console.log("2:", b);  // ???
+    }
+
+    console.log("3:", a);  // ???
+    console.log("4:", c);  // ???
+    console.log("5:", d);  // ???
+}
+
+test();
+console.log("6:", a);  // ???
+console.log("7:", b);  // ???
+// console.log("8:", c);  // What happens here?
+                    </code></pre>
+
+                    <h4>Part 2: Build a Score Tracker</h4>
+                    <pre><code class="language-javascript">
+// TODO: Create a closure-based score tracker
+// It should return an object with these methods:
+//   addPoints(points)  — adds points to the score
+//   penalty(points)    — subtracts points (min score is 0)
+//   getScore()         — returns the current score
+//   reset()            — resets the score to 0
+
+// Usage:
+// const tracker = createScoreTracker();
+// tracker.addPoints(10);
+// tracker.addPoints(25);
+// tracker.penalty(5);
+// console.log(tracker.getScore());  // 30
+// tracker.reset();
+// console.log(tracker.getScore());  // 0
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>Part 1:</strong> Remember — <code>let</code> is block-scoped, <code>var</code> is function-scoped. The <code>var d</code> inside the <code>if</code> block belongs to the function scope, not the block. Variable shadowing means inner <code>a</code> hides outer <code>a</code> within its scope.</p>
+                        <p><strong>Part 2:</strong> Follow the <code>createCounter</code> pattern from the lesson. Declare a <code>let score = 0</code> inside the function and return an object whose methods read and modify that variable. For <code>penalty</code>, use <code>Math.max(0, score - points)</code> to prevent going below zero.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+// Part 1 Answers:
+// 1: "block a"     (let a shadows function a inside the block)
+// 2: "global b"    (b found via scope chain in global)
+// 3: "function a"  (block scope ended — back to function a)
+// 4: "function c"  (var c in function scope — accessible)
+// 5: "function d"  (var d is function-scoped, not block-scoped!)
+// 6: "global a"    (global a was never modified)
+// 7: "global b"    (global b accessible)
+// 8: ReferenceError (c is function-scoped — not accessible globally)
+
+
+// Part 2: Score Tracker
+function createScoreTracker() {
+    let score = 0;
+
+    return {
+        addPoints(points) {
+            score += points;
+        },
+        penalty(points) {
+            score = Math.max(0, score - points);
+        },
+        getScore() {
+            return score;
+        },
+        reset() {
+            score = 0;
+        }
+    };
+}
+
+const tracker = createScoreTracker();
+tracker.addPoints(10);
+tracker.addPoints(25);
+tracker.penalty(5);
+console.log(tracker.getScore());  // 30
+
+tracker.penalty(100);
+console.log(tracker.getScore());  // 0 (can't go below zero)
+
+tracker.addPoints(50);
+tracker.reset();
+console.log(tracker.getScore());  // 0
+
+// Score is truly private
+// console.log(tracker.score);  // undefined
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is the output?</p>
+                        <pre><code class="language-javascript">console.log(x);
+var x = 10;</code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The assignment (= 10) is not hoisted — only the declaration (var x) is.">A) 10</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="var declarations are hoisted and initialized to undefined. The assignment x = 10 happens later, so console.log sees undefined.">B) undefined</button>
+                            <button class="quiz-option" data-correct="false" data-hint="var is hoisted, so no error occurs. You'd get an error with let or const instead.">C) ReferenceError</button>
+                            <button class="quiz-option" data-correct="false" data-hint="null is a specific assigned value — var initializes to undefined, not null.">D) null</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Which keyword creates a block-scoped variable?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="var is function-scoped — it ignores block boundaries like if/else and loops.">A) var</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Both let and const are block-scoped — they respect curly brace boundaries.">B) let</button>
+                            <button class="quiz-option" data-correct="false" data-hint="function creates function scope, not block scope.">C) function</button>
+                            <button class="quiz-option" data-correct="false" data-hint="global isn't a JavaScript keyword — you create global variables by declaring outside any function/block.">D) global</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What is a closure?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That describes syntax, not closures. Closures are about variable access.">A) A function inside curly braces</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's the scope chain. Closures specifically involve functions remembering outer scope.">B) A variable that can be accessed globally</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="A closure is formed when a function retains access to variables from its enclosing scope, even after that scope has finished executing.">C) A function that remembers variables from its outer scope</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That describes an IIFE (Immediately Invoked Function Expression), which can create closures but isn't a closure itself.">D) A way to call a function immediately</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Global scope</strong>: variables declared outside functions/blocks — accessible everywhere (use sparingly!)</li>
+                        <li><strong>Function scope</strong>: variables inside a function — private to that function</li>
+                        <li><strong>Block scope</strong>: <code>let</code>/<code>const</code> inside <code>{ }</code> — private to that block. <code>var</code> ignores blocks!</li>
+                        <li><strong>Scope chain</strong>: JavaScript looks outward through nested scopes to find variables</li>
+                        <li><strong>Hoisting</strong>: declarations move to the top of their scope. <code>var</code> gets <code>undefined</code>; <code>let</code>/<code>const</code> enter the TDZ</li>
+                        <li><strong>Closures</strong>: inner functions remember their outer scope's variables, enabling data privacy and powerful patterns</li>
+                        <li><strong>Always use <code>let</code>/<code>const</code></strong> — avoid <code>var</code> to prevent scope leaks</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Glossary/Scope" target="_blank" rel="noopener">MDN — Scope</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Glossary/Hoisting" target="_blank" rel="noopener">MDN — Hoisting</a></li>
+                    <li><a href="https://javascript.info/closure" target="_blank" rel="noopener">javascript.info — Closures</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures" target="_blank" rel="noopener">MDN — Closures</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You've completed Module 2! You now understand control flow, functions, and scope. In Module 3, you'll start <strong>working with data</strong> — beginning with <strong>arrays</strong>, the most important data structure in everyday JavaScript.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Module 2 Complete!</h3>
+                    <p>You've mastered control flow and functions — conditionals, loops, functions, and scope. Your programs can now make decisions, repeat actions, organize code, and manage data access. On to data structures!</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_07.html" class="prev-lesson">← Previous: Functions</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_09.html" class="next-lesson">Next: Arrays →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

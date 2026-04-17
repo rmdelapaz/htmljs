@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn JavaScript objects — how to store data with named keys using properties, methods, dot and bracket notation, nesting, and destructuring.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 10: Objects - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3</a></li>
+            <li aria-current="page">Lesson 10: Objects</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🏗️ Lesson 10: Objects</h1>
+                <p class="lead">Arrays store data by position. Objects store data by <em>name</em> — making them perfect for representing real-world things like users, products, and settings.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Create objects using literal syntax</li>
+                        <li>Read and write properties using dot notation and bracket notation</li>
+                        <li>Add, update, and delete properties dynamically</li>
+                        <li>Define methods (functions inside objects)</li>
+                        <li>Use <code>this</code> inside object methods</li>
+                        <li>Nest objects and arrays inside objects</li>
+                        <li>Destructure objects into variables</li>
+                        <li>Iterate over object keys, values, and entries</li>
+                        <li>Check if a property exists and list all keys</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 50 minutes</p>
+                    <p><strong>Project:</strong> Build a contact book with search and display features</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#creating" class="toc-link">Creating Objects</a></li>
+                        <li><a href="#accessing" class="toc-link">Accessing Properties</a></li>
+                        <li><a href="#modifying" class="toc-link">Adding, Updating &amp; Deleting</a></li>
+                        <li><a href="#methods" class="toc-link">Methods &amp; this</a></li>
+                        <li><a href="#nesting" class="toc-link">Nesting Objects &amp; Arrays</a></li>
+                        <li><a href="#destructuring" class="toc-link">Destructuring Objects</a></li>
+                        <li><a href="#iterating" class="toc-link">Iterating Over Objects</a></li>
+                        <li><a href="#checking" class="toc-link">Checking Properties &amp; Comparing</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>In the previous lesson you learned that arrays store ordered lists of values accessed by <strong>index</strong> (a number). Objects take a different approach — they store values accessed by <strong>key</strong> (a name).</p>
+                <p>This makes objects ideal for representing things with named attributes. A user has a <code>name</code>, an <code>email</code>, and an <code>age</code>. A product has a <code>title</code>, a <code>price</code>, and a <code>category</code>. Whenever you need to describe <em>what</em> a piece of data means, objects are the tool for the job.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Object: user"] --- B["name: 'Ray'"]
+                    A --- C["email: 'ray@example.com'"]
+                    A --- D["age: 30"]
+                    A --- E["isPro: true"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style E fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+
+                <p>Each piece of data in an object is called a <strong>property</strong>. A property has a <strong>key</strong> (the name) and a <strong>value</strong> (the data). Together, arrays and objects are the two pillars of data handling in JavaScript.</p>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="creating" class="lesson-section">
+                <h2>Creating Objects</h2>
+                <p>The standard way to create an object is with <strong>curly brace notation</strong> (an object literal). Each property is written as <code>key: value</code>, separated by commas.</p>
+
+                <pre><code class="language-javascript">
+// Object literal — the standard way
+const user = {
+    name: "Ray",
+    age: 30,
+    email: "ray@example.com",
+    isPro: true
+};
+
+// Empty object — add properties later
+const settings = {};
+
+// Single-line for small objects
+const point = { x: 10, y: 20 };
+                </code></pre>
+
+                <h3>Property Key Rules</h3>
+                <p>Keys are usually simple names (identifiers), but they can also be strings — which is useful when keys contain spaces or special characters.</p>
+
+                <pre><code class="language-javascript">
+const product = {
+    name: "Laptop",          // Simple key — no quotes needed
+    "price-usd": 999,        // Hyphens require quotes
+    "in stock": true,        // Spaces require quotes
+    123: "numeric key"       // Numbers are valid keys (converted to strings)
+};
+                </code></pre>
+
+                <h3>Shorthand Property Names</h3>
+                <p>When the variable name matches the key name, you can use a shorthand.</p>
+
+                <pre><code class="language-javascript">
+const name = "Ray";
+const age = 30;
+const role = "developer";
+
+// Without shorthand
+const user1 = { name: name, age: age, role: role };
+
+// With shorthand — cleaner!
+const user2 = { name, age, role };
+
+console.log(user2);  // { name: "Ray", age: 30, role: "developer" }
+                </code></pre>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="accessing" class="lesson-section">
+                <h2>Accessing Properties</h2>
+                <p>There are two ways to read a property value: <strong>dot notation</strong> and <strong>bracket notation</strong>.</p>
+
+                <h3>Dot Notation</h3>
+                <p>The most common and readable way. Use when the key is a valid identifier (no spaces, no hyphens, doesn't start with a number).</p>
+
+                <pre><code class="language-javascript">
+const car = {
+    make: "Toyota",
+    model: "Corolla",
+    year: 2024
+};
+
+console.log(car.make);   // "Toyota"
+console.log(car.year);   // 2024
+
+// Accessing a key that doesn't exist returns undefined
+console.log(car.color);  // undefined (no error!)
+                </code></pre>
+
+                <h3>Bracket Notation</h3>
+                <p>Required when the key has special characters, or when the key is stored in a variable.</p>
+
+                <pre><code class="language-javascript">
+const product = {
+    name: "Headphones",
+    "price-usd": 79,
+    "in stock": true
+};
+
+// Bracket notation with string keys
+console.log(product["price-usd"]);  // 79
+console.log(product["in stock"]);   // true
+
+// Dynamic keys — the key comes from a variable
+const field = "name";
+console.log(product[field]);        // "Headphones"
+
+// This is powerful — you can compute which property to access
+function getField(obj, key) {
+    return obj[key];
+}
+console.log(getField(product, "name"));  // "Headphones"
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 When to Use Which?</h4>
+                    <ul>
+                        <li><strong>Dot notation</strong> — default choice. Clean, readable, and most common.</li>
+                        <li><strong>Bracket notation</strong> — when the key has special characters, or when you need to use a variable as the key.</li>
+                    </ul>
+                </div>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Accessing a Property"] --> B{"Is the key a<br/>simple identifier?"}
+                    B -->|"Yes"| C["Dot Notation<br/>obj.key"]
+                    B -->|"No (spaces, hyphens, etc.)"| D["Bracket Notation<br/>obj['key']"]
+                    A --> E{"Is the key stored<br/>in a variable?"}
+                    E -->|"Yes"| F["Bracket Notation<br/>obj[variable]"]
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style F fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="modifying" class="lesson-section">
+                <h2>Adding, Updating &amp; Deleting</h2>
+                <p>Objects are mutable — you can add new properties, change existing ones, and remove them at any time.</p>
+
+                <h3>Adding &amp; Updating Properties</h3>
+                <pre><code class="language-javascript">
+const user = {
+    name: "Ray",
+    age: 30
+};
+
+// Update an existing property
+user.age = 31;
+
+// Add a new property — just assign it
+user.email = "ray@example.com";
+user.isPro = true;
+
+console.log(user);
+// { name: "Ray", age: 31, email: "ray@example.com", isPro: true }
+                </code></pre>
+
+                <h3>Deleting Properties</h3>
+                <pre><code class="language-javascript">
+const settings = {
+    theme: "dark",
+    fontSize: 16,
+    notifications: true,
+    beta: false
+};
+
+// Remove a property entirely
+delete settings.beta;
+
+console.log(settings);
+// { theme: "dark", fontSize: 16, notifications: true }
+console.log(settings.beta);  // undefined — it's gone
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ const Doesn't Mean Immutable</h4>
+                    <p>Just like arrays, <code>const</code> prevents reassigning the variable but <strong>not</strong> modifying the object's contents. This is the same behavior you saw in the arrays lesson.</p>
+                    <pre><code class="language-javascript">
+const config = { debug: false };
+
+// ✅ Modifying contents is allowed
+config.debug = true;
+config.version = "2.0";
+
+// ❌ Reassigning the variable is NOT allowed
+// config = { debug: true };  // TypeError
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="methods" class="lesson-section">
+                <h2>Methods &amp; this</h2>
+                <p>When a property's value is a <strong>function</strong>, it's called a <strong>method</strong>. Methods let objects have behavior, not just data.</p>
+
+                <pre><code class="language-javascript">
+const calculator = {
+    // Method — a function as a property value
+    add(a, b) {
+        return a + b;
+    },
+    subtract(a, b) {
+        return a - b;
+    },
+    multiply(a, b) {
+        return a * b;
+    }
+};
+
+console.log(calculator.add(5, 3));       // 8
+console.log(calculator.multiply(4, 7));  // 28
+                </code></pre>
+
+                <h3>The this Keyword</h3>
+                <p>Inside a method, <code>this</code> refers to the object that owns the method. It lets a method access other properties on the same object.</p>
+
+                <pre><code class="language-javascript">
+const player = {
+    name: "Ray",
+    score: 0,
+    lives: 3,
+
+    addPoints(points) {
+        this.score += points;
+        console.log(`${this.name} scored ${points}! Total: ${this.score}`);
+    },
+
+    loseLife() {
+        this.lives--;
+        console.log(`${this.name} lost a life. Lives left: ${this.lives}`);
+    },
+
+    status() {
+        return `${this.name}: ${this.score} points, ${this.lives} lives`;
+    }
+};
+
+player.addPoints(10);    // "Ray scored 10! Total: 10"
+player.addPoints(25);    // "Ray scored 25! Total: 35"
+player.loseLife();       // "Ray lost a life. Lives left: 2"
+console.log(player.status());  // "Ray: 35 points, 2 lives"
+                </code></pre>
+
+                <div class="card card-danger">
+                    <h4>❌ Arrow Functions Don't Have Their Own this</h4>
+                    <p>Arrow functions inherit <code>this</code> from their surrounding scope, which means they <strong>don't work</strong> as object methods that need to reference the object.</p>
+                    <pre><code class="language-javascript">
+const broken = {
+    name: "Oops",
+
+    // ❌ Arrow function — 'this' is NOT the object
+    greet: () => {
+        console.log(`Hi, I'm ${this.name}`);
+    },
+
+    // ✅ Regular method — 'this' IS the object
+    greetCorrect() {
+        console.log(`Hi, I'm ${this.name}`);
+    }
+};
+
+broken.greet();          // "Hi, I'm undefined"
+broken.greetCorrect();   // "Hi, I'm Oops"
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="nesting" class="lesson-section">
+                <h2>Nesting Objects &amp; Arrays</h2>
+                <p>Objects can contain other objects, arrays, or any combination. This is how you model real-world data with depth and structure.</p>
+
+                <pre><code class="language-javascript">
+const student = {
+    name: "Maria",
+    age: 22,
+    address: {
+        street: "123 Main St",
+        city: "Austin",
+        state: "TX"
+    },
+    courses: ["Math 201", "CS 101", "Art 110"],
+    grades: {
+        "Math 201": 95,
+        "CS 101": 88,
+        "Art 110": 92
+    }
+};
+
+// Accessing nested data — chain the accessors
+console.log(student.address.city);     // "Austin"
+console.log(student.courses[0]);       // "Math 201"
+console.log(student.grades["CS 101"]); // 88
+
+// Updating nested data
+student.address.city = "Dallas";
+student.courses.push("History 101");
+                </code></pre>
+
+                <h3>Arrays of Objects</h3>
+                <p>One of the most common patterns in JavaScript — an array where each element is an object. Think of it like a spreadsheet: each object is a row, each property is a column.</p>
+
+                <pre><code class="language-javascript">
+const users = [
+    { id: 1, name: "Alice", role: "admin" },
+    { id: 2, name: "Bob", role: "editor" },
+    { id: 3, name: "Carol", role: "viewer" }
+];
+
+// Access a specific user
+console.log(users[0].name);  // "Alice"
+
+// Loop through all users
+for (const user of users) {
+    console.log(`${user.name} is a ${user.role}`);
+}
+
+// Find a specific user
+const bob = users.find(u => u.name === "Bob");
+console.log(bob.role);  // "editor"
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["student"] --> B["name: 'Maria'"]
+                    A --> C["address: { ... }"]
+                    A --> D["courses: [ ... ]"]
+                    A --> E["grades: { ... }"]
+                    C --> F["street: '123 Main St'"]
+                    C --> G["city: 'Austin'"]
+                    C --> H["state: 'TX'"]
+                    D --> I["[0] 'Math 201'"]
+                    D --> J["[1] 'CS 101'"]
+                    D --> K["[2] 'Art 110'"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style E fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="destructuring" class="lesson-section">
+                <h2>Destructuring Objects</h2>
+                <p>Just like arrays, you can unpack object properties directly into variables. The difference: with objects, you match by <strong>key name</strong> instead of position.</p>
+
+                <pre><code class="language-javascript">
+const book = {
+    title: "Dune",
+    author: "Frank Herbert",
+    year: 1965,
+    pages: 412
+};
+
+// Without destructuring
+const title = book.title;
+const author = book.author;
+
+// With destructuring — cleaner!
+const { title, author, year, pages } = book;
+console.log(title);   // "Dune"
+console.log(author);  // "Frank Herbert"
+console.log(year);    // 1965
+                </code></pre>
+
+                <h3>Renaming Variables</h3>
+                <pre><code class="language-javascript">
+const apiResponse = {
+    user_name: "ray42",
+    user_email: "ray@example.com"
+};
+
+// Rename during destructuring with key: newName
+const { user_name: username, user_email: email } = apiResponse;
+console.log(username);  // "ray42"
+console.log(email);     // "ray@example.com"
+                </code></pre>
+
+                <h3>Default Values</h3>
+                <pre><code class="language-javascript">
+const config = { theme: "dark" };
+
+// Set defaults for missing properties
+const { theme, fontSize = 16, language = "en" } = config;
+console.log(theme);     // "dark"     (from the object)
+console.log(fontSize);  // 16         (default — not in object)
+console.log(language);  // "en"       (default — not in object)
+                </code></pre>
+
+                <h3>Destructuring in Function Parameters</h3>
+                <p>This is one of the most useful patterns — destructure directly in the function signature.</p>
+
+                <pre><code class="language-javascript">
+// Without destructuring
+function greetUser(user) {
+    console.log(`Hello, ${user.name}! You are ${user.age} years old.`);
+}
+
+// With destructuring — cleaner!
+function greetUser({ name, age }) {
+    console.log(`Hello, ${name}! You are ${age} years old.`);
+}
+
+greetUser({ name: "Ray", age: 30, email: "ray@example.com" });
+// "Hello, Ray! You are 30 years old."
+                </code></pre>
+            </section>
+
+            <!-- Section 8 -->
+            <section id="iterating" class="lesson-section">
+                <h2>Iterating Over Objects</h2>
+                <p>Unlike arrays, objects aren't iterable with <code>for...of</code> directly. JavaScript gives you three static methods to work with object data.</p>
+
+                <h3>Object.keys() — Get All Keys</h3>
+                <pre><code class="language-javascript">
+const car = { make: "Honda", model: "Civic", year: 2023 };
+
+const keys = Object.keys(car);
+console.log(keys);  // ["make", "model", "year"]
+
+// Loop over keys
+for (const key of Object.keys(car)) {
+    console.log(`${key}: ${car[key]}`);
+}
+// make: Honda
+// model: Civic
+// year: 2023
+                </code></pre>
+
+                <h3>Object.values() — Get All Values</h3>
+                <pre><code class="language-javascript">
+const car = { make: "Honda", model: "Civic", year: 2023 };
+
+const values = Object.values(car);
+console.log(values);  // ["Honda", "Civic", 2023]
+                </code></pre>
+
+                <h3>Object.entries() — Get Key-Value Pairs</h3>
+                <pre><code class="language-javascript">
+const car = { make: "Honda", model: "Civic", year: 2023 };
+
+const entries = Object.entries(car);
+console.log(entries);
+// [["make", "Honda"], ["model", "Civic"], ["year", 2023]]
+
+// Destructure each entry in the loop
+for (const [key, value] of Object.entries(car)) {
+    console.log(`${key} → ${value}`);
+}
+// make → Honda
+// model → Civic
+// year → 2023
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Returns</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>Object.keys(obj)</code></td><td>Array of key strings</td><td>Listing or counting properties</td></tr>
+                            <tr><td><code>Object.values(obj)</code></td><td>Array of values</td><td>Working with values only</td></tr>
+                            <tr><td><code>Object.entries(obj)</code></td><td>Array of <code>[key, value]</code> pairs</td><td>Looping with both key and value</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>The Spread Operator with Objects</h3>
+                <p>Just like arrays, the spread operator works with objects — perfect for copying or merging.</p>
+
+                <pre><code class="language-javascript">
+const defaults = { theme: "light", fontSize: 14, lang: "en" };
+const userPrefs = { theme: "dark", fontSize: 18 };
+
+// Merge — later properties override earlier ones
+const settings = { ...defaults, ...userPrefs };
+console.log(settings);
+// { theme: "dark", fontSize: 18, lang: "en" }
+
+// Copy an object
+const copy = { ...defaults };
+copy.theme = "blue";
+console.log(defaults.theme);  // "light" — original unchanged
+                </code></pre>
+            </section>
+
+            <!-- Section 9 -->
+            <section id="checking" class="lesson-section">
+                <h2>Checking Properties &amp; Comparing</h2>
+
+                <h3>Checking if a Property Exists</h3>
+                <pre><code class="language-javascript">
+const user = { name: "Ray", age: 30, email: undefined };
+
+// The "in" operator — checks if the key exists (even if value is undefined)
+console.log("name" in user);    // true
+console.log("email" in user);   // true (key exists!)
+console.log("phone" in user);   // false
+
+// hasOwnProperty — same idea, method version
+console.log(user.hasOwnProperty("age"));    // true
+console.log(user.hasOwnProperty("phone"));  // false
+
+// ⚠️ Be careful with undefined checks
+console.log(user.email !== undefined);  // false — but the key DOES exist!
+console.log(user.phone !== undefined);  // false — and this key does NOT exist
+// Both return false, so this approach can't distinguish the two cases
+                </code></pre>
+
+                <h3>Optional Chaining (?.)</h3>
+                <p>When accessing deeply nested properties, you risk errors if an intermediate value is <code>null</code> or <code>undefined</code>. Optional chaining prevents this.</p>
+
+                <pre><code class="language-javascript">
+const user = {
+    name: "Ray",
+    address: {
+        city: "Henderson"
+    }
+};
+
+// Without optional chaining — crashes if address is missing
+// const zip = user.address.zip;  // undefined (OK here)
+// const zip = user.work.zip;     // ❌ TypeError: Cannot read properties of undefined
+
+// With optional chaining — safe!
+console.log(user.address?.city);    // "Henderson"
+console.log(user.address?.zip);     // undefined (no error)
+console.log(user.work?.zip);        // undefined (no error!)
+console.log(user.work?.address?.zip);  // undefined (chains safely)
+                </code></pre>
+
+                <h3>Comparing Objects</h3>
+                <div class="card card-danger">
+                    <h4>❌ Objects Are Compared by Reference, Not Value</h4>
+                    <p>Two objects with identical contents are <strong>not</strong> equal. JavaScript compares whether they're the <em>same object in memory</em>, not whether they have the same data.</p>
+                    <pre><code class="language-javascript">
+const a = { x: 1, y: 2 };
+const b = { x: 1, y: 2 };
+const c = a;
+
+console.log(a === b);  // false — different objects!
+console.log(a === c);  // true  — same reference
+
+// To compare contents, use JSON.stringify (simple objects only)
+console.log(JSON.stringify(a) === JSON.stringify(b));  // true
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Contact Book</h3>
+                    <p><strong>Objective:</strong> Build a set of functions that manage a contact book using objects and arrays.</p>
+
+                    <pre><code class="language-javascript">
+// Contact book — an array of contact objects
+const contacts = [
+    { name: "Alice", phone: "555-0101", email: "alice@example.com", group: "work" },
+    { name: "Bob", phone: "555-0202", email: "bob@example.com", group: "family" },
+    { name: "Carol", phone: "555-0303", email: "carol@example.com", group: "work" }
+];
+
+// TODO: Write these functions:
+
+// 1. addContact(book, contact)
+//    - Add a contact object to the book
+//    - Don't add if a contact with the same name already exists
+//    - Return true if added, false if duplicate
+
+// 2. findContact(book, name)
+//    - Find and return the contact with the given name
+//    - Return null if not found
+
+// 3. updateContact(book, name, updates)
+//    - Find the contact by name, then apply the updates object
+//    - Example: updateContact(contacts, "Alice", { phone: "555-9999" })
+//    - Return true if updated, false if contact not found
+
+// 4. displayContact(contact)
+//    - Log a formatted display of the contact:
+//      "Name: Alice | Phone: 555-0101 | Email: alice@example.com | Group: work"
+
+// 5. listByGroup(book, group)
+//    - Return an array of names of contacts in the given group
+
+// Test your functions:
+// addContact(contacts, { name: "Dave", phone: "555-0404", email: "dave@example.com", group: "family" });
+// console.log(findContact(contacts, "Bob"));
+// updateContact(contacts, "Alice", { phone: "555-9999", group: "friend" });
+// displayContact(findContact(contacts, "Alice"));
+// console.log(listByGroup(contacts, "work"));
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>addContact:</strong> Use <code>find()</code> to check for duplicates by name first, then <code>push()</code> if safe.</p>
+                        <p><strong>findContact:</strong> Use <code>find()</code> with a name comparison. Return <code>null</code> instead of <code>undefined</code> for clarity.</p>
+                        <p><strong>updateContact:</strong> Find the contact first. Then use <code>Object.assign(contact, updates)</code> or the spread operator to apply changes.</p>
+                        <p><strong>displayContact:</strong> Use <code>Object.entries()</code> or template literals to format the output.</p>
+                        <p><strong>listByGroup:</strong> Use <code>filter()</code> to get matching contacts, then <code>map()</code> to extract just the names.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+const contacts = [
+    { name: "Alice", phone: "555-0101", email: "alice@example.com", group: "work" },
+    { name: "Bob", phone: "555-0202", email: "bob@example.com", group: "family" },
+    { name: "Carol", phone: "555-0303", email: "carol@example.com", group: "work" }
+];
+
+function addContact(book, contact) {
+    const exists = book.find(c => c.name === contact.name);
+    if (exists) {
+        console.log(`Contact "${contact.name}" already exists.`);
+        return false;
+    }
+    book.push(contact);
+    return true;
+}
+
+function findContact(book, name) {
+    const contact = book.find(c => c.name === name);
+    return contact || null;
+}
+
+function updateContact(book, name, updates) {
+    const contact = findContact(book, name);
+    if (!contact) {
+        console.log(`Contact "${name}" not found.`);
+        return false;
+    }
+    Object.assign(contact, updates);
+    return true;
+}
+
+function displayContact(contact) {
+    if (!contact) {
+        console.log("No contact to display.");
+        return;
+    }
+    const parts = Object.entries(contact)
+        .map(([key, value]) => `${key[0].toUpperCase() + key.slice(1)}: ${value}`)
+        .join(" | ");
+    console.log(parts);
+}
+
+function listByGroup(book, group) {
+    return book
+        .filter(c => c.group === group)
+        .map(c => c.name);
+}
+
+// Testing
+addContact(contacts, {
+    name: "Dave", phone: "555-0404",
+    email: "dave@example.com", group: "family"
+});
+// Added successfully
+
+addContact(contacts, {
+    name: "Alice", phone: "555-0000",
+    email: "new@example.com", group: "other"
+});
+// Contact "Alice" already exists.
+
+console.log(findContact(contacts, "Bob"));
+// { name: "Bob", phone: "555-0202", ... }
+
+updateContact(contacts, "Alice", { phone: "555-9999", group: "friend" });
+displayContact(findContact(contacts, "Alice"));
+// Name: Alice | Phone: 555-9999 | Email: alice@example.com | Group: friend
+
+console.log(listByGroup(contacts, "family"));
+// ["Bob", "Dave"]
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which notation must you use when the key is stored in a variable?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Dot notation treats whatever follows the dot as a literal key name, not a variable.">A) Dot notation</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Bracket notation evaluates the expression inside the brackets, so obj[myVar] looks up the key stored in myVar.">B) Bracket notation</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Parentheses are for function calls, not property access.">C) Parentheses notation</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Either works for simple string keys, but only bracket notation handles variables.">D) Either works</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What does <code>Object.keys({ a: 1, b: 2, c: 3 })</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Object.values() returns the values. Object.keys() returns the keys.">A) [1, 2, 3]</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Object.keys() returns an array of all the property names (keys) in the object.">B) [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's what Object.entries() returns — pairs of keys and values.">C) [[&quot;a&quot;, 1], [&quot;b&quot;, 2], [&quot;c&quot;, 3]]</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Object.keys() returns an array, not a number.">D) 3</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> Why shouldn't you use arrow functions as object methods that use <code>this</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Arrow functions work fine in objects — the issue is specifically with 'this'.">A) Arrow functions can't be properties</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Arrow functions don't have their own 'this' — they inherit it from the enclosing scope. In an object method, you usually want 'this' to refer to the object, which requires a regular function.">B) Arrow functions don't have their own this</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Arrow functions can return values just fine. The issue is about 'this' binding.">C) Arrow functions can't return values</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Arrow functions are valid syntax and will run — they just won't have the right 'this'.">D) Arrow functions cause syntax errors in objects</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> What does <code>{ x: 1 } === { x: 1 }</code> evaluate to?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Even though they look the same, JavaScript compares objects by reference, not by content.">A) true</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Objects are compared by reference — these are two separate objects in memory, so they're not equal even though they have the same contents.">B) false</button>
+                            <button class="quiz-option" data-correct="false" data-hint="This comparison is valid JavaScript and returns a boolean.">C) TypeError</button>
+                            <button class="quiz-option" data-correct="false" data-hint="This always evaluates to false — it depends on the objects being the exact same reference, not the contents.">D) It depends on the values</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Objects</strong> store data as <strong>key-value pairs</strong> — perfect for named properties</li>
+                        <li><strong>Dot notation</strong> (<code>obj.key</code>) is the default; <strong>bracket notation</strong> (<code>obj["key"]</code>) is for dynamic or special keys</li>
+                        <li>Objects are <strong>mutable</strong> — add, update, or delete properties freely</li>
+                        <li><strong>Methods</strong> are functions inside objects; use <code>this</code> to reference the object (avoid arrow functions for methods)</li>
+                        <li><strong>Nesting</strong> objects and arrays models complex, real-world data</li>
+                        <li><strong>Destructuring</strong> unpacks properties into variables — especially useful in function parameters</li>
+                        <li><strong><code>Object.keys()</code></strong>, <strong><code>Object.values()</code></strong>, and <strong><code>Object.entries()</code></strong> let you iterate over objects</li>
+                        <li><strong>Optional chaining</strong> (<code>?.</code>) safely accesses nested properties without crashes</li>
+                        <li>Objects are compared by <strong>reference</strong>, not by value</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects" target="_blank" rel="noopener">MDN — Working with Objects</a></li>
+                    <li><a href="https://javascript.info/object" target="_blank" rel="noopener">javascript.info — Objects</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment" target="_blank" rel="noopener">MDN — Destructuring Assignment</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining" target="_blank" rel="noopener">MDN — Optional Chaining</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You now know both fundamental data structures — arrays and objects. In the next lesson, you'll learn <strong>array methods</strong> like <code>map</code>, <code>filter</code>, and <code>reduce</code> — powerful tools that transform data cleanly and concisely without writing manual loops.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_09.html" class="prev-lesson">← Previous: Arrays</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_11.html" class="next-lesson">Next: Array Methods →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

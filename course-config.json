@@ -1,0 +1,122 @@
+{
+  "course": {
+    "title": "Front-End JavaScript",
+    "subtitle": "Make Your Web Pages Come Alive",
+    "description": "Learn JavaScript from the ground up and bring interactivity to the HTML & CSS skills you already have. By the end of this course, you'll build dynamic, interactive web pages using vanilla JavaScript.",
+    "author": {
+      "name": "Ray De La Paz",
+      "email": "contact via website",
+      "website": "https://rays-home.netlify.app/",
+      "bio": "Technical trainer, full-stack developer, and course developer with 30+ years of experience."
+    },
+    "version": "1.0.0",
+    "lastUpdated": "2026-04-16",
+    "language": "en",
+    "difficulty": "beginner",
+    "estimatedHours": 30,
+    "tags": ["javascript", "front-end", "web development", "DOM", "interactive", "vanilla JS"]
+  },
+
+  "branding": {
+    "primaryColor": "#f59e0b",
+    "secondaryColor": "#f8fafc",
+    "accentColor": "#6366f1",
+    "fontFamily": "Segoe UI, system-ui, -apple-system, sans-serif",
+    "logo": "images/logo.png",
+    "favicon": "favicon.png"
+  },
+
+  "navigation": {
+    "showBreadcrumbs": true,
+    "showProgressBar": true,
+    "showLessonNav": true,
+    "showSearch": true,
+    "showThemeToggle": true,
+    "keyboardShortcuts": true,
+    "externalLinks": [
+      { "label": "Ray's House of Fun", "url": "https://rays-home.netlify.app/" },
+      { "label": "Contact", "url": "https://rays-home.netlify.app/contact" }
+    ]
+  },
+
+  "modules": [
+    {
+      "id": "module-1",
+      "title": "JavaScript Foundations",
+      "description": "Get set up and learn the building blocks of JavaScript",
+      "lessons": [
+        { "id": "lesson-1-1", "title": "Welcome to JavaScript", "filename": "lesson_01.html", "duration": "30 minutes", "difficulty": "beginner" },
+        { "id": "lesson-1-2", "title": "Linking Scripts & the Console", "filename": "lesson_02.html", "duration": "40 minutes", "difficulty": "beginner" },
+        { "id": "lesson-1-3", "title": "Variables & Data Types", "filename": "lesson_03.html", "duration": "50 minutes", "difficulty": "beginner" },
+        { "id": "lesson-1-4", "title": "Operators & Expressions", "filename": "lesson_04.html", "duration": "45 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-2",
+      "title": "Control Flow & Functions",
+      "description": "Make decisions, repeat actions, and organize code into reusable pieces",
+      "lessons": [
+        { "id": "lesson-2-1", "title": "Conditionals", "filename": "lesson_05.html", "duration": "45 minutes", "difficulty": "beginner" },
+        { "id": "lesson-2-2", "title": "Loops", "filename": "lesson_06.html", "duration": "50 minutes", "difficulty": "beginner" },
+        { "id": "lesson-2-3", "title": "Functions", "filename": "lesson_07.html", "duration": "55 minutes", "difficulty": "beginner" },
+        { "id": "lesson-2-4", "title": "Scope & Hoisting", "filename": "lesson_08.html", "duration": "45 minutes", "difficulty": "intermediate" }
+      ]
+    },
+    {
+      "id": "module-3",
+      "title": "Working with Data",
+      "description": "Master arrays, objects, strings, and powerful built-in methods",
+      "lessons": [
+        { "id": "lesson-3-1", "title": "Arrays", "filename": "lesson_09.html", "duration": "50 minutes", "difficulty": "beginner" },
+        { "id": "lesson-3-2", "title": "Objects", "filename": "lesson_10.html", "duration": "50 minutes", "difficulty": "beginner" },
+        { "id": "lesson-3-3", "title": "Array Methods", "filename": "lesson_11.html", "duration": "55 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-3-4", "title": "Strings & Template Literals", "filename": "lesson_12.html", "duration": "40 minutes", "difficulty": "beginner" }
+      ]
+    },
+    {
+      "id": "module-4",
+      "title": "The DOM",
+      "description": "Connect JavaScript to the page — select, modify, and create HTML elements",
+      "lessons": [
+        { "id": "lesson-4-1", "title": "Introduction to the DOM", "filename": "lesson_13.html", "duration": "45 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-4-2", "title": "Selecting & Modifying Elements", "filename": "lesson_14.html", "duration": "50 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-4-3", "title": "Events & Event Listeners", "filename": "lesson_15.html", "duration": "55 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-4-4", "title": "Creating & Removing Elements", "filename": "lesson_16.html", "duration": "50 minutes", "difficulty": "intermediate" }
+      ]
+    },
+    {
+      "id": "module-5",
+      "title": "Building Interactive Pages",
+      "description": "Combine everything to build real features — forms, timers, storage, and APIs",
+      "lessons": [
+        { "id": "lesson-5-1", "title": "Forms & Validation", "filename": "lesson_17.html", "duration": "55 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-5-2", "title": "Timers & Animation", "filename": "lesson_18.html", "duration": "50 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-5-3", "title": "Local Storage", "filename": "lesson_19.html", "duration": "45 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-5-4", "title": "Working with APIs & Fetch", "filename": "lesson_20.html", "duration": "60 minutes", "difficulty": "intermediate" }
+      ]
+    },
+    {
+      "id": "module-6",
+      "title": "Capstone & Next Steps",
+      "description": "Build a complete project and plan your next steps as a developer",
+      "lessons": [
+        { "id": "lesson-6-1", "title": "Building a Complete Project", "filename": "lesson_21.html", "duration": "90 minutes", "difficulty": "intermediate" },
+        { "id": "lesson-6-2", "title": "Next Steps & Best Practices", "filename": "lesson_22.html", "duration": "45 minutes", "difficulty": "intermediate" }
+      ]
+    }
+  ],
+
+  "features": {
+    "codeHighlighting": true,
+    "copyCodeButton": true,
+    "progressTracking": true,
+    "offlineSupport": false,
+    "responsiveDesign": true,
+    "accessibility": true,
+    "printFriendly": true,
+    "searchEnabled": true,
+    "darkMode": true,
+    "mermaidDiagrams": true,
+    "svgDarkModeSupport": true
+  }
+}

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how to dynamically create, insert, clone, and remove HTML elements with JavaScript using createElement, append, remove, and more.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 16: Creating &amp; Removing Elements - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 4</a></li>
+            <li aria-current="page">Lesson 16: Creating &amp; Removing Elements</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔨 Lesson 16: Creating &amp; Removing Elements</h1>
+                <p class="lead">You can select elements, modify them, and listen for events. Now it's time to build the DOM itself — creating elements from scratch, inserting them exactly where you want, and removing them when they're no longer needed.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Create new HTML elements with <code>document.createElement</code></li>
+                        <li>Add text, classes, attributes, and children to new elements</li>
+                        <li>Insert elements into the DOM with <code>append</code>, <code>prepend</code>, <code>before</code>, and <code>after</code></li>
+                        <li>Remove elements with <code>remove()</code> and <code>replaceWith()</code></li>
+                        <li>Clone elements with <code>cloneNode()</code></li>
+                        <li>Understand the performance trade-offs of <code>innerHTML</code> vs. <code>createElement</code></li>
+                        <li>Use <code>DocumentFragment</code> for efficient batch insertions</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 50 minutes</p>
+                    <p><strong>Project:</strong> Build a dynamic notification system</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#creating-elements" class="toc-link">Creating Elements</a></li>
+                        <li><a href="#inserting-elements" class="toc-link">Inserting Elements into the DOM</a></li>
+                        <li><a href="#removing-elements" class="toc-link">Removing &amp; Replacing Elements</a></li>
+                        <li><a href="#cloning" class="toc-link">Cloning Elements</a></li>
+                        <li><a href="#innerhtml-vs-createelement" class="toc-link">innerHTML vs. createElement</a></li>
+                        <li><a href="#fragments" class="toc-link">DocumentFragment &amp; Batch Inserts</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="creating-elements" class="lesson-section">
+                <h2>Creating Elements</h2>
+
+                <p>The <code>document.createElement</code> method creates a new HTML element in memory. At this point the element exists only in JavaScript — it's not visible on the page until you insert it into the DOM.</p>
+
+                <pre><code class="language-javascript">
+// Create a new paragraph element
+const paragraph = document.createElement("p");
+
+// It exists in memory but is NOT on the page yet
+console.log(paragraph);  // &lt;p&gt;&lt;/p&gt;
+                </code></pre>
+
+                <h3>Building Up an Element</h3>
+                <p>After creating an element, configure it — add text, classes, attributes, styles — before inserting it into the page.</p>
+
+                <pre><code class="language-javascript">
+// Create a card element step by step
+const card = document.createElement("div");
+card.classList.add("card", "featured");
+card.id = "new-card";
+card.dataset.category = "news";
+
+// Add text content
+const title = document.createElement("h3");
+title.textContent = "Breaking News";
+
+const body = document.createElement("p");
+body.textContent = "Something exciting just happened!";
+
+// Build the tree: add children to the card
+card.appendChild(title);
+card.appendChild(body);
+
+// card is now:
+// &lt;div class="card featured" id="new-card" data-category="news"&gt;
+//   &lt;h3&gt;Breaking News&lt;/h3&gt;
+//   &lt;p&gt;Something exciting just happened!&lt;/p&gt;
+// &lt;/div&gt;
+                </code></pre>
+
+                <h3>Helper Function Pattern</h3>
+                <p>When you create elements frequently, a small helper keeps your code clean and readable.</p>
+
+                <pre><code class="language-javascript">
+function createEl(tag, { text, classes, attrs } = {}) {
+    const el = document.createElement(tag);
+    if (text) el.textContent = text;
+    if (classes) el.classList.add(...classes);
+    if (attrs) {
+        for (const [key, val] of Object.entries(attrs)) {
+            el.setAttribute(key, val);
+        }
+    }
+    return el;
+}
+
+// Usage — much cleaner!
+const heading = createEl("h2", { text: "Hello!", classes: ["title", "primary"] });
+const link = createEl("a", { text: "Visit", attrs: { href: "https://example.com", target: "_blank" } });
+                </code></pre>
+
+                <div class="mermaid">
+                    graph LR
+                    A["createElement()"] --> B["Configure<br/>(text, classes,<br/>attributes)"]
+                    B --> C["Add Children<br/>(append, prepend)"]
+                    C --> D["Insert into DOM<br/>(now visible!)"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="inserting-elements" class="lesson-section">
+                <h2>Inserting Elements into the DOM</h2>
+
+                <p>Once you've created and configured an element, you need to put it somewhere on the page. There are several insertion methods, each placing the element in a different position relative to a reference element.</p>
+
+                <h3>append() &amp; prepend()</h3>
+                <p>These add elements as <strong>children</strong> of the target — at the end or the beginning.</p>
+
+                <pre><code class="language-javascript">
+const list = document.querySelector("#my-list");
+
+const newItem = document.createElement("li");
+newItem.textContent = "New item";
+
+// Add as the LAST child
+list.append(newItem);
+
+// Add as the FIRST child
+const firstItem = document.createElement("li");
+firstItem.textContent = "I'm first now!";
+list.prepend(firstItem);
+
+// append and prepend can also accept plain strings
+list.append("Some text at the end");
+                </code></pre>
+
+                <h3>before() &amp; after()</h3>
+                <p>These insert elements as <strong>siblings</strong> — directly before or after the reference element.</p>
+
+                <pre><code class="language-javascript">
+const middleItem = document.querySelector("#item-3");
+
+const beforeItem = document.createElement("li");
+beforeItem.textContent = "Inserted before item 3";
+middleItem.before(beforeItem);
+
+const afterItem = document.createElement("li");
+afterItem.textContent = "Inserted after item 3";
+middleItem.after(afterItem);
+                </code></pre>
+
+                <h3>Inserting Multiple Elements at Once</h3>
+                <p><code>append</code>, <code>prepend</code>, <code>before</code>, and <code>after</code> all accept multiple arguments — elements and strings mixed together.</p>
+
+                <pre><code class="language-javascript">
+const container = document.querySelector(".container");
+
+const heading = document.createElement("h2");
+heading.textContent = "New Section";
+
+const paragraph = document.createElement("p");
+paragraph.textContent = "Here's the content.";
+
+// Insert both at once
+container.append(heading, paragraph);
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Inserts Where</th>
+                                <th>Relationship</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>parent.append(el)</code></td><td>End of parent</td><td>As last child</td></tr>
+                            <tr><td><code>parent.prepend(el)</code></td><td>Start of parent</td><td>As first child</td></tr>
+                            <tr><td><code>sibling.before(el)</code></td><td>Before the sibling</td><td>As previous sibling</td></tr>
+                            <tr><td><code>sibling.after(el)</code></td><td>After the sibling</td><td>As next sibling</td></tr>
+                            <tr><td><code>parent.appendChild(el)</code></td><td>End of parent</td><td>As last child (older API)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 append() vs. appendChild()</h4>
+                    <p><code>appendChild</code> is the older method — it only takes one element at a time and doesn't accept strings. <code>append</code> is newer, more flexible, and can take multiple elements and strings. Prefer <code>append</code> in new code.</p>
+                    <pre><code class="language-javascript">
+// appendChild — older, still common
+list.appendChild(newItem);            // One element only
+
+// append — modern, more flexible
+list.append(item1, item2, "text");    // Multiple items + strings
+                    </code></pre>
+                </div>
+
+                <h3>Moving Elements</h3>
+                <p>A DOM element can only exist in <strong>one place</strong> at a time. If you append an element that's already in the DOM, it <em>moves</em> — it doesn't create a copy.</p>
+
+                <pre><code class="language-javascript">
+const sidebar = document.querySelector(".sidebar");
+const main = document.querySelector(".main");
+
+// This heading is currently in the sidebar
+const heading = sidebar.querySelector("h2");
+
+// Appending it to main MOVES it — it's removed from the sidebar
+main.append(heading);
+                </code></pre>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="removing-elements" class="lesson-section">
+                <h2>Removing &amp; Replacing Elements</h2>
+
+                <h3>remove() — The Modern Way</h3>
+                <p>The simplest way to remove an element — just call <code>remove()</code> on it.</p>
+
+                <pre><code class="language-javascript">
+const card = document.querySelector(".old-card");
+card.remove();  // Gone from the DOM
+
+// Common pattern: remove after a click
+const deleteBtn = document.querySelector(".delete-btn");
+deleteBtn.addEventListener("click", () => {
+    deleteBtn.closest(".card").remove();
+});
+                </code></pre>
+
+                <h3>replaceWith() — Swap One Element for Another</h3>
+                <pre><code class="language-javascript">
+const oldHeading = document.querySelector("h2");
+
+const newHeading = document.createElement("h2");
+newHeading.textContent = "Updated Title";
+newHeading.classList.add("highlight");
+
+// Replace the old heading with the new one
+oldHeading.replaceWith(newHeading);
+                </code></pre>
+
+                <h3>Removing All Children</h3>
+                <p>Need to clear a container? There are a few approaches.</p>
+
+                <pre><code class="language-javascript">
+const list = document.querySelector("#task-list");
+
+// Option 1: Set innerHTML to empty (simple but slower)
+list.innerHTML = "";
+
+// Option 2: replaceChildren with no arguments (modern, clean)
+list.replaceChildren();
+
+// Option 3: Loop and remove (verbose but explicit)
+while (list.firstChild) {
+    list.firstChild.remove();
+}
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ The Older removeChild() Pattern</h4>
+                    <p>Before <code>remove()</code> existed, you had to go through the parent element. You'll still see this in older code and tutorials.</p>
+                    <pre><code class="language-javascript">
+// Old way — requires a reference to the parent
+const parent = child.parentNode;
+parent.removeChild(child);
+
+// Modern way — much simpler
+child.remove();
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="cloning" class="lesson-section">
+                <h2>Cloning Elements</h2>
+
+                <p>Since appending an element <em>moves</em> it, you need <code>cloneNode()</code> if you want a copy.</p>
+
+                <pre><code class="language-javascript">
+const original = document.querySelector(".card-template");
+
+// Shallow clone — copies only the element itself, not its children
+const shallowCopy = original.cloneNode(false);
+console.log(shallowCopy.innerHTML);  // "" (empty)
+
+// Deep clone — copies the element AND all its descendants
+const deepCopy = original.cloneNode(true);
+console.log(deepCopy.innerHTML);     // Full content copied
+                </code></pre>
+
+                <h3>Practical: Card from a Template</h3>
+                <pre><code class="language-javascript">
+// HTML: a hidden template card
+// &lt;div class="card-template" style="display:none"&gt;
+//   &lt;h3 class="card-title"&gt;&lt;/h3&gt;
+//   &lt;p class="card-body"&gt;&lt;/p&gt;
+// &lt;/div&gt;
+
+function createCard(title, body) {
+    const template = document.querySelector(".card-template");
+    const card = template.cloneNode(true);  // Deep clone
+
+    // Customize the clone
+    card.classList.remove("card-template");
+    card.classList.add("card");
+    card.style.display = "";  // Make it visible
+    card.querySelector(".card-title").textContent = title;
+    card.querySelector(".card-body").textContent = body;
+
+    return card;
+}
+
+const newCard = createCard("Welcome!", "This card was cloned from a template.");
+document.querySelector(".card-grid").append(newCard);
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 HTML &lt;template&gt; Element</h4>
+                    <p>HTML has a dedicated <code>&lt;template&gt;</code> element for exactly this purpose. Its content isn't rendered on the page and won't have styles applied until you clone and insert it.</p>
+                    <pre><code class="language-html">
+&lt;template id="card-template"&gt;
+    &lt;div class="card"&gt;
+        &lt;h3 class="card-title"&gt;&lt;/h3&gt;
+        &lt;p class="card-body"&gt;&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+                    </code></pre>
+                    <pre><code class="language-javascript">
+const template = document.querySelector("#card-template");
+// .content gives you the DocumentFragment inside the template
+const clone = template.content.cloneNode(true);
+clone.querySelector(".card-title").textContent = "Hello!";
+document.querySelector(".card-grid").append(clone);
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="innerhtml-vs-createelement" class="lesson-section">
+                <h2>innerHTML vs. createElement</h2>
+
+                <p>You've seen two ways to add content: building elements with <code>createElement</code> or writing HTML strings with <code>innerHTML</code>. Each has trade-offs.</p>
+
+                <h3>innerHTML — Quick but Risky</h3>
+                <pre><code class="language-javascript">
+const list = document.querySelector("#task-list");
+
+// Quick and easy for static content you control
+list.innerHTML = `
+    &lt;li class="task"&gt;Buy groceries&lt;/li&gt;
+    &lt;li class="task"&gt;Walk the dog&lt;/li&gt;
+    &lt;li class="task"&gt;Write code&lt;/li&gt;
+`;
+
+// ⚠️ Replaces ALL existing content — previous children are destroyed
+// ⚠️ Event listeners on old children are lost
+// ❌ DANGEROUS with user input (XSS vulnerability)
+                </code></pre>
+
+                <h3>createElement — Safe and Precise</h3>
+                <pre><code class="language-javascript">
+// More code, but safe and precise
+function addTask(text) {
+    const li = document.createElement("li");
+    li.classList.add("task");
+    li.textContent = text;  // textContent is XSS-safe
+
+    document.querySelector("#task-list").append(li);
+    // Existing children and their event listeners are preserved
+}
+
+addTask("Buy groceries");
+addTask("Walk the dog");
+addTask("Write code");
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Factor</th>
+                                <th>innerHTML</th>
+                                <th>createElement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Speed to write</td><td>Fast — just a string</td><td>More code</td></tr>
+                            <tr><td>Safety with user input</td><td>Dangerous (XSS risk)</td><td>Safe (textContent)</td></tr>
+                            <tr><td>Existing content</td><td>Destroyed &amp; replaced</td><td>Preserved</td></tr>
+                            <tr><td>Event listeners</td><td>Lost on old elements</td><td>Preserved on siblings</td></tr>
+                            <tr><td>Performance (many items)</td><td>One reflow</td><td>One reflow per append*</td></tr>
+                            <tr><td>Best for</td><td>Static HTML you control</td><td>Dynamic, interactive content</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p><small>* Use <code>DocumentFragment</code> (next section) to batch <code>createElement</code> calls into one reflow.</small></p>
+
+                <div class="card card-success">
+                    <h4>✅ Rules of Thumb</h4>
+                    <ul>
+                        <li>Use <code>createElement</code> + <code>textContent</code> when content includes any user input</li>
+                        <li>Use <code>innerHTML</code> only for static HTML you fully control (templates, initial markup)</li>
+                        <li>Never concatenate user input into an <code>innerHTML</code> string</li>
+                        <li>If you need <code>innerHTML</code>'s convenience with safety, consider the <code>&lt;template&gt;</code> + <code>cloneNode</code> pattern</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="fragments" class="lesson-section">
+                <h2>DocumentFragment &amp; Batch Inserts</h2>
+
+                <p>Every time you insert an element into the DOM, the browser may recalculate layout (a "reflow"). If you're adding 100 items one at a time, that's potentially 100 reflows. A <code>DocumentFragment</code> lets you build a batch of elements off-screen and insert them all at once — one reflow.</p>
+
+                <pre><code class="language-javascript">
+// ❌ Slow: 100 individual DOM insertions
+const list = document.querySelector("#my-list");
+for (let i = 0; i &lt; 100; i++) {
+    const li = document.createElement("li");
+    li.textContent = `Item ${i + 1}`;
+    list.append(li);  // Reflow on each append
+}
+
+// ✅ Fast: Build in a fragment, insert once
+const fragment = document.createDocumentFragment();
+for (let i = 0; i &lt; 100; i++) {
+    const li = document.createElement("li");
+    li.textContent = `Item ${i + 1}`;
+    fragment.append(li);  // No reflow — fragment is off-screen
+}
+list.append(fragment);    // One reflow for all 100 items
+                </code></pre>
+
+                <h3>How Fragments Work</h3>
+                <p>A <code>DocumentFragment</code> is a lightweight container that holds DOM nodes but isn't part of the visible page. When you append a fragment to the DOM, the fragment itself disappears — only its children are inserted.</p>
+
+                <pre><code class="language-javascript">
+const fragment = document.createDocumentFragment();
+
+const h2 = document.createElement("h2");
+h2.textContent = "Section Title";
+
+const p = document.createElement("p");
+p.textContent = "Section content goes here.";
+
+fragment.append(h2, p);
+
+// Inserting the fragment adds h2 and p (not the fragment wrapper)
+document.querySelector("main").append(fragment);
+
+// fragment is now empty — its children moved to the DOM
+console.log(fragment.childNodes.length);  // 0
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Create Fragment"] --> B["Build elements<br/>in memory"]
+                    B --> C["Append elements<br/>to fragment"]
+                    C --> D["Append fragment<br/>to DOM"]
+                    D --> E["One reflow<br/>All visible!"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                    style E fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 When Do You Need Fragments?</h4>
+                    <p>For a handful of elements (5–10), the performance difference is negligible. Use fragments when you're inserting <strong>dozens or hundreds</strong> of elements, rendering data from an API, or building complex UI sections. If you're adding one or two elements, just <code>append</code> them directly.</p>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Dynamic Notification System</h3>
+                    <p><strong>Objective:</strong> Build a notification system that creates toast-style alerts, auto-dismisses them after a timer, and lets users close them manually. This combines <code>createElement</code>, event delegation, insertion, removal, and timers.</p>
+
+                    <pre><code class="language-html">
+&lt;!-- Save this as notifications.html and open in a browser --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Notification System&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: sans-serif; padding: 2rem; background: #f1f5f9; }
+        .controls { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .controls button {
+            padding: 0.5rem 1rem; border: none; border-radius: 6px;
+            color: white; cursor: pointer; font-size: 0.9rem;
+        }
+        .btn-success { background: #22c55e; }
+        .btn-warning { background: #f59e0b; }
+        .btn-error { background: #ef4444; }
+        .btn-info { background: #3b82f6; }
+        .btn-clear { background: #64748b; }
+
+        #notification-area {
+            position: fixed; top: 1rem; right: 1rem;
+            width: 320px; display: flex; flex-direction: column; gap: 0.5rem;
+            z-index: 1000;
+        }
+        .notification {
+            padding: 1rem; border-radius: 8px; color: white;
+            display: flex; justify-content: space-between; align-items: start;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease;
+        }
+        .notification.success { background: #22c55e; }
+        .notification.warning { background: #f59e0b; color: #1e293b; }
+        .notification.error { background: #ef4444; }
+        .notification.info { background: #3b82f6; }
+        .notification .close-btn {
+            background: none; border: none; color: inherit;
+            font-size: 1.2rem; cursor: pointer; padding: 0; margin-left: 0.5rem;
+            opacity: 0.8;
+        }
+        .notification .close-btn:hover { opacity: 1; }
+        .notification-text { flex: 1; }
+        .counter { color: #64748b; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;🔔 Notification System&lt;/h1&gt;
+    &lt;div class="controls"&gt;
+        &lt;button class="btn-success" data-type="success"&gt;✅ Success&lt;/button&gt;
+        &lt;button class="btn-warning" data-type="warning"&gt;⚠️ Warning&lt;/button&gt;
+        &lt;button class="btn-error" data-type="error"&gt;❌ Error&lt;/button&gt;
+        &lt;button class="btn-info" data-type="info"&gt;ℹ️ Info&lt;/button&gt;
+        &lt;button class="btn-clear"&gt;🗑️ Clear All&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;p class="counter"&gt;Notifications: &lt;span id="count"&gt;0&lt;/span&gt;&lt;/p&gt;
+    &lt;div id="notification-area"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+    // TODO: Complete each task
+
+    // 1. Write a showNotification(type, message) function:
+    //    - Create a &lt;div class="notification {type}"&gt;
+    //    - Inside it, create a &lt;span class="notification-text"&gt; with the message
+    //    - Create a &lt;button class="close-btn"&gt; with "×" as text
+    //    - Append text span and close button to the notification div
+    //    - Prepend the notification to #notification-area
+    //    - Auto-remove after 5 seconds using setTimeout
+    //    - Update the count
+
+    // 2. Use event delegation on .controls to handle button clicks:
+    //    - If the button has a data-type attribute, call showNotification
+    //      with that type and an appropriate message
+    //    - If the "Clear All" button is clicked, remove all notifications
+
+    // 3. Use event delegation on #notification-area to handle close clicks:
+    //    - If a .close-btn is clicked, remove its parent .notification
+    //    - Update the count
+
+    // 4. Write an updateCount() function that counts .notification
+    //    elements and updates #count
+
+    // 5. Bonus: Use a DocumentFragment to add 5 notifications at once
+    //    when a keyboard shortcut (e.g., Ctrl+Shift+N) is pressed
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>1:</strong> Use <code>document.createElement("div")</code>, add classes with <code>classList.add("notification", type)</code>, and create child elements for the text and button. Use <code>prepend</code> to add new notifications at the top.</p>
+                        <p><strong>2:</strong> Use <code>event.target.dataset.type</code> to get the notification type from the clicked button. For "Clear All," use <code>replaceChildren()</code> on the notification area.</p>
+                        <p><strong>3:</strong> Use <code>event.target.closest(".notification").remove()</code> when a close button is clicked.</p>
+                        <p><strong>4:</strong> Count with <code>notificationArea.querySelectorAll(".notification").length</code>.</p>
+                        <p><strong>5:</strong> Create a <code>DocumentFragment</code>, loop 5 times to create notification divs, append them to the fragment, then prepend the fragment to the notification area.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+const notificationArea = document.querySelector("#notification-area");
+const controls = document.querySelector(".controls");
+const countDisplay = document.querySelector("#count");
+
+const messages = {
+    success: "Operation completed successfully!",
+    warning: "Please check your input.",
+    error: "Something went wrong. Try again.",
+    info: "Here's some useful information."
+};
+
+// 4. Update the notification count
+function updateCount() {
+    countDisplay.textContent =
+        notificationArea.querySelectorAll(".notification").length;
+}
+
+// 1. Show a notification
+function showNotification(type, message) {
+    const notification = document.createElement("div");
+    notification.classList.add("notification", type);
+
+    const text = document.createElement("span");
+    text.classList.add("notification-text");
+    text.textContent = message;
+
+    const closeBtn = document.createElement("button");
+    closeBtn.classList.add("close-btn");
+    closeBtn.textContent = "×";
+
+    notification.append(text, closeBtn);
+    notificationArea.prepend(notification);
+    updateCount();
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.remove();
+        updateCount();
+    }, 5000);
+}
+
+// 2. Event delegation on controls
+controls.addEventListener("click", (event) => {
+    const btn = event.target.closest("button");
+    if (!btn) return;
+
+    const type = btn.dataset.type;
+    if (type) {
+        showNotification(type, messages[type]);
+    } else if (btn.classList.contains("btn-clear")) {
+        notificationArea.replaceChildren();
+        updateCount();
+    }
+});
+
+// 3. Event delegation for close buttons
+notificationArea.addEventListener("click", (event) => {
+    if (event.target.matches(".close-btn")) {
+        event.target.closest(".notification").remove();
+        updateCount();
+    }
+});
+
+// 5. Bonus: Batch notifications with Ctrl+Shift+N
+document.addEventListener("keydown", (event) => {
+    if (event.ctrlKey && event.shiftKey && event.key === "N") {
+        event.preventDefault();
+        const types = ["success", "warning", "error", "info", "success"];
+        const fragment = document.createDocumentFragment();
+
+        types.forEach(type => {
+            const notification = document.createElement("div");
+            notification.classList.add("notification", type);
+
+            const text = document.createElement("span");
+            text.classList.add("notification-text");
+            text.textContent = messages[type] || "Batch notification";
+
+            const closeBtn = document.createElement("button");
+            closeBtn.classList.add("close-btn");
+            closeBtn.textContent = "×";
+
+            notification.append(text, closeBtn);
+            fragment.append(notification);
+
+            // Auto-remove each after 5 seconds
+            setTimeout(() => {
+                notification.remove();
+                updateCount();
+            }, 5000);
+        });
+
+        notificationArea.prepend(fragment);
+        updateCount();
+    }
+});
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>document.createElement("div")</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The element is created in memory only. It won't appear on the page until you insert it.">A) A new &lt;div&gt; that is immediately visible on the page</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="createElement creates the element in memory. It exists as a JavaScript object but isn't part of the visible DOM until you append or insert it.">B) A new &lt;div&gt; element in memory, not yet in the DOM</button>
+                            <button class="quiz-option" data-correct="false" data-hint="createElement returns an Element object, not an HTML string.">C) A string of HTML</button>
+                            <button class="quiz-option" data-correct="false" data-hint="createElement doesn't select existing elements — it creates brand new ones.">D) A reference to an existing &lt;div&gt; on the page</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What happens if you <code>append</code> an element that's already in the DOM?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="An element can only exist in one place. Appending it somewhere new moves it from its old position.">A) It creates a copy in the new location</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="DOM elements can only exist in one place. Appending an existing element moves it from its current position to the new one. Use cloneNode() if you want a copy.">B) It moves from its old position to the new one</button>
+                            <button class="quiz-option" data-correct="false" data-hint="No error is thrown — the element simply moves to its new position.">C) It throws an error</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The element does move. Appending is never ignored for existing elements.">D) Nothing — the element stays where it was</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What is the modern way to remove an element from the DOM?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="There's no 'delete' keyword for DOM elements. Use the remove() method.">A) <code>delete element</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's the older approach — it works but requires a reference to the parent.">B) <code>element.parentNode.removeChild(element)</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="element.remove() is the modern, clean way to remove an element from the DOM. No need to reference the parent.">C) <code>element.remove()</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="Setting display to none hides the element but doesn't remove it from the DOM. It still exists in the tree.">D) <code>element.style.display = &quot;none&quot;</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> What does <code>cloneNode(true)</code> do compared to <code>cloneNode(false)</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="cloneNode(true) creates a deep copy — the element and ALL its children and descendants. cloneNode(false) copies only the element itself, without any children.">A) Deep clone (element + all children) vs. shallow clone (element only)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The argument controls depth (children), not event listeners. Event listeners are never copied by cloneNode.">B) Clone with event listeners vs. without</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Both return a clone. The boolean controls whether children are included, not whether the clone is inserted.">C) Clone and insert vs. clone without inserting</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Both create new copies. The boolean controls whether the element's children are also cloned.">D) Clone as new element vs. clone as reference</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> Why use a <code>DocumentFragment</code> when adding many elements?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Fragments don't add security. They help with performance by reducing reflows.">A) It prevents XSS attacks</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Fragments don't persist. They empty out after being appended to the DOM.">B) It keeps a backup of the elements</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="A DocumentFragment lets you build all elements off-screen, then insert them all at once — causing only one browser reflow instead of one per element. This matters when adding dozens or hundreds of items.">C) It batches insertions into one DOM update, reducing reflows</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Fragments aren't required. They're an optimization for batch inserts — you can always append elements individually.">D) It's the only way to add multiple elements</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong><code>document.createElement(tag)</code></strong> creates an element in memory — configure it before inserting</li>
+                        <li><strong><code>append</code></strong> and <strong><code>prepend</code></strong> add children; <strong><code>before</code></strong> and <strong><code>after</code></strong> add siblings</li>
+                        <li>Appending an existing DOM element <strong>moves</strong> it — use <strong><code>cloneNode(true)</code></strong> for a copy</li>
+                        <li><strong><code>remove()</code></strong> deletes an element; <strong><code>replaceWith()</code></strong> swaps it for another</li>
+                        <li>Clear all children with <strong><code>replaceChildren()</code></strong> or <code>innerHTML = ""</code></li>
+                        <li>Use <strong><code>createElement</code> + <code>textContent</code></strong> for user-provided content (safe from XSS)</li>
+                        <li>Use <strong><code>innerHTML</code></strong> only for static HTML you fully control</li>
+                        <li><strong><code>DocumentFragment</code></strong> batches multiple insertions into a single DOM update for better performance</li>
+                        <li>The <strong><code>&lt;template&gt;</code></strong> element is the HTML-native way to define reusable element structures</li>
+                    </ul>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏆 Module 4 Complete!</h3>
+                    <p>You've finished the entire DOM module! You now know how to:</p>
+                    <ul>
+                        <li><strong>Lesson 13:</strong> Understand what the DOM is and how the browser builds it</li>
+                        <li><strong>Lesson 14:</strong> Select elements and modify their text, classes, styles, and attributes</li>
+                        <li><strong>Lesson 15:</strong> Respond to user interactions with events and event delegation</li>
+                        <li><strong>Lesson 16:</strong> Create, insert, clone, and remove elements dynamically</li>
+                    </ul>
+                    <p>These four skills are the foundation of everything interactive on the web. The next module puts them all together to build real features.</p>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement" target="_blank" rel="noopener">MDN — createElement()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/append" target="_blank" rel="noopener">MDN — append()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode" target="_blank" rel="noopener">MDN — cloneNode()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment" target="_blank" rel="noopener">MDN — DocumentFragment</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template" target="_blank" rel="noopener">MDN — &lt;template&gt; Element</a></li>
+                    <li><a href="https://javascript.info/modifying-document" target="_blank" rel="noopener">javascript.info — Modifying the Document</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Module 5 is where everything comes together. You'll build <strong>real interactive features</strong> — forms with client-side validation, timers and animations, persistent data with Local Storage, and fetching live data from APIs. First up: <strong>Forms &amp; Validation</strong>.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_15.html" class="prev-lesson">← Previous: Events &amp; Event Listeners</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_17.html" class="next-lesson">Next: Forms &amp; Validation →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to make your JavaScript programs make decisions with if/else statements, switch, and the ternary operator.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 5: Conditionals - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2</a></li>
+            <li aria-current="page">Lesson 5: Conditionals</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔀 Lesson 5: Conditionals</h1>
+                <p class="lead">Teach your programs to make decisions — run different code depending on whether conditions are true or false.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Write <code>if</code>, <code>else if</code>, and <code>else</code> statements to control program flow</li>
+                        <li>Use <code>switch</code> statements for multi-branch decisions</li>
+                        <li>Write concise conditions with the ternary operator (<code>? :</code>)</li>
+                        <li>Nest conditionals and understand when to avoid deep nesting</li>
+                        <li>Combine comparisons and logical operators in real conditions</li>
+                        <li>Apply guard clauses for cleaner, more readable code</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Build a grade calculator that assigns letter grades</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#if-else" class="toc-link">if / else Statements</a></li>
+                        <li><a href="#else-if" class="toc-link">else if Chains</a></li>
+                        <li><a href="#switch" class="toc-link">switch Statements</a></li>
+                        <li><a href="#ternary" class="toc-link">The Ternary Operator</a></li>
+                        <li><a href="#nesting" class="toc-link">Nesting &amp; Guard Clauses</a></li>
+                        <li><a href="#truthy-conditions" class="toc-link">Truthy/Falsy in Conditions</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>So far, your programs run every line of code from top to bottom, every time. But real programs need to <strong>make decisions</strong>: show a welcome message <em>if</em> the user is logged in, display an error <em>if</em> the password is wrong, apply a discount <em>if</em> the cart total is over $50.</p>
+                <p><strong>Conditionals</strong> let you run different blocks of code depending on whether a condition is <code>true</code> or <code>false</code>. They're the first step toward making your programs truly interactive.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Start"] --> B{"Is condition true?"}
+                    B -->|Yes| C["Run this code"]
+                    B -->|No| D["Skip it or run alternative"]
+                    C --> E["Continue program"]
+                    D --> E
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="if-else" class="lesson-section">
+                <h2>if / else Statements</h2>
+                <p>The <code>if</code> statement is the most fundamental conditional. It evaluates a condition and runs a block of code only when that condition is <code>true</code>.</p>
+
+                <h3>Basic if</h3>
+                <pre><code class="language-javascript">
+let temperature = 95;
+
+if (temperature > 90) {
+    console.log("It's really hot outside! Stay hydrated. 🔥");
+}
+// This runs because 95 > 90 is true
+                </code></pre>
+
+                <h3>if / else</h3>
+                <p>Add an <code>else</code> block to handle the case when the condition is <code>false</code>.</p>
+
+                <pre><code class="language-javascript">
+let age = 16;
+
+if (age >= 18) {
+    console.log("You can vote!");
+} else {
+    console.log("You're not old enough to vote yet.");
+}
+// Output: "You're not old enough to vote yet."
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["age = 16"] --> B{"age >= 18?"}
+                    B -->|Yes| C["'You can vote!'"]
+                    B -->|No| D["'Not old enough yet.'"]
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Multiple Conditions with Logical Operators</h3>
+                <p>Remember <code>&&</code> (AND) and <code>||</code> (OR) from the last lesson? Here's where they shine.</p>
+
+                <pre><code class="language-javascript">
+let age = 25;
+let hasTicket = true;
+
+if (age >= 18 && hasTicket) {
+    console.log("Welcome to the concert!");
+} else {
+    console.log("Sorry, you can't enter.");
+}
+
+// Using OR
+let isWeekend = true;
+let isHoliday = false;
+
+if (isWeekend || isHoliday) {
+    console.log("No work today! 🎉");
+} else {
+    console.log("Time to get to work.");
+}
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Don't Forget the Curly Braces</h4>
+                    <p>You <em>can</em> write a single-line <code>if</code> without braces, but <strong>don't</strong>. It's a common source of bugs. Always use braces — even for one-liners.</p>
+                    <pre><code class="language-javascript">
+// ❌ Avoid — easy to break when adding lines
+if (loggedIn) console.log("Welcome");
+
+// ✅ Always use braces
+if (loggedIn) {
+    console.log("Welcome");
+}
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="else-if" class="lesson-section">
+                <h2>else if Chains</h2>
+                <p>When you have more than two possible outcomes, chain <code>else if</code> blocks. JavaScript checks each condition in order and runs the <strong>first</strong> one that's <code>true</code>.</p>
+
+                <pre><code class="language-javascript">
+let score = 82;
+
+if (score >= 90) {
+    console.log("Grade: A");
+} else if (score >= 80) {
+    console.log("Grade: B");
+} else if (score >= 70) {
+    console.log("Grade: C");
+} else if (score >= 60) {
+    console.log("Grade: D");
+} else {
+    console.log("Grade: F");
+}
+// Output: "Grade: B"
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Order Matters!</h4>
+                    <p>Conditions are checked <strong>top to bottom</strong>. Once a condition is <code>true</code>, its block runs and <em>all remaining else-if/else blocks are skipped</em>. That's why you check the highest grade first — a score of 95 would match <code>>= 90</code>, <code>>= 80</code>, <em>and</em> <code>>= 70</code>, but only the first match runs.</p>
+                </div>
+
+                <h3>Real-World Example: Time-Based Greeting</h3>
+                <pre><code class="language-javascript">
+let hour = new Date().getHours();  // 0–23
+
+if (hour < 12) {
+    console.log("Good morning! ☀️");
+} else if (hour < 17) {
+    console.log("Good afternoon! 🌤️");
+} else if (hour < 21) {
+    console.log("Good evening! 🌅");
+} else {
+    console.log("Good night! 🌙");
+}
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Get current hour"] --> B{"hour < 12?"}
+                    B -->|Yes| C["Good morning ☀️"]
+                    B -->|No| D{"hour < 17?"}
+                    D -->|Yes| E["Good afternoon 🌤️"]
+                    D -->|No| F{"hour < 21?"}
+                    F -->|Yes| G["Good evening 🌅"]
+                    F -->|No| H["Good night 🌙"]
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style D fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style F fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="switch" class="lesson-section">
+                <h2>switch Statements</h2>
+                <p>When you're comparing <strong>one value</strong> against <strong>many specific options</strong>, a <code>switch</code> statement can be cleaner than a long <code>else if</code> chain.</p>
+
+                <pre><code class="language-javascript">
+let day = "Wednesday";
+
+switch (day) {
+    case "Monday":
+        console.log("Start of the work week 😩");
+        break;
+    case "Tuesday":
+    case "Wednesday":
+    case "Thursday":
+        console.log("Midweek grind 💪");
+        break;
+    case "Friday":
+        console.log("TGIF! 🎉");
+        break;
+    case "Saturday":
+    case "Sunday":
+        console.log("Weekend vibes! 🏖️");
+        break;
+    default:
+        console.log("That's not a valid day.");
+}
+// Output: "Midweek grind 💪"
+                </code></pre>
+
+                <h3>How switch Works</h3>
+                <ol>
+                    <li>JavaScript evaluates the expression in <code>switch()</code></li>
+                    <li>It compares the result to each <code>case</code> using <strong>strict equality</strong> (<code>===</code>)</li>
+                    <li>When a match is found, that block runs</li>
+                    <li><code>break</code> exits the switch — <strong>without it, execution "falls through" to the next case!</strong></li>
+                    <li><code>default</code> runs if no case matches (like <code>else</code>)</li>
+                </ol>
+
+                <div class="card card-danger">
+                    <h4>❌ Don't Forget <code>break</code>!</h4>
+                    <p>Without <code>break</code>, JavaScript falls through to the next case. This is intentional in the Tuesday/Wednesday/Thursday example above (they share the same output), but it's a common bug when unintended.</p>
+                    <pre><code class="language-javascript">
+// ❌ Bug! Missing break causes fall-through
+let fruit = "apple";
+
+switch (fruit) {
+    case "apple":
+        console.log("Apples are $1.50/lb");
+        // No break! Falls through to next case!
+    case "banana":
+        console.log("Bananas are $0.75/lb");
+        break;
+}
+// Output: BOTH lines print!
+// "Apples are $1.50/lb"
+// "Bananas are $0.75/lb"
+                    </code></pre>
+                </div>
+
+                <h3>When to Use switch vs. if/else</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Use <code>switch</code> When</th>
+                                <th>Use <code>if/else</code> When</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Comparing one value to many exact matches</td>
+                                <td>Checking ranges or complex conditions</td>
+                            </tr>
+                            <tr>
+                                <td>Each case is a specific value (string, number)</td>
+                                <td>Conditions use <code>&&</code>, <code>||</code>, <code>&gt;</code>, <code>&lt;</code>, etc.</td>
+                            </tr>
+                            <tr>
+                                <td>Multiple cases share the same code</td>
+                                <td>Conditions are unrelated to each other</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="ternary" class="lesson-section">
+                <h2>The Ternary Operator</h2>
+                <p>The <strong>ternary operator</strong> (<code>? :</code>) is a compact way to write a simple <code>if/else</code> that produces a value. It's the only JavaScript operator that takes three operands.</p>
+
+                <pre><code class="language-javascript">
+// Syntax: condition ? valueIfTrue : valueIfFalse
+
+let age = 20;
+let status = age >= 18 ? "adult" : "minor";
+console.log(status);  // "adult"
+
+// Equivalent if/else:
+// let status;
+// if (age >= 18) {
+//     status = "adult";
+// } else {
+//     status = "minor";
+// }
+                </code></pre>
+
+                <h3>Common Use Cases</h3>
+                <pre><code class="language-javascript">
+// Assigning a value based on a condition
+let score = 85;
+let result = score >= 60 ? "Pass" : "Fail";
+console.log(result);  // "Pass"
+
+// Inside template literals
+let items = 3;
+console.log(`You have ${items} item${items === 1 ? "" : "s"} in your cart.`);
+// "You have 3 items in your cart."
+
+// Setting a default
+let username = "";
+let displayName = username ? username : "Guest";
+console.log(displayName);  // "Guest" (empty string is falsy)
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Keep Ternaries Simple</h4>
+                    <p>Ternaries are great for short, simple conditions. Don't nest them or use them for complex logic — it quickly becomes unreadable.</p>
+                    <pre><code class="language-javascript">
+// ✅ Good — clear and simple
+let label = count === 0 ? "empty" : "has items";
+
+// ❌ Bad — nested ternaries are hard to read
+let grade = score >= 90 ? "A" : score >= 80 ? "B" : score >= 70 ? "C" : "F";
+// Use if/else or else-if for this instead!
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="nesting" class="lesson-section">
+                <h2>Nesting &amp; Guard Clauses</h2>
+                <p>You can nest <code>if</code> statements inside other <code>if</code> statements, but deep nesting makes code hard to follow. <strong>Guard clauses</strong> are a cleaner alternative.</p>
+
+                <h3>Nested Conditionals (Often Messy)</h3>
+                <pre><code class="language-javascript">
+// ❌ Deeply nested — hard to follow
+function processOrder(user, item) {
+    if (user) {
+        if (user.isLoggedIn) {
+            if (item.inStock) {
+                if (user.balance >= item.price) {
+                    console.log("Order placed!");
+                } else {
+                    console.log("Insufficient funds.");
+                }
+            } else {
+                console.log("Item out of stock.");
+            }
+        } else {
+            console.log("Please log in.");
+        }
+    } else {
+        console.log("No user found.");
+    }
+}
+                </code></pre>
+
+                <h3>Guard Clauses (Much Better)</h3>
+                <p>A <strong>guard clause</strong> checks for problems early and exits, so the main logic stays flat and readable.</p>
+
+                <pre><code class="language-javascript">
+// ✅ Guard clauses — flat and readable
+function processOrder(user, item) {
+    if (!user) {
+        console.log("No user found.");
+        return;
+    }
+    if (!user.isLoggedIn) {
+        console.log("Please log in.");
+        return;
+    }
+    if (!item.inStock) {
+        console.log("Item out of stock.");
+        return;
+    }
+    if (user.balance < item.price) {
+        console.log("Insufficient funds.");
+        return;
+    }
+
+    console.log("Order placed!");
+}
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: Prefer Guard Clauses</h4>
+                    <p>Guard clauses handle edge cases and errors first, then let the "happy path" run without nesting. Your code reads like a checklist instead of a maze. This pattern will serve you well as your programs get more complex.</p>
+                </div>
+
+                <div class="mermaid">
+                    graph TD
+                    A["processOrder called"] --> B{"user exists?"}
+                    B -->|No| C["❌ No user found"]
+                    B -->|Yes| D{"user logged in?"}
+                    D -->|No| E["❌ Please log in"]
+                    D -->|Yes| F{"item in stock?"}
+                    F -->|No| G["❌ Out of stock"]
+                    F -->|Yes| H{"balance >= price?"}
+                    H -->|No| I["❌ Insufficient funds"]
+                    H -->|Yes| J["✅ Order placed!"]
+                    style J fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style C fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style E fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style G fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style I fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="truthy-conditions" class="lesson-section">
+                <h2>Truthy/Falsy in Conditions</h2>
+                <p>Remember truthy and falsy values from Lesson 4? They work directly in <code>if</code> conditions — you don't need to compare to <code>true</code> or <code>false</code> explicitly.</p>
+
+                <pre><code class="language-javascript">
+let username = "Ray";
+
+// ❌ Unnecessary — comparing to truthy/falsy explicitly
+if (username !== "" && username !== null && username !== undefined) {
+    console.log(`Hello, ${username}!`);
+}
+
+// ✅ Cleaner — truthy check handles all of the above
+if (username) {
+    console.log(`Hello, ${username}!`);
+}
+// Works because non-empty strings are truthy
+// Empty string, null, and undefined are all falsy
+                </code></pre>
+
+                <pre><code class="language-javascript">
+// Common patterns using truthy/falsy
+let items = [];
+
+if (items.length) {
+    console.log(`You have ${items.length} items.`);
+} else {
+    console.log("Your cart is empty.");
+}
+// 0 is falsy, so empty array's .length (0) goes to else
+
+let errorMessage = "";
+
+if (errorMessage) {
+    console.log(`Error: ${errorMessage}`);
+}
+// Empty string is falsy, so this won't run
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 When to Be Explicit</h4>
+                    <p>Truthy/falsy checks are great for strings and objects, but be careful with numbers. If <code>0</code> is a valid value (not an error), a truthy check will incorrectly treat it as "missing." In those cases, check explicitly: <code>if (count !== undefined)</code> instead of <code>if (count)</code>.</p>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Grade Calculator</h3>
+                    <p><strong>Objective:</strong> Build a program that takes a numeric score and outputs the letter grade, plus a message for each grade level.</p>
+
+                    <h4>Instructions:</h4>
+                    <pre><code class="language-javascript">
+// Grade Calculator
+
+// TODO: Set the student's score
+// const studentName = "Alex";
+// const score = 78;
+
+// TODO: Use if/else if/else to determine the letter grade:
+// 90–100: "A"
+// 80–89:  "B"
+// 70–79:  "C"
+// 60–69:  "D"
+// Below 60: "F"
+
+// TODO: Use a switch on the letter grade to set a message:
+// A → "Excellent work!"
+// B → "Great job!"
+// C → "Solid effort, keep improving!"
+// D → "You passed, but review the material."
+// F → "Let's set up a study plan."
+
+// TODO: Use a ternary to determine pass/fail (60+ is passing)
+
+// TODO: Log the results:
+// "Alex scored 78 (C) — Solid effort, keep improving!"
+// "Status: Pass"
+
+// BONUS: Add an edge case check — if score is below 0
+// or above 100, log "Invalid score" and skip everything else
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p>Start with the bonus edge-case check as a guard clause. Then use <code>else if</code> chains for the grade ranges (check highest first). Store the letter grade in a variable so you can use it in the <code>switch</code> statement.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+const studentName = "Alex";
+const score = 78;
+
+// Guard clause for invalid scores
+if (score < 0 || score > 100) {
+    console.log("Invalid score. Must be between 0 and 100.");
+} else {
+    // Determine letter grade
+    let letterGrade;
+
+    if (score >= 90) {
+        letterGrade = "A";
+    } else if (score >= 80) {
+        letterGrade = "B";
+    } else if (score >= 70) {
+        letterGrade = "C";
+    } else if (score >= 60) {
+        letterGrade = "D";
+    } else {
+        letterGrade = "F";
+    }
+
+    // Determine message using switch
+    let message;
+
+    switch (letterGrade) {
+        case "A":
+            message = "Excellent work!";
+            break;
+        case "B":
+            message = "Great job!";
+            break;
+        case "C":
+            message = "Solid effort, keep improving!";
+            break;
+        case "D":
+            message = "You passed, but review the material.";
+            break;
+        case "F":
+            message = "Let's set up a study plan.";
+            break;
+    }
+
+    // Ternary for pass/fail
+    const status = score >= 60 ? "Pass" : "Fail";
+
+    // Output
+    console.log(`${studentName} scored ${score} (${letterGrade}) — ${message}`);
+    console.log(`Status: ${status}`);
+}
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does this code output?</p>
+                        <pre><code class="language-javascript">let x = 5;
+if (x > 10) {
+    console.log("A");
+} else if (x > 3) {
+    console.log("B");
+} else if (x > 1) {
+    console.log("C");
+} else {
+    console.log("D");
+}</code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="5 is not greater than 10, so this block is skipped.">A) A</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="5 > 10 is false, but 5 > 3 is true, so 'B' prints. The remaining conditions are skipped.">B) B</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Even though 5 > 1 is true, the else-if chain already matched at x > 3. Only the first match runs.">C) C</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The else block only runs if ALL previous conditions are false.">D) D</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What happens if you forget <code>break</code> in a <code>switch</code> case?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript won't throw an error — it just behaves unexpectedly.">A) JavaScript throws an error</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Without break, execution 'falls through' to the next case — running its code too, regardless of whether it matches.">B) Execution falls through to the next case</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It doesn't skip — it actually does the opposite and keeps going.">C) The case is skipped</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The default block runs only after falling through all remaining cases.">D) The default block runs</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What does <code>let result = 10 > 5 ? "yes" : "no";</code> assign to <code>result</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="10 > 5 is true, so the ternary returns the first value: 'yes'.">A) "yes"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'no' would only be assigned if the condition (10 > 5) were false.">B) "no"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The ternary operator always returns one of its two values, not a boolean.">C) true</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The ternary always produces a value — it won't be undefined.">D) undefined</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong><code>if / else</code></strong> runs code based on whether a condition is true or false</li>
+                        <li><strong><code>else if</code></strong> chains let you check multiple conditions in order — first match wins</li>
+                        <li><strong><code>switch</code></strong> compares one value against many specific options — don't forget <code>break</code>!</li>
+                        <li><strong>Ternary</strong> (<code>? :</code>) is a compact if/else for simple value assignments</li>
+                        <li><strong>Guard clauses</strong> check for edge cases early to avoid deeply nested code</li>
+                        <li><strong>Truthy/falsy</strong> values work directly in conditions — no need for explicit comparisons</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/if...else" target="_blank" rel="noopener">MDN — if...else</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch" target="_blank" rel="noopener">MDN — switch</a></li>
+                    <li><a href="https://javascript.info/ifelse" target="_blank" rel="noopener">javascript.info — Conditional Branching</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_operator" target="_blank" rel="noopener">MDN — Conditional (Ternary) Operator</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now your programs can make decisions, but what about <strong>repeating actions</strong>? In the next lesson, you'll learn about <strong>loops</strong> — <code>for</code>, <code>while</code>, and <code>for...of</code> — to process data, count, and repeat tasks efficiently.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_04.html" class="prev-lesson">← Previous: Operators &amp; Expressions</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_06.html" class="next-lesson">Next: Loops →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

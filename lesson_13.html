@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Understand the Document Object Model (DOM) — what it is, how browsers build the document tree, and how to explore it with DevTools.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 13: Introduction to the DOM - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 4</a></li>
+            <li aria-current="page">Lesson 13: Introduction to the DOM</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🌳 Lesson 13: Introduction to the DOM</h1>
+                <p class="lead">The DOM is the bridge between your HTML and JavaScript. It turns a static web page into a living, interactive experience you can read, change, and control with code.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain what the DOM is and why it matters</li>
+                        <li>Describe how the browser builds the document tree from HTML</li>
+                        <li>Identify key DOM objects: <code>document</code>, <code>window</code>, elements, and nodes</li>
+                        <li>Navigate the DOM tree using parent, child, and sibling properties</li>
+                        <li>Use the DevTools Elements panel to inspect and explore the DOM</li>
+                        <li>Understand the difference between HTML source and the live DOM</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Explore the DOM tree using the console and DevTools</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-is-dom" class="toc-link">What Is the DOM?</a></li>
+                        <li><a href="#document-tree" class="toc-link">The Document Tree</a></li>
+                        <li><a href="#key-objects" class="toc-link">Key DOM Objects</a></li>
+                        <li><a href="#node-types" class="toc-link">Node Types</a></li>
+                        <li><a href="#traversing" class="toc-link">Traversing the Tree</a></li>
+                        <li><a href="#devtools" class="toc-link">Exploring with DevTools</a></li>
+                        <li><a href="#html-vs-dom" class="toc-link">HTML Source vs. Live DOM</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="what-is-dom" class="lesson-section">
+                <h2>What Is the DOM?</h2>
+                <p>The <strong>DOM</strong> (Document Object Model) is a programming interface for web pages. When a browser loads HTML, it doesn't just display text — it builds an <strong>in-memory representation</strong> of the page as a tree of objects. This tree is the DOM.</p>
+                <p>JavaScript can't read or modify HTML files directly. Instead, it interacts with the DOM — adding, removing, and changing elements, text, styles, and attributes. Every interactive feature on a web page works through the DOM.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["HTML Source Code"] -->|"Browser parses"| B["DOM Tree<br/>(in memory)"]
+                    B -->|"Browser renders"| C["What You See<br/>(on screen)"]
+                    D["JavaScript"] -->|"Reads & modifies"| B
+                    B -->|"Changes trigger"| C
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                </div>
+
+                <p>Think of it this way: HTML is the <em>blueprint</em>, the DOM is the <em>building</em>, and JavaScript is the <em>contractor</em> who can remodel the building after it's constructed.</p>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="document-tree" class="lesson-section">
+                <h2>The Document Tree</h2>
+                <p>The DOM is structured as a <strong>tree</strong>, just like a family tree. Every piece of the page — elements, text, attributes — is a <strong>node</strong> in this tree.</p>
+
+                <p>Consider this simple HTML:</p>
+                <pre><code class="language-html">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;My Page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello!&lt;/h1&gt;
+    &lt;p&gt;Welcome to my &lt;strong&gt;awesome&lt;/strong&gt; page.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+                </code></pre>
+
+                <p>The browser turns this into the following tree:</p>
+
+                <div class="mermaid">
+                    graph TD
+                    DOC["document"] --> HTML["html"]
+                    HTML --> HEAD["head"]
+                    HTML --> BODY["body"]
+                    HEAD --> TITLE["title"]
+                    TITLE --> T1["'My Page'"]
+                    BODY --> H1["h1"]
+                    BODY --> P["p"]
+                    H1 --> T2["'Hello!'"]
+                    P --> T3["'Welcome to my '"]
+                    P --> STRONG["strong"]
+                    P --> T4["' page.'"]
+                    STRONG --> T5["'awesome'"]
+                    style DOC fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style HTML fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style HEAD fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style BODY fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style TITLE fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style H1 fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style P fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style STRONG fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style T1 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style T2 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style T3 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style T4 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style T5 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+
+                <p>Key relationships in this tree:</p>
+                <ul>
+                    <li><strong>Parent:</strong> <code>&lt;html&gt;</code> is the parent of <code>&lt;head&gt;</code> and <code>&lt;body&gt;</code></li>
+                    <li><strong>Children:</strong> <code>&lt;h1&gt;</code> and <code>&lt;p&gt;</code> are children of <code>&lt;body&gt;</code></li>
+                    <li><strong>Siblings:</strong> <code>&lt;h1&gt;</code> and <code>&lt;p&gt;</code> are siblings (same parent)</li>
+                    <li><strong>Text nodes:</strong> <code>"Hello!"</code> is a text node inside <code>&lt;h1&gt;</code></li>
+                </ul>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="key-objects" class="lesson-section">
+                <h2>Key DOM Objects</h2>
+
+                <h3>window — The Global Object</h3>
+                <p><code>window</code> represents the browser window. It's the top-level object — everything lives inside it, including the DOM.</p>
+
+                <pre><code class="language-javascript">
+// window properties you already know
+console.log(window.innerWidth);   // Browser width in pixels
+console.log(window.innerHeight);  // Browser height in pixels
+console.log(window.location.href);  // Current URL
+
+// You've been using window methods all along
+window.console.log("Hello!");     // Same as console.log()
+window.alert("Hi!");              // Same as alert()
+window.setTimeout(() => {}, 1000); // Same as setTimeout()
+                </code></pre>
+
+                <h3>document — The Page Itself</h3>
+                <p><code>document</code> is the entry point to the DOM. It represents the entire HTML document and provides methods to find and create elements.</p>
+
+                <pre><code class="language-javascript">
+// document basics
+console.log(document.title);           // Page title
+console.log(document.URL);             // Page URL
+console.log(document.documentElement); // The &lt;html&gt; element
+console.log(document.head);            // The &lt;head&gt; element
+console.log(document.body);            // The &lt;body&gt; element
+
+// These are the methods you'll use most (covered in the next lesson)
+// document.querySelector()
+// document.querySelectorAll()
+// document.getElementById()
+// document.createElement()
+                </code></pre>
+
+                <h3>Elements — The Building Blocks</h3>
+                <pre><code class="language-javascript">
+// Every HTML tag becomes an element object in the DOM
+const heading = document.querySelector("h1");
+
+// Elements have properties you can read and change
+console.log(heading.tagName);       // "H1"
+console.log(heading.textContent);   // The text inside the element
+console.log(heading.className);     // CSS classes
+console.log(heading.id);            // The id attribute
+console.log(heading.style);         // Inline styles object
+                </code></pre>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="node-types" class="lesson-section">
+                <h2>Node Types</h2>
+                <p>Not everything in the DOM tree is an HTML element. The DOM has different <strong>node types</strong>.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Node Type</th>
+                                <th>nodeType Value</th>
+                                <th>Example</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Element</td><td>1</td><td><code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code></td><td>HTML tags</td></tr>
+                            <tr><td>Text</td><td>3</td><td><code>"Hello World"</code></td><td>Text content inside elements</td></tr>
+                            <tr><td>Comment</td><td>8</td><td><code>&lt;!-- note --&gt;</code></td><td>HTML comments</td></tr>
+                            <tr><td>Document</td><td>9</td><td><code>document</code></td><td>The root document itself</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <pre><code class="language-javascript">
+// Check a node's type
+const heading = document.querySelector("h1");
+console.log(heading.nodeType);   // 1 (Element)
+console.log(heading.nodeName);   // "H1"
+
+const textNode = heading.firstChild;
+console.log(textNode.nodeType);  // 3 (Text)
+console.log(textNode.nodeName);  // "#text"
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Elements vs. Nodes</h4>
+                    <p>In practice, you'll mostly work with <strong>elements</strong> (node type 1). Text nodes and comment nodes exist in the tree, but you'll rarely need to interact with them directly. Methods like <code>querySelector</code> return elements, not raw nodes.</p>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="traversing" class="lesson-section">
+                <h2>Traversing the Tree</h2>
+                <p>Once you have a reference to an element, you can navigate to its relatives — parent, children, and siblings.</p>
+
+                <h3>Parent</h3>
+                <pre><code class="language-javascript">
+const item = document.querySelector("li");
+const list = item.parentElement;    // The &lt;ul&gt; or &lt;ol&gt; containing this &lt;li&gt;
+const body = list.parentElement;    // Keeps going up the tree
+                </code></pre>
+
+                <h3>Children</h3>
+                <pre><code class="language-javascript">
+const list = document.querySelector("ul");
+
+// All child elements (ignores text nodes)
+console.log(list.children);            // HTMLCollection of &lt;li&gt; elements
+console.log(list.children.length);     // Number of child elements
+console.log(list.children[0]);         // First &lt;li&gt;
+
+// First and last child elements
+console.log(list.firstElementChild);   // First &lt;li&gt;
+console.log(list.lastElementChild);    // Last &lt;li&gt;
+                </code></pre>
+
+                <h3>Siblings</h3>
+                <pre><code class="language-javascript">
+const second = list.children[1];
+
+console.log(second.previousElementSibling);  // The &lt;li&gt; before this one
+console.log(second.nextElementSibling);      // The &lt;li&gt; after this one
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    UL["ul<br/>(parentElement)"] --> LI1["li<br/>(firstElementChild)"]
+                    UL --> LI2["li<br/>(children[1])"]
+                    UL --> LI3["li<br/>(lastElementChild)"]
+                    LI1 -->|"nextElementSibling"| LI2
+                    LI2 -->|"nextElementSibling"| LI3
+                    LI3 -->|"previousElementSibling"| LI2
+                    LI2 -->|"previousElementSibling"| LI1
+                    style UL fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style LI1 fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style LI2 fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style LI3 fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Element vs. Node Properties</h4>
+                    <p>There are two sets of traversal properties. The <strong>Element</strong> versions (recommended) skip text nodes and comments. The <strong>Node</strong> versions include everything.</p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Element Properties (Use These)</th>
+                                    <th>Node Properties (Include Text Nodes)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><code>parentElement</code></td><td><code>parentNode</code></td></tr>
+                                <tr><td><code>children</code></td><td><code>childNodes</code></td></tr>
+                                <tr><td><code>firstElementChild</code></td><td><code>firstChild</code></td></tr>
+                                <tr><td><code>lastElementChild</code></td><td><code>lastChild</code></td></tr>
+                                <tr><td><code>nextElementSibling</code></td><td><code>nextSibling</code></td></tr>
+                                <tr><td><code>previousElementSibling</code></td><td><code>previousSibling</code></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="devtools" class="lesson-section">
+                <h2>Exploring with DevTools</h2>
+                <p>The browser's DevTools are your best friend for understanding the DOM. Here's how to use them.</p>
+
+                <h3>Opening DevTools</h3>
+                <ul>
+                    <li><strong>Windows/Linux:</strong> <kbd>F12</kbd> or <kbd>Ctrl + Shift + I</kbd></li>
+                    <li><strong>Mac:</strong> <kbd>Cmd + Option + I</kbd></li>
+                    <li><strong>Right-click:</strong> "Inspect" on any element</li>
+                </ul>
+
+                <h3>The Elements Panel</h3>
+                <p>The Elements panel shows the live DOM tree. You can:</p>
+                <ul>
+                    <li><strong>Hover</strong> over elements to highlight them on the page</li>
+                    <li><strong>Click</strong> to expand/collapse sections of the tree</li>
+                    <li><strong>Double-click</strong> to edit text or attributes in real time</li>
+                    <li><strong>Delete</strong> elements to see what happens</li>
+                    <li><strong>Drag</strong> elements to rearrange them</li>
+                </ul>
+
+                <h3>The Console + DOM</h3>
+                <pre><code class="language-javascript">
+// Try these in your browser console right now!
+
+// Select this page's heading
+document.querySelector("h1");
+
+// Change the heading text
+document.querySelector("h1").textContent = "I changed this!";
+
+// Change the background color
+document.body.style.backgroundColor = "lightyellow";
+
+// Count how many sections are on this page
+document.querySelectorAll("section").length;
+
+// $0 — refers to the currently selected element in Elements panel
+// After clicking an element in the Elements panel:
+// $0.tagName
+// $0.textContent
+// $0.children
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: The $0 Shortcut</h4>
+                    <p>In DevTools, click any element in the Elements panel. Then switch to the Console and type <code>$0</code> — it refers to the element you just selected. This is incredibly useful for quick experiments. <code>$1</code> refers to the previously selected element.</p>
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="html-vs-dom" class="lesson-section">
+                <h2>HTML Source vs. Live DOM</h2>
+                <p>An important distinction: the HTML source code and the DOM are <strong>not the same thing</strong>. The DOM is a living, mutable representation that starts from HTML but can diverge.</p>
+
+                <pre><code class="language-javascript">
+// The DOM can contain things that aren't in the HTML source:
+
+// 1. Browser corrections — browsers fix invalid HTML
+// Missing &lt;tbody&gt; in tables? The browser adds it to the DOM.
+
+// 2. JavaScript additions — code can create new elements
+const newParagraph = document.createElement("p");
+newParagraph.textContent = "I was created by JavaScript!";
+document.body.appendChild(newParagraph);
+// This &lt;p&gt; exists in the DOM but not in the HTML file
+
+// 3. User interactions — form inputs change the DOM
+// When a user types in an &lt;input&gt;, the DOM's .value updates
+// but the HTML source attribute stays the same
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 View Source vs. Inspect</h4>
+                    <ul>
+                        <li><strong>View Source</strong> (<kbd>Ctrl/Cmd + U</kbd>): Shows the original HTML file from the server — static, never changes.</li>
+                        <li><strong>Inspect / Elements Panel</strong>: Shows the live DOM — reflects JavaScript changes, browser corrections, and user interactions.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: DOM Explorer</h3>
+                    <p><strong>Objective:</strong> Use the browser console to explore this very page's DOM. Open DevTools (<kbd>F12</kbd>) and try each task in the Console.</p>
+
+                    <pre><code class="language-javascript">
+// Do these in your browser console on THIS page:
+
+// 1. Find the page title
+document.title
+
+// 2. Get the main heading
+document.querySelector("h1")
+
+// 3. How many sections does this lesson have?
+document.querySelectorAll(".lesson-section").length
+
+// 4. Get the breadcrumb navigation
+document.querySelector(".breadcrumb")
+
+// 5. Navigate the tree manually:
+//    Start from the body, get its first element child,
+//    then that element's next sibling, and so on
+document.body.firstElementChild
+document.body.firstElementChild.nextElementSibling
+
+// 6. Change the page heading text
+document.querySelector("h1").textContent = "🌳 I Explored the DOM!"
+
+// 7. Change the page background color
+document.body.style.backgroundColor = "#f0f9ff"
+
+// 8. Find all links on the page and count them
+document.querySelectorAll("a").length
+
+// 9. Use the Elements panel:
+//    - Click on different elements and watch them highlight
+//    - Try $0 in the console after selecting an element
+//    - Double-click text in the Elements panel to edit it
+//    - Try deleting an element (select it, press Delete key)
+
+// 10. Bonus: Walk the full tree from document to a deep element
+document.documentElement  // &lt;html&gt;
+    .children[1]          // &lt;body&gt;
+    .children[3]          // &lt;main&gt;
+    .firstElementChild    // .container
+    .firstElementChild    // &lt;header&gt;
+    .firstElementChild    // &lt;h1&gt;
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p>All of these tasks are done in the browser console, not in a code file. Open DevTools with <kbd>F12</kbd> or <kbd>Ctrl + Shift + I</kbd>, click the Console tab, and type each line. Refresh the page to undo your changes.</p>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is the DOM?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The HTML file is the source code. The DOM is what the browser creates from it.">A) The HTML file on the server</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The DOM is a tree of objects that the browser creates from HTML. JavaScript interacts with this tree, not the HTML file directly.">B) An in-memory tree of objects representing the page</button>
+                            <button class="quiz-option" data-correct="false" data-hint="CSS handles styling. The DOM represents the page structure that JavaScript can interact with.">C) A CSS styling system</button>
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript is a programming language. The DOM is a browser API that JavaScript uses to interact with the page.">D) A JavaScript library</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Which object is the entry point to the DOM?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="window is the global browser object. The DOM lives inside window.document.">A) window</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="document represents the page and provides methods like querySelector() and createElement() to interact with the DOM.">B) document</button>
+                            <button class="quiz-option" data-correct="false" data-hint="body is one element inside the document — it's not the entry point to the whole DOM.">C) body</button>
+                            <button class="quiz-option" data-correct="false" data-hint="html is the root element, but you access it through document.documentElement.">D) html</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What does <code>element.parentElement</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="children returns child elements. parentElement goes UP the tree, not down.">A) All child elements</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="parentElement returns the element that contains this element — one level up in the DOM tree.">B) The element that contains this element</button>
+                            <button class="quiz-option" data-correct="false" data-hint="nextElementSibling returns the next sibling. parentElement returns the container above.">C) The next element in the page</button>
+                            <button class="quiz-option" data-correct="false" data-hint="document is the root of the entire DOM. parentElement returns just the immediate parent.">D) The document object</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>The <strong>DOM</strong> is the browser's in-memory tree representation of your HTML page</li>
+                        <li><strong><code>document</code></strong> is your entry point — it provides methods to find and create elements</li>
+                        <li>The DOM tree has <strong>parents, children, and siblings</strong> — navigate with properties like <code>parentElement</code>, <code>children</code>, <code>nextElementSibling</code></li>
+                        <li>Use <strong>Element properties</strong> (not Node properties) to skip text nodes when traversing</li>
+                        <li>The <strong>DevTools Elements panel</strong> shows the live DOM, not the original HTML source</li>
+                        <li>JavaScript changes the DOM, which the browser re-renders — the HTML file stays unchanged</li>
+                        <li>The <strong><code>$0</code></strong> console shortcut references the currently selected element in DevTools</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction" target="_blank" rel="noopener">MDN — Introduction to the DOM</a></li>
+                    <li><a href="https://javascript.info/dom-nodes" target="_blank" rel="noopener">javascript.info — DOM Tree</a></li>
+                    <li><a href="https://developer.chrome.com/docs/devtools/dom/" target="_blank" rel="noopener">Chrome DevTools — View and Change the DOM</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you understand what the DOM is, the next lesson teaches you to <strong>select and modify elements</strong> — changing text, classes, styles, and attributes with JavaScript. This is where things get hands-on.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_12.html" class="prev-lesson">← Previous: Strings &amp; Template Literals</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_14.html" class="next-lesson">Next: Selecting &amp; Modifying Elements →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

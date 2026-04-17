@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master JavaScript operators — arithmetic, assignment, comparison, logical, and the tricky world of type coercion.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 4: Operators &amp; Expressions - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1</a></li>
+            <li aria-current="page">Lesson 4: Operators &amp; Expressions</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>⚡ Lesson 4: Operators &amp; Expressions</h1>
+                <p class="lead">Learn how to perform calculations, make comparisons, and combine logic — the tools that make your programs make decisions.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Use arithmetic operators for math calculations</li>
+                        <li>Apply assignment operators including shorthand (<code>+=</code>, <code>-=</code>, etc.)</li>
+                        <li>Compare values with <code>==</code>, <code>===</code>, <code>!=</code>, <code>!==</code>, <code>&lt;</code>, <code>&gt;</code></li>
+                        <li>Explain the critical difference between <code>==</code> and <code>===</code></li>
+                        <li>Combine conditions with logical operators (<code>&&</code>, <code>||</code>, <code>!</code>)</li>
+                        <li>Understand operator precedence and how expressions evaluate</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Build a tip calculator using operators</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#arithmetic" class="toc-link">Arithmetic Operators</a></li>
+                        <li><a href="#assignment" class="toc-link">Assignment Operators</a></li>
+                        <li><a href="#comparison" class="toc-link">Comparison Operators</a></li>
+                        <li><a href="#logical" class="toc-link">Logical Operators</a></li>
+                        <li><a href="#string-operators" class="toc-link">String Operators</a></li>
+                        <li><a href="#precedence" class="toc-link">Operator Precedence</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>Variables store data, but <strong>operators</strong> let you <em>do things</em> with that data — add numbers, compare values, combine conditions, and build expressions. An <strong>expression</strong> is any piece of code that produces a value: <code>2 + 3</code> is an expression that produces <code>5</code>.</p>
+                <p>This lesson covers the operators you'll use every day in JavaScript.</p>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="arithmetic" class="lesson-section">
+                <h2>Arithmetic Operators</h2>
+                <p>These perform math on numbers, just like a calculator.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Operator</th>
+                                <th>Name</th>
+                                <th>Example</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>+</code></td><td>Addition</td><td><code>10 + 3</code></td><td><code>13</code></td></tr>
+                            <tr><td><code>-</code></td><td>Subtraction</td><td><code>10 - 3</code></td><td><code>7</code></td></tr>
+                            <tr><td><code>*</code></td><td>Multiplication</td><td><code>10 * 3</code></td><td><code>30</code></td></tr>
+                            <tr><td><code>/</code></td><td>Division</td><td><code>10 / 3</code></td><td><code>3.333...</code></td></tr>
+                            <tr><td><code>%</code></td><td>Modulo (remainder)</td><td><code>10 % 3</code></td><td><code>1</code></td></tr>
+                            <tr><td><code>**</code></td><td>Exponentiation</td><td><code>2 ** 3</code></td><td><code>8</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <pre><code class="language-javascript">
+let price = 29.99;
+let quantity = 3;
+let subtotal = price * quantity;
+console.log(`Subtotal: $${subtotal}`);  // "Subtotal: $89.97"
+
+// Modulo is great for checking even/odd
+let number = 7;
+console.log(number % 2);  // 1 (odd — remainder when dividing by 2)
+console.log(8 % 2);       // 0 (even)
+
+// Increment and Decrement
+let count = 5;
+count++;  // count is now 6 (same as count = count + 1)
+count--;  // count is now 5 again
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Modulo (<code>%</code>) Use Cases</h4>
+                    <p>Modulo gives you the <strong>remainder</strong> after division. Common uses include checking if a number is even (<code>n % 2 === 0</code>), wrapping around values (like cycling through array indices), and converting total seconds into minutes/seconds.</p>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="assignment" class="lesson-section">
+                <h2>Assignment Operators</h2>
+                <p>You already know <code>=</code> assigns a value. Shorthand operators combine assignment with an operation.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Operator</th>
+                                <th>Example</th>
+                                <th>Equivalent To</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>=</code></td><td><code>x = 10</code></td><td>Assign 10 to x</td></tr>
+                            <tr><td><code>+=</code></td><td><code>x += 5</code></td><td><code>x = x + 5</code></td></tr>
+                            <tr><td><code>-=</code></td><td><code>x -= 3</code></td><td><code>x = x - 3</code></td></tr>
+                            <tr><td><code>*=</code></td><td><code>x *= 2</code></td><td><code>x = x * 2</code></td></tr>
+                            <tr><td><code>/=</code></td><td><code>x /= 4</code></td><td><code>x = x / 4</code></td></tr>
+                            <tr><td><code>%=</code></td><td><code>x %= 3</code></td><td><code>x = x % 3</code></td></tr>
+                            <tr><td><code>**=</code></td><td><code>x **= 2</code></td><td><code>x = x ** 2</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <pre><code class="language-javascript">
+let score = 100;
+score += 25;   // score is now 125
+score -= 10;   // score is now 115
+score *= 2;    // score is now 230
+
+console.log(score);  // 230
+                </code></pre>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="comparison" class="lesson-section">
+                <h2>Comparison Operators</h2>
+                <p>Comparison operators compare two values and return a <strong>boolean</strong> (<code>true</code> or <code>false</code>). They're the foundation of decision-making in code.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Operator</th>
+                                <th>Name</th>
+                                <th>Example</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>===</code></td><td>Strict equal</td><td><code>5 === 5</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>!==</code></td><td>Strict not equal</td><td><code>5 !== "5"</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>==</code></td><td>Loose equal</td><td><code>5 == "5"</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>!=</code></td><td>Loose not equal</td><td><code>5 != "5"</code></td><td><code>false</code></td></tr>
+                            <tr><td><code>&gt;</code></td><td>Greater than</td><td><code>10 &gt; 5</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>&lt;</code></td><td>Less than</td><td><code>3 &lt; 7</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>&gt;=</code></td><td>Greater or equal</td><td><code>5 &gt;= 5</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>&lt;=</code></td><td>Less or equal</td><td><code>3 &lt;= 2</code></td><td><code>false</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>The Critical Difference: <code>===</code> vs. <code>==</code></h3>
+                <p>This is one of the most important things to understand in JavaScript.</p>
+
+                <pre><code class="language-javascript">
+// === (strict equality) — checks value AND type
+console.log(5 === 5);      // true  (same value, same type)
+console.log(5 === "5");    // false (same value, different type!)
+console.log(true === 1);   // false (different types)
+
+// == (loose equality) — converts types before comparing
+console.log(5 == "5");     // true  (JS converts "5" to 5, then compares)
+console.log(true == 1);    // true  (JS converts true to 1)
+console.log(null == undefined);  // true (special case)
+console.log("" == 0);      // true  (both are "falsy")
+                </code></pre>
+
+                <div class="card card-danger">
+                    <h4>❌ Always Use <code>===</code> and <code>!==</code></h4>
+                    <p>Loose equality (<code>==</code>) performs type coercion and produces counterintuitive results. <strong>Always use strict equality (<code>===</code>) and strict inequality (<code>!==</code>)</strong> unless you have a specific reason not to. This is a universal JavaScript best practice.</p>
+                </div>
+
+                <pre><code class="language-javascript">
+// Why == is dangerous — these are all true!
+console.log("" == 0);           // true
+console.log("0" == 0);          // true
+console.log("" == "0");         // false (both strings, no coercion)
+console.log(false == "0");      // true
+console.log(false == "");       // true
+console.log(null == undefined); // true
+
+// With ===, the results make sense
+console.log("" === 0);          // false
+console.log("0" === 0);         // false
+console.log(false === "0");     // false
+                </code></pre>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="logical" class="lesson-section">
+                <h2>Logical Operators</h2>
+                <p>Logical operators combine boolean values or expressions. They're how you build complex conditions.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Operator</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Example</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>&&</code></td><td>AND</td><td>Both must be true</td><td><code>true && true</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>||</code></td><td>OR</td><td>At least one must be true</td><td><code>false || true</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>!</code></td><td>NOT</td><td>Flips the value</td><td><code>!true</code></td><td><code>false</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <pre><code class="language-javascript">
+let age = 25;
+let hasID = true;
+
+// AND — both conditions must be true
+let canEnter = age >= 21 && hasID;
+console.log(canEnter);  // true
+
+// OR — at least one condition must be true
+let isWeekend = false;
+let isHoliday = true;
+let dayOff = isWeekend || isHoliday;
+console.log(dayOff);  // true
+
+// NOT — flips the boolean
+let isLoggedIn = false;
+console.log(!isLoggedIn);  // true (NOT false = true)
+
+// Combining them
+let isMember = true;
+let hasCoupon = false;
+let getsDiscount = isMember || hasCoupon;
+let canCheckout = getsDiscount && age >= 18;
+console.log(`Gets discount: ${getsDiscount}`);   // true
+console.log(`Can checkout: ${canCheckout}`);       // true
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["age >= 21?"] -->|Yes| B["hasID?"]
+                    A -->|No| D["❌ Cannot Enter"]
+                    B -->|Yes| C["✅ Can Enter"]
+                    B -->|No| D
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Truthy and Falsy Values</h3>
+                <p>JavaScript can treat non-boolean values as <code>true</code> or <code>false</code> in logical contexts. These are called <strong>truthy</strong> and <strong>falsy</strong> values.</p>
+
+                <pre><code class="language-javascript">
+// Falsy values (these all evaluate to false):
+// false, 0, -0, "", null, undefined, NaN
+
+// Everything else is truthy:
+// true, any number (except 0), any non-empty string, objects, arrays
+
+console.log(Boolean(0));          // false
+console.log(Boolean(""));         // false
+console.log(Boolean(null));       // false
+console.log(Boolean(undefined));  // false
+
+console.log(Boolean(1));          // true
+console.log(Boolean("hello"));    // true
+console.log(Boolean(42));         // true
+console.log(Boolean("0"));        // true (non-empty string!)
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Common Gotcha</h4>
+                    <p><code>"0"</code> (the string containing zero) is <strong>truthy</strong> because it's a non-empty string. <code>0</code> (the number zero) is <strong>falsy</strong>. This catches many beginners off guard.</p>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="string-operators" class="lesson-section">
+                <h2>String Operators</h2>
+                <p>The <code>+</code> operator does double duty — it adds numbers <em>and</em> concatenates (joins) strings.</p>
+
+                <pre><code class="language-javascript">
+// Concatenation
+let first = "Java";
+let second = "Script";
+let combined = first + second;
+console.log(combined);  // "JavaScript"
+
+// Concatenation with variables
+let greeting = "Hello, " + "World!";
+console.log(greeting);  // "Hello, World!"
+
+// += works with strings too
+let message = "Good";
+message += " morning!";
+console.log(message);  // "Good morning!"
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Prefer Template Literals</h4>
+                    <p>For building strings with variables, template literals (backticks) are cleaner than <code>+</code> concatenation. You learned this in Lesson 3 — keep using them!</p>
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="precedence" class="lesson-section">
+                <h2>Operator Precedence</h2>
+                <p>When an expression has multiple operators, JavaScript follows a specific order — just like math class (PEMDAS/BODMAS). Key points:</p>
+
+                <ol>
+                    <li><strong>Parentheses</strong> <code>()</code> — evaluated first (always use these to be explicit!)</li>
+                    <li><strong>Exponentiation</strong> <code>**</code></li>
+                    <li><strong>Multiplication / Division / Modulo</strong> <code>* / %</code></li>
+                    <li><strong>Addition / Subtraction</strong> <code>+ -</code></li>
+                    <li><strong>Comparisons</strong> <code>&lt; &gt; &lt;= &gt;=</code></li>
+                    <li><strong>Equality</strong> <code>=== !== == !=</code></li>
+                    <li><strong>Logical AND</strong> <code>&&</code></li>
+                    <li><strong>Logical OR</strong> <code>||</code></li>
+                    <li><strong>Assignment</strong> <code>= += -= etc.</code></li>
+                </ol>
+
+                <pre><code class="language-javascript">
+// Without parentheses — follows precedence rules
+let result = 2 + 3 * 4;
+console.log(result);  // 14 (not 20! multiplication first)
+
+// With parentheses — explicit and clear
+let result2 = (2 + 3) * 4;
+console.log(result2);  // 20
+
+// Complex expression
+let total = 100 - 20 * 0.1 + 5;
+console.log(total);  // 103 (20 * 0.1 = 2, then 100 - 2 + 5)
+
+// Clear version with parentheses
+let total2 = (100 - (20 * 0.1)) + 5;
+console.log(total2);  // 103 (same result, but intention is clear)
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: Use Parentheses Generously</h4>
+                    <p>Don't rely on memorizing precedence rules. Use parentheses to make your intentions clear. Future you (and anyone reading your code) will thank you.</p>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Tip Calculator</h3>
+                    <p><strong>Objective:</strong> Use arithmetic, assignment, and comparison operators to build a console-based tip calculator.</p>
+
+                    <h4>Instructions:</h4>
+                    <pre><code class="language-javascript">
+// Tip Calculator
+
+// TODO: Set up these variables
+// const billAmount = 85.50;
+// const tipPercentage = 20;  // 20%
+// const numberOfPeople = 3;
+
+// TODO: Calculate:
+// 1. tipAmount (billAmount * tipPercentage / 100)
+// 2. totalWithTip (billAmount + tipAmount)
+// 3. perPerson (totalWithTip / numberOfPeople)
+
+// TODO: Log the results using template literals
+// "Bill: $85.50"
+// "Tip (20%): $17.10"
+// "Total: $102.60"
+// "Per person: $34.20"
+
+// BONUS: Check if the bill is "expensive" (over $100 after tip)
+// Log whether it is using a comparison
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p>Use <code>.toFixed(2)</code> on numbers to format them to two decimal places: <code>perPerson.toFixed(2)</code> gives you <code>"34.20"</code> instead of <code>34.2</code>.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+const billAmount = 85.50;
+const tipPercentage = 20;
+const numberOfPeople = 3;
+
+const tipAmount = billAmount * tipPercentage / 100;
+const totalWithTip = billAmount + tipAmount;
+const perPerson = totalWithTip / numberOfPeople;
+
+console.log(`Bill: $${billAmount.toFixed(2)}`);
+console.log(`Tip (${tipPercentage}%): $${tipAmount.toFixed(2)}`);
+console.log(`Total: $${totalWithTip.toFixed(2)}`);
+console.log(`Per person: $${perPerson.toFixed(2)}`);
+
+// Bonus: Check if expensive
+const isExpensive = totalWithTip > 100;
+console.log(`Expensive? ${isExpensive}`);  // true
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>10 % 3</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That would be 10 / 3 (division), not 10 % 3 (modulo).">A) 3.33</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The modulo operator returns the remainder: 10 ÷ 3 = 3 remainder 1.">B) 1</button>
+                            <button class="quiz-option" data-correct="false" data-hint="3 is the quotient (how many times 3 goes into 10), not the remainder.">C) 3</button>
+                            <button class="quiz-option" data-correct="false" data-hint="10 % 3 gives the remainder of division, which is always less than the divisor.">D) 30</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What does <code>5 === "5"</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Strict equality (===) checks both value AND type. 5 is a number and '5' is a string — different types, so false.">A) false</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That would be true with == (loose equality), but === is strict — it checks types too.">B) true</button>
+                            <button class="quiz-option" data-correct="false" data-hint="This is a valid comparison — JavaScript will return a boolean.">C) Error</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Comparisons always return booleans, not undefined.">D) undefined</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What is the result of <code>true && false || true</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="&& has higher precedence than ||. Evaluate && first, then ||.">A) false</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="&& is evaluated first: true && false = false. Then false || true = true.">B) true</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Logical operations always return a definite boolean result.">C) undefined</button>
+                            <button class="quiz-option" data-correct="false" data-hint="This is valid JavaScript — no error will occur.">D) Error</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Arithmetic operators</strong>: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>, <code>**</code> for math</li>
+                        <li><strong>Assignment shorthand</strong>: <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code> for cleaner updates</li>
+                        <li><strong>Always use <code>===</code></strong> (strict equality) and <code>!==</code> instead of <code>==</code> and <code>!=</code></li>
+                        <li><strong>Logical operators</strong>: <code>&&</code> (AND), <code>||</code> (OR), <code>!</code> (NOT) combine conditions</li>
+                        <li><strong>Truthy/falsy</strong>: <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code> are falsy; everything else is truthy</li>
+                        <li><strong>Use parentheses</strong> to make operator precedence clear and intentional</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators" target="_blank" rel="noopener">MDN — Expressions and Operators</a></li>
+                    <li><a href="https://javascript.info/operators" target="_blank" rel="noopener">javascript.info — Basic Operators</a></li>
+                    <li><a href="https://javascript.info/comparison" target="_blank" rel="noopener">javascript.info — Comparisons</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You've completed Module 1! You now have the fundamentals: variables, data types, and operators. In Module 2, you'll learn to <strong>control the flow</strong> of your programs with <strong>conditionals</strong> — making your code make decisions with <code>if</code>, <code>else</code>, and <code>switch</code>.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Module 1 Complete!</h3>
+                    <p>You've finished JavaScript Foundations. You understand variables, data types, and operators. Time to make your code think!</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_03.html" class="prev-lesson">← Previous: Variables &amp; Data Types</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_05.html" class="next-lesson">Next: Conditionals →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

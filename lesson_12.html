@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master JavaScript strings — string methods for searching, slicing, and transforming text, plus template literals for interpolation and multiline strings.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 12: Strings &amp; Template Literals - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3</a></li>
+            <li aria-current="page">Lesson 12: Strings &amp; Template Literals</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔤 Lesson 12: Strings &amp; Template Literals</h1>
+                <p class="lead">Text is everywhere in web development — user input, API data, HTML content. Master JavaScript's string tools and you'll handle text like a pro.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Use template literals for interpolation and multiline strings</li>
+                        <li>Search strings with <code>includes</code>, <code>startsWith</code>, <code>endsWith</code>, and <code>indexOf</code></li>
+                        <li>Extract parts of strings with <code>slice</code>, <code>substring</code>, and <code>at</code></li>
+                        <li>Transform strings with <code>toUpperCase</code>, <code>toLowerCase</code>, <code>trim</code>, and <code>replace</code></li>
+                        <li>Split strings into arrays and join arrays into strings</li>
+                        <li>Pad, repeat, and format strings for display</li>
+                        <li>Understand that strings are immutable</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 40 minutes</p>
+                    <p><strong>Project:</strong> Build a text formatting utility</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#template-literals" class="toc-link">Template Literals</a></li>
+                        <li><a href="#searching" class="toc-link">Searching Strings</a></li>
+                        <li><a href="#extracting" class="toc-link">Extracting Parts</a></li>
+                        <li><a href="#transforming" class="toc-link">Transforming Strings</a></li>
+                        <li><a href="#split-join" class="toc-link">Split &amp; Join</a></li>
+                        <li><a href="#padding-repeat" class="toc-link">Padding &amp; Repeating</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>You've been using strings since Lesson 3, but we've only scratched the surface. Strings have <strong>dozens of built-in methods</strong> for searching, extracting, and transforming text. In this lesson, you'll learn the ones you'll use most often.</p>
+                <p>One critical concept first: <strong>strings are immutable</strong>. Every string method returns a <em>new</em> string — the original is never changed. This is different from arrays, where methods like <code>push</code> and <code>splice</code> modify the original.</p>
+
+                <pre><code class="language-javascript">
+const greeting = "Hello, World!";
+
+// String methods return NEW strings
+const upper = greeting.toUpperCase();
+
+console.log(upper);     // "HELLO, WORLD!"
+console.log(greeting);  // "Hello, World!" — unchanged!
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Strings Are Like Read-Only Arrays</h4>
+                    <p>You can access individual characters by index (<code>str[0]</code>) and check <code>length</code>, just like arrays. But you can't change individual characters — you have to create a new string.</p>
+                    <pre><code class="language-javascript">
+const word = "hello";
+console.log(word[0]);       // "h"
+console.log(word.length);   // 5
+// word[0] = "H";           // ❌ Silently fails — strings are immutable
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="template-literals" class="lesson-section">
+                <h2>Template Literals</h2>
+                <p>Template literals use <strong>backticks</strong> (<code>`</code>) instead of quotes. You've used them for basic interpolation, but they have more features worth knowing.</p>
+
+                <h3>String Interpolation (Review)</h3>
+                <pre><code class="language-javascript">
+const name = "Ray";
+const age = 30;
+
+// Old way — concatenation
+const msg1 = "Hello, " + name + "! You are " + age + " years old.";
+
+// Template literal — much cleaner
+const msg2 = `Hello, ${name}! You are ${age} years old.`;
+
+// Expressions work inside ${}
+const msg3 = `In 10 years, you'll be ${age + 10}.`;
+const msg4 = `Status: ${age >= 18 ? "adult" : "minor"}`;
+                </code></pre>
+
+                <h3>Multiline Strings</h3>
+                <pre><code class="language-javascript">
+// Old way — escaped newlines
+const old = "Line 1\n" +
+            "Line 2\n" +
+            "Line 3";
+
+// Template literal — just press Enter
+const modern = `Line 1
+Line 2
+Line 3`;
+
+// Great for HTML snippets
+const card = `
+    &lt;div class="card"&gt;
+        &lt;h2&gt;${name}&lt;/h2&gt;
+        &lt;p&gt;Age: ${age}&lt;/p&gt;
+    &lt;/div&gt;
+`;
+                </code></pre>
+
+                <h3>Tagged Templates (Preview)</h3>
+                <p>You can "tag" a template literal with a function. This is an advanced feature used in libraries — you'll recognize it when you see it.</p>
+
+                <pre><code class="language-javascript">
+// You'll encounter these in frameworks and libraries
+// css`color: red;`           — styled-components
+// html`&lt;div&gt;${content}&lt;/div&gt;`  — lit-html
+// gql`query { user { name } }`  — GraphQL
+
+// The function receives the string parts and values separately
+// For now, just know they exist — you don't need to write them yet
+                </code></pre>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="searching" class="lesson-section">
+                <h2>Searching Strings</h2>
+
+                <h3>includes() — Does It Contain?</h3>
+                <pre><code class="language-javascript">
+const sentence = "The quick brown fox jumps over the lazy dog";
+
+console.log(sentence.includes("fox"));      // true
+console.log(sentence.includes("cat"));      // false
+console.log(sentence.includes("Fox"));      // false — case-sensitive!
+
+// Case-insensitive check
+console.log(sentence.toLowerCase().includes("fox"));  // true
+                </code></pre>
+
+                <h3>startsWith() and endsWith()</h3>
+                <pre><code class="language-javascript">
+const filename = "report-2026.pdf";
+
+console.log(filename.startsWith("report"));   // true
+console.log(filename.endsWith(".pdf"));        // true
+console.log(filename.endsWith(".docx"));       // false
+
+// Practical: validate file types
+function isImage(name) {
+    const lower = name.toLowerCase();
+    return lower.endsWith(".jpg") || lower.endsWith(".png") || lower.endsWith(".gif");
+}
+
+console.log(isImage("photo.JPG"));    // true
+console.log(isImage("doc.pdf"));      // false
+                </code></pre>
+
+                <h3>indexOf() and lastIndexOf()</h3>
+                <pre><code class="language-javascript">
+const text = "Hello World, Hello JavaScript";
+
+console.log(text.indexOf("Hello"));       // 0 (first occurrence)
+console.log(text.lastIndexOf("Hello"));   // 13 (last occurrence)
+console.log(text.indexOf("Python"));      // -1 (not found)
+
+// Search starting from a specific position
+console.log(text.indexOf("Hello", 1));    // 13 (skips the first one)
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Returns</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>includes(str)</code></td><td><code>true</code> / <code>false</code></td><td>Does it contain this text?</td></tr>
+                            <tr><td><code>startsWith(str)</code></td><td><code>true</code> / <code>false</code></td><td>Does it begin with this?</td></tr>
+                            <tr><td><code>endsWith(str)</code></td><td><code>true</code> / <code>false</code></td><td>Does it end with this?</td></tr>
+                            <tr><td><code>indexOf(str)</code></td><td>Index or <code>-1</code></td><td>Where is the first occurrence?</td></tr>
+                            <tr><td><code>lastIndexOf(str)</code></td><td>Index or <code>-1</code></td><td>Where is the last occurrence?</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="extracting" class="lesson-section">
+                <h2>Extracting Parts</h2>
+
+                <h3>slice() — The Go-To Extractor</h3>
+                <p>Just like array <code>slice</code>, string <code>slice</code> extracts a portion without changing the original. It supports negative indexes.</p>
+
+                <pre><code class="language-javascript">
+const str = "Hello, World!";
+
+console.log(str.slice(0, 5));    // "Hello"
+console.log(str.slice(7));       // "World!"
+console.log(str.slice(-6));      // "orld!"
+console.log(str.slice(7, 12));   // "World"
+console.log(str.slice(-6, -1));  // "orld"
+                </code></pre>
+
+                <h3>substring()</h3>
+                <p>Similar to <code>slice</code> but doesn't support negative indexes. Use <code>slice</code> instead — it's more versatile.</p>
+
+                <pre><code class="language-javascript">
+const str = "Hello, World!";
+
+console.log(str.substring(0, 5));  // "Hello"
+console.log(str.substring(7));     // "World!"
+
+// substring swaps arguments if start > end
+console.log(str.substring(5, 0));  // "Hello" (same as (0, 5))
+// slice doesn't — it returns empty string
+console.log(str.slice(5, 0));      // ""
+                </code></pre>
+
+                <h3>at() — Modern Character Access</h3>
+                <pre><code class="language-javascript">
+const word = "JavaScript";
+
+console.log(word.at(0));    // "J"
+console.log(word.at(-1));   // "t"  (last character)
+console.log(word.at(-2));   // "p"  (second to last)
+                </code></pre>
+
+                <div class="mermaid">
+                    graph LR
+                    A["'Hello, World!'"] --> B["slice(0,5) → 'Hello'"]
+                    A --> C["slice(7) → 'World!'"]
+                    A --> D["slice(-6) → 'orld!'"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="transforming" class="lesson-section">
+                <h2>Transforming Strings</h2>
+
+                <h3>Case Conversion</h3>
+                <pre><code class="language-javascript">
+const mixed = "Hello World";
+
+console.log(mixed.toUpperCase());  // "HELLO WORLD"
+console.log(mixed.toLowerCase());  // "hello world"
+
+// Common: case-insensitive comparison
+const input = "Yes";
+if (input.toLowerCase() === "yes") {
+    console.log("User said yes!");
+}
+                </code></pre>
+
+                <h3>trim() — Remove Whitespace</h3>
+                <pre><code class="language-javascript">
+const messy = "   Hello World   ";
+
+console.log(messy.trim());       // "Hello World" (both sides)
+console.log(messy.trimStart());  // "Hello World   " (left only)
+console.log(messy.trimEnd());    // "   Hello World" (right only)
+
+// Essential for user input
+const email = "  ray@example.com  ";
+const clean = email.trim();
+console.log(clean);  // "ray@example.com"
+                </code></pre>
+
+                <h3>replace() and replaceAll()</h3>
+                <pre><code class="language-javascript">
+const text = "I love cats. cats are great. I have two cats.";
+
+// replace — first occurrence only
+console.log(text.replace("cats", "dogs"));
+// "I love dogs. cats are great. I have two cats."
+
+// replaceAll — every occurrence
+console.log(text.replaceAll("cats", "dogs"));
+// "I love dogs. dogs are great. I have two dogs."
+
+// Replace with regex (for pattern matching)
+const phone = "(555) 123-4567";
+const digits = phone.replace(/\D/g, "");  // Remove non-digits
+console.log(digits);  // "5551234567"
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Regular Expressions — A Preview</h4>
+                    <p>The <code>/\D/g</code> syntax is a <strong>regular expression</strong> (regex). Regex is a powerful pattern-matching language. You don't need to learn it now — just know that <code>replace</code> supports it for advanced text transformations. The <code>g</code> flag means "global" (replace all matches).</p>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="split-join" class="lesson-section">
+                <h2>Split &amp; Join</h2>
+                <p>These two methods are perfect partners: <code>split</code> turns a string into an array, and <code>join</code> turns an array back into a string.</p>
+
+                <h3>split() — String to Array</h3>
+                <pre><code class="language-javascript">
+const csv = "apple,banana,cherry,date";
+const fruits = csv.split(",");
+console.log(fruits);  // ["apple", "banana", "cherry", "date"]
+
+const sentence = "The quick brown fox";
+const words = sentence.split(" ");
+console.log(words);  // ["The", "quick", "brown", "fox"]
+
+// Split into characters
+const letters = "hello".split("");
+console.log(letters);  // ["h", "e", "l", "l", "o"]
+
+// Limit the number of splits
+const parts = "a-b-c-d-e".split("-", 3);
+console.log(parts);  // ["a", "b", "c"]
+                </code></pre>
+
+                <h3>join() — Array to String</h3>
+                <pre><code class="language-javascript">
+const words = ["Hello", "World"];
+
+console.log(words.join(" "));    // "Hello World"
+console.log(words.join(", "));   // "Hello, World"
+console.log(words.join("-"));    // "Hello-World"
+console.log(words.join(""));     // "HelloWorld"
+                </code></pre>
+
+                <h3>split + transform + join Pattern</h3>
+                <p>One of the most useful string manipulation patterns — split a string apart, transform the pieces, and join them back.</p>
+
+                <pre><code class="language-javascript">
+// Capitalize each word
+function titleCase(str) {
+    return str
+        .split(" ")
+        .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
+}
+
+console.log(titleCase("hello world"));         // "Hello World"
+console.log(titleCase("the QUICK brown FOX"));  // "The Quick Brown Fox"
+
+// Convert between formats
+function camelToKebab(str) {
+    return str
+        .replace(/([A-Z])/g, "-$1")
+        .toLowerCase();
+}
+
+console.log(camelToKebab("backgroundColor"));  // "background-color"
+console.log(camelToKebab("fontSize"));         // "font-size"
+                </code></pre>
+
+                <div class="mermaid">
+                    graph LR
+                    A["'hello world'"] -->|"split(' ')"| B["['hello', 'world']"]
+                    B -->|"map(capitalize)"| C["['Hello', 'World']"]
+                    C -->|"join(' ')"| D["'Hello World'"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="padding-repeat" class="lesson-section">
+                <h2>Padding &amp; Repeating</h2>
+
+                <h3>padStart() and padEnd()</h3>
+                <p>Pad a string to a target length by adding characters at the start or end. Great for formatting numbers, IDs, and tabular output.</p>
+
+                <pre><code class="language-javascript">
+// Pad numbers with leading zeros
+const orderNum = "42";
+console.log(orderNum.padStart(6, "0"));  // "000042"
+
+// Align text
+const items = [
+    { name: "Apple", price: "1.50" },
+    { name: "Banana", price: "0.75" },
+    { name: "Cherry", price: "3.00" }
+];
+
+items.forEach(item => {
+    console.log(`${item.name.padEnd(10)} $${item.price.padStart(5)}`);
+});
+// Apple      $ 1.50
+// Banana     $ 0.75
+// Cherry     $ 3.00
+
+// Mask credit card numbers
+const card = "4532015112830366";
+const masked = card.slice(-4).padStart(card.length, "*");
+console.log(masked);  // "************0366"
+                </code></pre>
+
+                <h3>repeat()</h3>
+                <pre><code class="language-javascript">
+console.log("ha".repeat(3));     // "hahaha"
+console.log("-".repeat(20));     // "--------------------"
+console.log("abc".repeat(0));    // ""
+
+// Create a simple progress bar
+function progressBar(percent, width = 20) {
+    const filled = Math.round(width * percent / 100);
+    const empty = width - filled;
+    return `[${"█".repeat(filled)}${"░".repeat(empty)}] ${percent}%`;
+}
+
+console.log(progressBar(75));   // [███████████████░░░░░] 75%
+console.log(progressBar(30));   // [██████░░░░░░░░░░░░░░] 30%
+                </code></pre>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Text Formatting Utility</h3>
+                    <p><strong>Objective:</strong> Build a collection of string utility functions.</p>
+
+                    <pre><code class="language-javascript">
+// TODO: Write each function using string methods (no manual character loops!)
+
+// 1. truncate(str, maxLength)
+//    Shorten a string and add "..." if it exceeds maxLength
+//    truncate("Hello World", 8)  → "Hello..."
+//    truncate("Hi", 10)          → "Hi"
+
+// 2. slugify(str)
+//    Convert a title to a URL-friendly slug
+//    slugify("Hello World!")         → "hello-world"
+//    slugify("  My Blog Post #1  ") → "my-blog-post-1"
+
+// 3. countWords(str)
+//    Count the number of words in a string
+//    countWords("Hello World")          → 2
+//    countWords("  lots   of   spaces ") → 3
+
+// 4. initials(fullName)
+//    Get initials from a full name
+//    initials("Ray De La Paz")  → "RDLP"
+//    initials("Alice")          → "A"
+
+// 5. maskEmail(email)
+//    Mask an email address for privacy
+//    maskEmail("ray@example.com")     → "r***@example.com"
+//    maskEmail("alice@gmail.com")     → "a****@gmail.com"
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>truncate:</strong> Check <code>length > maxLength</code>, then use <code>slice(0, maxLength - 3)</code> + <code>"..."</code>.</p>
+                        <p><strong>slugify:</strong> Chain: <code>trim()</code> → <code>toLowerCase()</code> → <code>replace(/[^a-z0-9\s-]/g, "")</code> → <code>replace(/\s+/g, "-")</code>.</p>
+                        <p><strong>countWords:</strong> <code>trim()</code> → <code>split(/\s+/)</code> → <code>length</code>. Handle empty string edge case.</p>
+                        <p><strong>initials:</strong> <code>split(" ")</code> → <code>map(w => w[0])</code> → <code>join("")</code> → <code>toUpperCase()</code>.</p>
+                        <p><strong>maskEmail:</strong> <code>split("@")</code> to get local and domain parts, then mask the local part.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+// 1. Truncate
+function truncate(str, maxLength) {
+    if (str.length <= maxLength) return str;
+    return str.slice(0, maxLength - 3) + "...";
+}
+
+console.log(truncate("Hello World", 8));   // "Hello..."
+console.log(truncate("Hi", 10));           // "Hi"
+
+
+// 2. Slugify
+function slugify(str) {
+    return str
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")   // Remove special chars
+        .replace(/\s+/g, "-")            // Spaces to hyphens
+        .replace(/-+/g, "-");            // Collapse multiple hyphens
+}
+
+console.log(slugify("Hello World!"));          // "hello-world"
+console.log(slugify("  My Blog Post #1  "));   // "my-blog-post-1"
+
+
+// 3. Count Words
+function countWords(str) {
+    const trimmed = str.trim();
+    if (trimmed === "") return 0;
+    return trimmed.split(/\s+/).length;
+}
+
+console.log(countWords("Hello World"));            // 2
+console.log(countWords("  lots   of   spaces "));  // 3
+console.log(countWords(""));                        // 0
+
+
+// 4. Initials
+function initials(fullName) {
+    return fullName
+        .trim()
+        .split(/\s+/)
+        .map(word => word[0])
+        .join("")
+        .toUpperCase();
+}
+
+console.log(initials("Ray De La Paz"));  // "RDLP"
+console.log(initials("Alice"));          // "A"
+
+
+// 5. Mask Email
+function maskEmail(email) {
+    const [local, domain] = email.split("@");
+    const masked = local[0] + "*".repeat(local.length - 1);
+    return `${masked}@${domain}`;
+}
+
+console.log(maskEmail("ray@example.com"));    // "r**@example.com"
+console.log(maskEmail("alice@gmail.com"));    // "a****@gmail.com"
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Are JavaScript strings mutable or immutable?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Arrays are mutable (push, splice modify them), but strings are different.">A) Mutable — you can change characters in place</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Strings are immutable — every string method returns a new string. The original is never modified. This means str[0] = 'X' silently fails.">B) Immutable — methods always return new strings</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Strings are always immutable, regardless of whether you use const, let, or var.">C) It depends on const vs. let</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Template literals are still strings — they follow the same immutability rules.">D) Mutable with template literals, immutable otherwise</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What does <code>"hello world".split(" ")</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="split() returns an array, not a string.">A) &quot;hello world&quot;</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="split(' ') breaks the string at every space, creating an array of words.">B) [&quot;hello&quot;, &quot;world&quot;]</button>
+                            <button class="quiz-option" data-correct="false" data-hint="split(' ') splits by spaces, not by individual characters. Use split('') for characters.">C) [&quot;h&quot;, &quot;e&quot;, &quot;l&quot;, &quot;l&quot;, &quot;o&quot;, &quot; &quot;, &quot;w&quot;, &quot;o&quot;, &quot;r&quot;, &quot;l&quot;, &quot;d&quot;]</button>
+                            <button class="quiz-option" data-correct="false" data-hint="split() separates by the delimiter — each word becomes its own element.">D) [&quot;hello world&quot;]</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> How do you check if a string ends with &quot;.pdf&quot;?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="includes() checks anywhere in the string, not specifically the end.">A) <code>str.includes(&quot;.pdf&quot;)</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="endsWith() checks if the string ends with the specified substring — perfect for file extension checks.">B) <code>str.endsWith(&quot;.pdf&quot;)</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="startsWith() checks the beginning, not the end.">C) <code>str.startsWith(&quot;.pdf&quot;)</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="indexOf() returns a position, not a boolean, and doesn't guarantee the match is at the end.">D) <code>str.indexOf(&quot;.pdf&quot;)</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Strings are immutable</strong> — every method returns a new string</li>
+                        <li><strong>Template literals</strong> (<code>`backticks`</code>) support interpolation and multiline strings</li>
+                        <li><strong>Searching:</strong> <code>includes</code>, <code>startsWith</code>, <code>endsWith</code>, <code>indexOf</code></li>
+                        <li><strong>Extracting:</strong> <code>slice</code> is your go-to (supports negative indexes)</li>
+                        <li><strong>Transforming:</strong> <code>toUpperCase</code>, <code>toLowerCase</code>, <code>trim</code>, <code>replace</code>, <code>replaceAll</code></li>
+                        <li><strong>split + map + join</strong> is a powerful pattern for word-level transformations</li>
+                        <li><strong><code>padStart</code>/<code>padEnd</code></strong> format strings to a fixed width</li>
+                        <li>Always <code>trim()</code> user input before processing it</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" rel="noopener">MDN — String Reference</a></li>
+                    <li><a href="https://javascript.info/string" target="_blank" rel="noopener">javascript.info — Strings</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals" target="_blank" rel="noopener">MDN — Template Literals</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You've completed Module 3! You now know how to work with all of JavaScript's core data structures — arrays, objects, and strings. In Module 4, you'll connect JavaScript to the <strong>web page itself</strong> using the <strong>DOM</strong> (Document Object Model). This is where JavaScript goes from a scripting exercise to building real, interactive web pages.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Module 3 Complete!</h3>
+                    <p>You've mastered working with data — arrays, objects, array methods, and strings. Your JavaScript toolkit is now ready for the DOM. Time to make web pages come alive!</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_11.html" class="prev-lesson">← Previous: Array Methods</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_13.html" class="next-lesson">Next: Introduction to the DOM →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

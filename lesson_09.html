@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn JavaScript arrays — how to create, access, and modify collections of data using push, pop, splice, and other essential methods.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 9: Arrays - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3</a></li>
+            <li aria-current="page">Lesson 9: Arrays</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📦 Lesson 9: Arrays</h1>
+                <p class="lead">Variables hold a single value — but what if you need a list of values? Arrays let you store, access, and manipulate ordered collections of data.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Create arrays using literal syntax and the <code>Array</code> constructor</li>
+                        <li>Access and update elements by index</li>
+                        <li>Use <code>length</code> to find and control the size of an array</li>
+                        <li>Add and remove elements with <code>push</code>, <code>pop</code>, <code>unshift</code>, and <code>shift</code></li>
+                        <li>Insert, remove, or replace elements with <code>splice</code></li>
+                        <li>Search arrays with <code>includes</code>, <code>indexOf</code>, and <code>find</code></li>
+                        <li>Combine and extract arrays with <code>concat</code>, <code>slice</code>, and the spread operator</li>
+                        <li>Iterate over arrays with <code>for</code>, <code>for...of</code>, and <code>forEach</code></li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 50 minutes</p>
+                    <p><strong>Project:</strong> Build a to-do list manager using array operations</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#creating" class="toc-link">Creating Arrays</a></li>
+                        <li><a href="#accessing" class="toc-link">Accessing &amp; Modifying Elements</a></li>
+                        <li><a href="#length" class="toc-link">The length Property</a></li>
+                        <li><a href="#adding-removing" class="toc-link">Adding &amp; Removing Elements</a></li>
+                        <li><a href="#splice" class="toc-link">Splice — The Swiss Army Knife</a></li>
+                        <li><a href="#searching" class="toc-link">Searching Arrays</a></li>
+                        <li><a href="#combining" class="toc-link">Combining &amp; Extracting</a></li>
+                        <li><a href="#iterating" class="toc-link">Iterating Over Arrays</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>So far, every variable you've created holds a single value — one number, one string, one boolean. But real programs almost always work with <strong>collections</strong> of data: a list of usernames, a set of quiz scores, a shopping cart full of items.</p>
+                <p>That's what <strong>arrays</strong> are for. An array is an ordered list of values, and it's the most commonly used data structure in JavaScript. You'll use arrays in virtually every project you build.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Array: fruits"] --- B["[0] 'apple'"]
+                    A --- C["[1] 'banana'"]
+                    A --- D["[2] 'cherry'"]
+                    A --- E["[3] 'date'"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style E fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+
+                <p>Each value in an array is called an <strong>element</strong>, and each element has a numbered position called its <strong>index</strong>. Indexes start at <strong>0</strong>, not 1 — this is true across almost all programming languages.</p>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="creating" class="lesson-section">
+                <h2>Creating Arrays</h2>
+                <p>The most common way to create an array is with <strong>square bracket notation</strong> (an array literal). You can also create empty arrays and fill them later.</p>
+
+                <pre><code class="language-javascript">
+// Array literal — the standard way
+const fruits = ["apple", "banana", "cherry"];
+
+// Empty array — start with nothing, add later
+const scores = [];
+
+// Arrays can hold any type — and mixed types
+const mixed = [42, "hello", true, null, undefined];
+
+// Nested arrays (arrays inside arrays)
+const grid = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+];
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Avoid the Array Constructor</h4>
+                    <p>You <em>can</em> create arrays with <code>new Array()</code>, but it has a confusing quirk: <code>new Array(3)</code> creates an empty array with 3 slots, not an array containing the number 3. Stick with square brackets.</p>
+                    <pre><code class="language-javascript">
+// Confusing constructor behavior
+const a = new Array(3);     // [ , , ] — 3 empty slots!
+const b = new Array("3");   // ["3"] — one element
+
+// ✅ Just use square brackets
+const c = [3];              // [3] — one element, no confusion
+                    </code></pre>
+                </div>
+
+                <h3>const with Arrays</h3>
+                <p>Declaring an array with <code>const</code> prevents you from reassigning the variable, but you <strong>can still modify the contents</strong>. The <code>const</code> protects the reference, not the data inside.</p>
+
+                <pre><code class="language-javascript">
+const colors = ["red", "green", "blue"];
+
+// ✅ Modifying contents is allowed
+colors.push("yellow");       // ["red", "green", "blue", "yellow"]
+colors[0] = "crimson";       // ["crimson", "green", "blue", "yellow"]
+
+// ❌ Reassigning the variable is NOT allowed
+// colors = ["purple"];      // TypeError: Assignment to constant variable
+                </code></pre>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="accessing" class="lesson-section">
+                <h2>Accessing &amp; Modifying Elements</h2>
+                <p>Use square brackets with an index number to read or change any element. Remember: the first index is <strong>0</strong>.</p>
+
+                <pre><code class="language-javascript">
+const animals = ["cat", "dog", "bird", "fish"];
+
+// Reading elements
+console.log(animals[0]);     // "cat"   (first element)
+console.log(animals[2]);     // "bird"  (third element)
+console.log(animals[3]);     // "fish"  (last element in this array)
+
+// Updating elements
+animals[1] = "wolf";
+console.log(animals);        // ["cat", "wolf", "bird", "fish"]
+
+// Accessing out of bounds — no error, just undefined
+console.log(animals[99]);    // undefined
+                </code></pre>
+
+                <h3>Accessing the Last Element</h3>
+                <p>To get the last element, you can use <code>length - 1</code> or the modern <code>at()</code> method with a negative index.</p>
+
+                <pre><code class="language-javascript">
+const letters = ["a", "b", "c", "d", "e"];
+
+// Classic approach
+console.log(letters[letters.length - 1]);  // "e"
+
+// Modern approach — at() supports negative indexes
+console.log(letters.at(-1));   // "e"  (last)
+console.log(letters.at(-2));   // "d"  (second to last)
+console.log(letters.at(0));    // "a"  (same as letters[0])
+                </code></pre>
+
+                <h3>Destructuring Arrays</h3>
+                <p>You can unpack array values directly into variables with <strong>destructuring</strong>.</p>
+
+                <pre><code class="language-javascript">
+const rgb = [255, 128, 0];
+
+// Without destructuring
+const red = rgb[0];
+const green = rgb[1];
+const blue = rgb[2];
+
+// With destructuring — cleaner!
+const [r, g, b] = rgb;
+console.log(r);  // 255
+console.log(g);  // 128
+console.log(b);  // 0
+
+// Skip elements with commas
+const [first, , third] = ["a", "b", "c"];
+console.log(first);  // "a"
+console.log(third);  // "c"
+                </code></pre>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="length" class="lesson-section">
+                <h2>The length Property</h2>
+                <p>Every array has a <code>length</code> property that tells you how many elements it contains. It updates automatically as you add or remove elements.</p>
+
+                <pre><code class="language-javascript">
+const items = ["pen", "paper", "eraser"];
+console.log(items.length);  // 3
+
+items.push("ruler");
+console.log(items.length);  // 4
+
+// Common pattern: check if array is empty
+if (items.length === 0) {
+    console.log("No items!");
+} else {
+    console.log(`You have ${items.length} items.`);
+}
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 length Is Not Read-Only</h4>
+                    <p>You can <em>set</em> <code>length</code> to truncate an array or extend it (with empty slots). This is rarely useful but good to know.</p>
+                    <pre><code class="language-javascript">
+const nums = [1, 2, 3, 4, 5];
+nums.length = 3;
+console.log(nums);  // [1, 2, 3] — last two elements removed!
+
+nums.length = 5;
+console.log(nums);  // [1, 2, 3, empty × 2] — extended with empty slots
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="adding-removing" class="lesson-section">
+                <h2>Adding &amp; Removing Elements</h2>
+                <p>JavaScript provides four core methods to add or remove elements from the <strong>beginning</strong> or <strong>end</strong> of an array.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    UNS["unshift()"] -->|"Add to start"| ARR["[ a, b, c ]"]
+                    ARR -->|"Remove from start"| SHI["shift()"]
+                    PUS["push()"] -->|"Add to end"| ARR
+                    ARR -->|"Remove from end"| POP["pop()"]
+                    style ARR fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style PUS fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style POP fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style UNS fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style SHI fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>push() and pop() — End of Array</h3>
+                <pre><code class="language-javascript">
+const stack = ["a", "b", "c"];
+
+// push — add one or more elements to the END
+stack.push("d");
+console.log(stack);  // ["a", "b", "c", "d"]
+
+stack.push("e", "f");
+console.log(stack);  // ["a", "b", "c", "d", "e", "f"]
+
+// push returns the NEW length
+const newLength = stack.push("g");
+console.log(newLength);  // 7
+
+// pop — remove the LAST element
+const removed = stack.pop();
+console.log(removed);  // "g"
+console.log(stack);    // ["a", "b", "c", "d", "e", "f"]
+                </code></pre>
+
+                <h3>unshift() and shift() — Beginning of Array</h3>
+                <pre><code class="language-javascript">
+const queue = ["b", "c", "d"];
+
+// unshift — add to the BEGINNING
+queue.unshift("a");
+console.log(queue);  // ["a", "b", "c", "d"]
+
+// shift — remove from the BEGINNING
+const first = queue.shift();
+console.log(first);  // "a"
+console.log(queue);  // ["b", "c", "d"]
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Performance Note</h4>
+                    <p><code>push</code>/<code>pop</code> are fast — they work on the end of the array without moving other elements. <code>unshift</code>/<code>shift</code> are slower because every other element needs to shift position. For small arrays this doesn't matter, but keep it in mind for large datasets.</p>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Position</th>
+                                <th>Action</th>
+                                <th>Returns</th>
+                                <th>Modifies Original?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>push()</code></td><td>End</td><td>Add</td><td>New length</td><td>Yes</td></tr>
+                            <tr><td><code>pop()</code></td><td>End</td><td>Remove</td><td>Removed element</td><td>Yes</td></tr>
+                            <tr><td><code>unshift()</code></td><td>Start</td><td>Add</td><td>New length</td><td>Yes</td></tr>
+                            <tr><td><code>shift()</code></td><td>Start</td><td>Remove</td><td>Removed element</td><td>Yes</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="splice" class="lesson-section">
+                <h2>Splice — The Swiss Army Knife</h2>
+                <p>The <code>splice()</code> method can <strong>remove</strong>, <strong>insert</strong>, or <strong>replace</strong> elements at any position in an array. It's the most versatile array method.</p>
+
+                <pre><code class="language-javascript">
+// Syntax: array.splice(startIndex, deleteCount, ...newItems)
+
+const colors = ["red", "green", "blue", "yellow", "purple"];
+                </code></pre>
+
+                <h3>Removing Elements</h3>
+                <pre><code class="language-javascript">
+const colors = ["red", "green", "blue", "yellow", "purple"];
+
+// Remove 2 elements starting at index 1
+const removed = colors.splice(1, 2);
+console.log(removed);  // ["green", "blue"]
+console.log(colors);   // ["red", "yellow", "purple"]
+                </code></pre>
+
+                <h3>Inserting Elements</h3>
+                <pre><code class="language-javascript">
+const colors = ["red", "yellow", "purple"];
+
+// Insert at index 1, delete 0 elements
+colors.splice(1, 0, "orange", "green");
+console.log(colors);  // ["red", "orange", "green", "yellow", "purple"]
+                </code></pre>
+
+                <h3>Replacing Elements</h3>
+                <pre><code class="language-javascript">
+const colors = ["red", "orange", "green", "yellow", "purple"];
+
+// At index 2, remove 1 element and insert "blue"
+colors.splice(2, 1, "blue");
+console.log(colors);  // ["red", "orange", "blue", "yellow", "purple"]
+
+// Replace multiple elements
+colors.splice(0, 2, "crimson");
+console.log(colors);  // ["crimson", "blue", "yellow", "purple"]
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["splice(start, deleteCount, ...items)"] --> B["Delete only<br/>splice(1, 2)"]
+                    A --> C["Insert only<br/>splice(1, 0, 'new')"]
+                    A --> D["Replace<br/>splice(1, 1, 'new')"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ splice vs. slice</h4>
+                    <p>Don't confuse <code>splice</code> and <code>slice</code>! They sound similar but behave very differently. <code>splice</code> <strong>modifies</strong> the original array. <code>slice</code> (covered below) <strong>copies</strong> a portion without changing the original.</p>
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="searching" class="lesson-section">
+                <h2>Searching Arrays</h2>
+                <p>JavaScript gives you several ways to check if an array contains a value or find where it is.</p>
+
+                <h3>includes() — Does It Exist?</h3>
+                <pre><code class="language-javascript">
+const fruits = ["apple", "banana", "cherry"];
+
+console.log(fruits.includes("banana"));   // true
+console.log(fruits.includes("grape"));    // false
+
+// Common pattern: conditional check
+if (fruits.includes("cherry")) {
+    console.log("Cherry is in stock!");
+}
+                </code></pre>
+
+                <h3>indexOf() — Where Is It?</h3>
+                <pre><code class="language-javascript">
+const fruits = ["apple", "banana", "cherry", "banana"];
+
+console.log(fruits.indexOf("banana"));   // 1 (first occurrence)
+console.log(fruits.indexOf("grape"));    // -1 (not found)
+
+// Classic pattern: check existence before indexOf existed
+if (fruits.indexOf("cherry") !== -1) {
+    console.log("Found cherry!");
+}
+                </code></pre>
+
+                <h3>find() — Get the First Match</h3>
+                <p><code>find()</code> takes a function and returns the <strong>first element</strong> that makes the function return <code>true</code>. This is especially useful with arrays of objects (which you'll learn about next lesson).</p>
+
+                <pre><code class="language-javascript">
+const numbers = [3, 7, 12, 5, 22, 8];
+
+// Find the first number greater than 10
+const big = numbers.find(num => num > 10);
+console.log(big);  // 12
+
+// Find the first even number
+const even = numbers.find(num => num % 2 === 0);
+console.log(even);  // 12
+
+// If nothing matches, returns undefined
+const huge = numbers.find(num => num > 100);
+console.log(huge);  // undefined
+                </code></pre>
+
+                <h3>findIndex() — Where Is the First Match?</h3>
+                <pre><code class="language-javascript">
+const numbers = [3, 7, 12, 5, 22, 8];
+
+const index = numbers.findIndex(num => num > 10);
+console.log(index);  // 2 (the index of 12)
+
+const notFound = numbers.findIndex(num => num > 100);
+console.log(notFound);  // -1
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Returns</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>includes(value)</code></td><td><code>true</code> / <code>false</code></td><td>Simple existence check</td></tr>
+                            <tr><td><code>indexOf(value)</code></td><td>Index or <code>-1</code></td><td>Finding position of exact value</td></tr>
+                            <tr><td><code>find(fn)</code></td><td>Element or <code>undefined</code></td><td>Finding first match by condition</td></tr>
+                            <tr><td><code>findIndex(fn)</code></td><td>Index or <code>-1</code></td><td>Finding position of first match</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 8 -->
+            <section id="combining" class="lesson-section">
+                <h2>Combining &amp; Extracting</h2>
+
+                <h3>concat() — Merge Arrays</h3>
+                <p><code>concat()</code> creates a <strong>new array</strong> by joining two or more arrays together. The originals are unchanged.</p>
+
+                <pre><code class="language-javascript">
+const front = ["a", "b"];
+const back = ["c", "d"];
+const extra = ["e"];
+
+const combined = front.concat(back);
+console.log(combined);   // ["a", "b", "c", "d"]
+console.log(front);      // ["a", "b"] — unchanged!
+
+const all = front.concat(back, extra);
+console.log(all);        // ["a", "b", "c", "d", "e"]
+                </code></pre>
+
+                <h3>Spread Operator — The Modern Way</h3>
+                <p>The <strong>spread operator</strong> (<code>...</code>) "spreads" an array's elements into a new array. It's the preferred modern approach to combining arrays.</p>
+
+                <pre><code class="language-javascript">
+const front = ["a", "b"];
+const back = ["c", "d"];
+
+// Spread into a new array
+const combined = [...front, ...back];
+console.log(combined);  // ["a", "b", "c", "d"]
+
+// Add extra elements in between
+const withMiddle = [...front, "X", "Y", ...back];
+console.log(withMiddle);  // ["a", "b", "X", "Y", "c", "d"]
+
+// Copy an array (shallow copy)
+const original = [1, 2, 3];
+const copy = [...original];
+copy.push(4);
+console.log(original);  // [1, 2, 3] — unaffected
+console.log(copy);      // [1, 2, 3, 4]
+                </code></pre>
+
+                <h3>slice() — Extract a Portion</h3>
+                <p><code>slice()</code> returns a <strong>new array</strong> containing a portion of the original. It does <strong>not</strong> modify the original. Think of it as copying a "slice" out of the array.</p>
+
+                <pre><code class="language-javascript">
+const letters = ["a", "b", "c", "d", "e"];
+
+// slice(startIndex, endIndex) — end is NOT included
+console.log(letters.slice(1, 3));   // ["b", "c"]
+console.log(letters.slice(2));      // ["c", "d", "e"] (from index 2 to end)
+console.log(letters.slice(-2));     // ["d", "e"] (last 2 elements)
+console.log(letters.slice());       // ["a", "b", "c", "d", "e"] (full copy)
+
+// Original is unchanged
+console.log(letters);  // ["a", "b", "c", "d", "e"]
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Mutating vs. Non-Mutating Methods</h4>
+                    <p>Some methods change the original array (<strong>mutating</strong>), while others return a new one and leave the original alone (<strong>non-mutating</strong>). Knowing the difference prevents bugs!</p>
+                    <ul>
+                        <li><strong>Mutating:</strong> <code>push</code>, <code>pop</code>, <code>shift</code>, <code>unshift</code>, <code>splice</code>, <code>sort</code>, <code>reverse</code></li>
+                        <li><strong>Non-mutating:</strong> <code>concat</code>, <code>slice</code>, <code>map</code>, <code>filter</code>, <code>find</code>, <code>includes</code></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 9 -->
+            <section id="iterating" class="lesson-section">
+                <h2>Iterating Over Arrays</h2>
+                <p>You'll often need to do something with <em>every</em> element in an array. Here are the three main approaches.</p>
+
+                <h3>Classic for Loop</h3>
+                <p>Gives you full control — you get the index and can break early, skip iterations, or go backwards.</p>
+
+                <pre><code class="language-javascript">
+const scores = [85, 92, 78, 95, 88];
+
+for (let i = 0; i &lt; scores.length; i++) {
+    console.log(`Score ${i + 1}: ${scores[i]}`);
+}
+// Score 1: 85
+// Score 2: 92
+// ...
+                </code></pre>
+
+                <h3>for...of Loop</h3>
+                <p>Cleaner when you just need the values and don't care about indexes.</p>
+
+                <pre><code class="language-javascript">
+const fruits = ["apple", "banana", "cherry"];
+
+for (const fruit of fruits) {
+    console.log(fruit.toUpperCase());
+}
+// APPLE
+// BANANA
+// CHERRY
+                </code></pre>
+
+                <h3>forEach() Method</h3>
+                <p><code>forEach</code> calls a function for each element. It gives you both the element and its index.</p>
+
+                <pre><code class="language-javascript">
+const colors = ["red", "green", "blue"];
+
+colors.forEach((color, index) => {
+    console.log(`${index}: ${color}`);
+});
+// 0: red
+// 1: green
+// 2: blue
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Which Loop Should I Use?</h4>
+                    <ul>
+                        <li><strong><code>for...of</code></strong> — default choice for most situations. Clean and readable.</li>
+                        <li><strong><code>for</code></strong> — when you need the index, or need <code>break</code>/<code>continue</code>.</li>
+                        <li><strong><code>forEach</code></strong> — when you want a callback pattern. Note: you can't <code>break</code> out of <code>forEach</code>.</li>
+                    </ul>
+                </div>
+
+                <h3>Building New Arrays from Loops</h3>
+                <pre><code class="language-javascript">
+const prices = [10, 20, 30, 40];
+
+// Add tax to each price
+const withTax = [];
+for (const price of prices) {
+    withTax.push(price * 1.08);
+}
+console.log(withTax);  // [10.8, 21.6, 32.4, 43.2]
+
+// In the next lesson (Array Methods), you'll learn
+// a cleaner way: prices.map(price => price * 1.08)
+                </code></pre>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: To-Do List Manager</h3>
+                    <p><strong>Objective:</strong> Build a set of functions that manage a to-do list using array methods.</p>
+
+                    <pre><code class="language-javascript">
+// Start with this to-do list
+const todos = ["Buy groceries", "Walk the dog", "Finish homework"];
+
+// TODO: Write these functions:
+
+// 1. addTodo(list, task)
+//    - Add a task to the end of the list
+//    - Return the updated list
+
+// 2. removeTodo(list, task)
+//    - Find and remove the task from the list
+//    - If the task doesn't exist, log "Task not found: [task]"
+//    - Return the updated list
+
+// 3. insertTodoAt(list, index, task)
+//    - Insert a task at a specific position
+//    - Return the updated list
+
+// 4. listTodos(list)
+//    - Log each task with a number: "1. Buy groceries"
+//    - If the list is empty, log "No tasks — you're all caught up!"
+
+// 5. completeTodo(list)
+//    - Remove and return the FIRST task (treat the list as a queue)
+//    - Log "Completed: [task]"
+//    - If list is empty, log "Nothing to complete!"
+
+// Test your functions:
+// addTodo(todos, "Read a book");
+// listTodos(todos);
+// removeTodo(todos, "Walk the dog");
+// completeTodo(todos);
+// insertTodoAt(todos, 1, "Call dentist");
+// listTodos(todos);
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>addTodo:</strong> Use <code>push()</code>.</p>
+                        <p><strong>removeTodo:</strong> Use <code>indexOf()</code> to find the task's position, then <code>splice()</code> to remove it. Check for <code>-1</code> first (not found).</p>
+                        <p><strong>insertTodoAt:</strong> Use <code>splice(index, 0, task)</code> to insert without removing.</p>
+                        <p><strong>listTodos:</strong> Use <code>forEach</code> and check <code>length === 0</code> first.</p>
+                        <p><strong>completeTodo:</strong> Use <code>shift()</code> to remove and return the first element.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+const todos = ["Buy groceries", "Walk the dog", "Finish homework"];
+
+function addTodo(list, task) {
+    list.push(task);
+    return list;
+}
+
+function removeTodo(list, task) {
+    const index = list.indexOf(task);
+    if (index === -1) {
+        console.log(`Task not found: ${task}`);
+    } else {
+        list.splice(index, 1);
+    }
+    return list;
+}
+
+function insertTodoAt(list, index, task) {
+    list.splice(index, 0, task);
+    return list;
+}
+
+function listTodos(list) {
+    if (list.length === 0) {
+        console.log("No tasks — you're all caught up!");
+        return;
+    }
+    list.forEach((task, i) => {
+        console.log(`${i + 1}. ${task}`);
+    });
+}
+
+function completeTodo(list) {
+    if (list.length === 0) {
+        console.log("Nothing to complete!");
+        return;
+    }
+    const done = list.shift();
+    console.log(`Completed: ${done}`);
+    return done;
+}
+
+// Testing
+addTodo(todos, "Read a book");
+listTodos(todos);
+// 1. Buy groceries
+// 2. Walk the dog
+// 3. Finish homework
+// 4. Read a book
+
+removeTodo(todos, "Walk the dog");
+listTodos(todos);
+// 1. Buy groceries
+// 2. Finish homework
+// 3. Read a book
+
+completeTodo(todos);
+// Completed: Buy groceries
+
+insertTodoAt(todos, 1, "Call dentist");
+listTodos(todos);
+// 1. Finish homework
+// 2. Call dentist
+// 3. Read a book
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is the index of the first element in a JavaScript array?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="JavaScript arrays are zero-indexed — the first element is always at index 0.">A) 0</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Some languages use 1-based indexing (like Lua), but JavaScript starts at 0.">B) 1</button>
+                            <button class="quiz-option" data-correct="false" data-hint="-1 is used with methods like at() to access the last element.">C) -1</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The first index is always fixed at 0, regardless of the array's length.">D) It depends on the array</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Which method adds an element to the END of an array?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="unshift() adds to the beginning, not the end.">A) unshift()</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="push() adds one or more elements to the end of an array and returns the new length.">B) push()</button>
+                            <button class="quiz-option" data-correct="false" data-hint="pop() removes the last element — it's the opposite of what you want here.">C) pop()</button>
+                            <button class="quiz-option" data-correct="false" data-hint="concat() creates a new array by merging arrays — it doesn't modify the original.">D) concat()</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What does <code>splice()</code> do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That describes slice(), not splice(). They sound similar but work differently!">A) Creates a copy of part of an array</button>
+                            <button class="quiz-option" data-correct="false" data-hint="concat() and the spread operator join arrays. splice works on a single array.">B) Joins two arrays together</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="splice() is the Swiss Army knife — it can remove, insert, or replace elements at any position in an array. It modifies the original array.">C) Removes, inserts, or replaces elements at any position</button>
+                            <button class="quiz-option" data-correct="false" data-hint="sort() handles sorting. splice is about adding/removing at specific positions.">D) Sorts the array in place</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> What does <code>["a","b","c"].includes("b")</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="indexOf() returns 1 for this case. includes() returns a boolean, not a number.">A) 1</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="includes() returns true because 'b' exists in the array. It's a simple boolean check.">B) true</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'b' is clearly in the array at index 1, so includes() returns true.">C) false</button>
+                            <button class="quiz-option" data-correct="false" data-hint="includes() always returns a boolean (true or false), never the element itself.">D) &quot;b&quot;</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Arrays</strong> store ordered collections of values in a single variable</li>
+                        <li><strong>Indexes start at 0</strong> — the first element is <code>array[0]</code></li>
+                        <li><strong><code>push</code>/<code>pop</code></strong> add/remove from the end; <strong><code>unshift</code>/<code>shift</code></strong> add/remove from the start</li>
+                        <li><strong><code>splice()</code></strong> can insert, remove, or replace elements at any position</li>
+                        <li><strong><code>includes</code></strong> checks existence; <strong><code>indexOf</code></strong> finds position; <strong><code>find</code></strong> finds by condition</li>
+                        <li><strong><code>slice</code></strong> and the <strong>spread operator</strong> create copies without modifying the original</li>
+                        <li><strong><code>for...of</code></strong> is the cleanest way to loop through arrays</li>
+                        <li><code>const</code> arrays can have their contents changed — <code>const</code> only locks the variable binding</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener">MDN — Array Reference</a></li>
+                    <li><a href="https://javascript.info/array" target="_blank" rel="noopener">javascript.info — Arrays</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice" target="_blank" rel="noopener">MDN — Array.splice()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax" target="_blank" rel="noopener">MDN — Spread Syntax</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you can create and manipulate arrays, the next lesson covers <strong>objects</strong> — JavaScript's other essential data structure. Objects let you store data with <em>named</em> keys instead of numbered indexes, which is perfect for representing real-world things like users, products, and settings.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_08.html" class="prev-lesson">← Previous: Scope &amp; Hoisting</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_10.html" class="next-lesson">Next: Objects →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

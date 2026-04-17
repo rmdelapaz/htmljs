@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to write reusable JavaScript functions — declarations, expressions, arrow functions, parameters, return values, and default arguments.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 7: Functions - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2</a></li>
+            <li aria-current="page">Lesson 7: Functions</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🧩 Lesson 7: Functions</h1>
+                <p class="lead">Package your logic into reusable building blocks — write once, call anywhere, and keep your code organized.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Write function declarations and understand hoisting</li>
+                        <li>Create function expressions and arrow functions</li>
+                        <li>Use parameters, arguments, and default values</li>
+                        <li>Return values from functions and use them in expressions</li>
+                        <li>Understand the difference between parameters and arguments</li>
+                        <li>Write clean functions that do one thing well</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 55 minutes</p>
+                    <p><strong>Project:</strong> Build a mini utility library of reusable helper functions</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#declarations" class="toc-link">Function Declarations</a></li>
+                        <li><a href="#parameters" class="toc-link">Parameters &amp; Arguments</a></li>
+                        <li><a href="#return-values" class="toc-link">Return Values</a></li>
+                        <li><a href="#expressions" class="toc-link">Function Expressions</a></li>
+                        <li><a href="#arrow-functions" class="toc-link">Arrow Functions</a></li>
+                        <li><a href="#best-practices" class="toc-link">Best Practices</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>So far you've been writing code that runs straight from top to bottom. As your programs grow, you'll notice yourself copying and pasting the same logic in multiple places. <strong>Functions</strong> solve this — they let you wrap a block of code into a named, reusable unit that you can call whenever you need it.</p>
+                <p>Think of a function like a recipe. You define it once (the recipe card), and you can follow it (call it) whenever you want that dish. You can even tweak the ingredients (parameters) each time.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Define function"] --> B["Call function"]
+                    B --> C["Code runs"]
+                    C --> D["Returns result"]
+                    D --> E["Use the result"]
+                    B --> F["Call again with different inputs"]
+                    F --> C
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="declarations" class="lesson-section">
+                <h2>Function Declarations</h2>
+                <p>A <strong>function declaration</strong> is the most traditional way to create a function. It uses the <code>function</code> keyword followed by a name.</p>
+
+                <pre><code class="language-javascript">
+// Defining a function
+function greet() {
+    console.log("Hello, world!");
+}
+
+// Calling (invoking) the function
+greet();  // "Hello, world!"
+greet();  // "Hello, world!" — call it as many times as you want
+                </code></pre>
+
+                <p>The parentheses <code>()</code> after the function name are what <strong>call</strong> (invoke) it. Without them, you're just referencing the function itself, not running it.</p>
+
+                <pre><code class="language-javascript">
+console.log(greet);   // [Function: greet] — the function object
+console.log(greet()); // "Hello, world!" — runs the function
+                </code></pre>
+
+                <h3>Hoisting</h3>
+                <p>Function declarations are <strong>hoisted</strong> — JavaScript moves them to the top of their scope before execution. This means you can call a function <em>before</em> it's defined in your code.</p>
+
+                <pre><code class="language-javascript">
+// This works! Declaration is hoisted.
+sayHi();  // "Hi there!"
+
+function sayHi() {
+    console.log("Hi there!");
+}
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Should You Rely on Hoisting?</h4>
+                    <p>Hoisting is useful to know about, but many developers prefer to define functions before calling them for readability. You'll see both styles in real codebases. The important thing is to be consistent within your projects.</p>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="parameters" class="lesson-section">
+                <h2>Parameters &amp; Arguments</h2>
+                <p><strong>Parameters</strong> are placeholders defined in the function signature. <strong>Arguments</strong> are the actual values you pass when calling the function.</p>
+
+                <pre><code class="language-javascript">
+//              parameter
+function greet(name) {
+    console.log(`Hello, ${name}!`);
+}
+
+//       argument
+greet("Ray");    // "Hello, Ray!"
+greet("Maria");  // "Hello, Maria!"
+                </code></pre>
+
+                <h3>Multiple Parameters</h3>
+                <pre><code class="language-javascript">
+function introduce(name, role, city) {
+    console.log(`I'm ${name}, a ${role} from ${city}.`);
+}
+
+introduce("Ray", "developer", "Henderson");
+// "I'm Ray, a developer from Henderson."
+                </code></pre>
+
+                <h3>Default Parameters</h3>
+                <p>You can give parameters default values that kick in when no argument is provided.</p>
+
+                <pre><code class="language-javascript">
+function greet(name = "stranger") {
+    console.log(`Hello, ${name}!`);
+}
+
+greet("Ray");   // "Hello, Ray!"
+greet();        // "Hello, stranger!"
+
+// Practical example
+function createUser(name, role = "viewer", active = true) {
+    console.log(`${name} — ${role} — ${active ? "Active" : "Inactive"}`);
+}
+
+createUser("Alex");                 // "Alex — viewer — Active"
+createUser("Jordan", "admin");       // "Jordan — admin — Active"
+createUser("Sam", "editor", false);  // "Sam — editor — Inactive"
+                </code></pre>
+
+                <h3>What Happens with Missing Arguments?</h3>
+                <pre><code class="language-javascript">
+function showInfo(a, b, c) {
+    console.log(a, b, c);
+}
+
+showInfo(1, 2, 3);  // 1 2 3
+showInfo(1, 2);     // 1 2 undefined  ← missing args become undefined
+showInfo(1);        // 1 undefined undefined
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Parameters vs. Arguments</h4>
+                    <p>People often use these terms interchangeably, but technically: <strong>parameters</strong> are the names in the function definition, and <strong>arguments</strong> are the values passed when calling. Think: <em>parameters</em> are the parking spots, <em>arguments</em> are the cars that park in them.</p>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="return-values" class="lesson-section">
+                <h2>Return Values</h2>
+                <p>Functions can <strong>return</strong> a value back to the code that called them. This is what makes functions truly powerful — they can compute something and hand the result back.</p>
+
+                <pre><code class="language-javascript">
+function add(a, b) {
+    return a + b;
+}
+
+const sum = add(3, 5);
+console.log(sum);  // 8
+
+// Use returned values directly in expressions
+console.log(add(10, 20) * 2);  // 60
+                </code></pre>
+
+                <h3>Key Rules About return</h3>
+                <pre><code class="language-javascript">
+// 1. return immediately exits the function
+function checkAge(age) {
+    if (age &lt; 0) {
+        return "Invalid age";  // Function exits here
+    }
+    return age >= 18 ? "Adult" : "Minor";
+}
+
+console.log(checkAge(-5));  // "Invalid age"
+console.log(checkAge(25));  // "Adult"
+
+// 2. A function without return gives undefined
+function sayHello(name) {
+    console.log(`Hello, ${name}!`);
+    // No return statement
+}
+
+const result = sayHello("Ray");
+console.log(result);  // undefined
+                </code></pre>
+
+                <h3>Returning Objects and Arrays</h3>
+                <pre><code class="language-javascript">
+function getUser(name, age) {
+    return {
+        name: name,
+        age: age,
+        isAdult: age >= 18
+    };
+}
+
+const user = getUser("Ray", 30);
+console.log(user.name);    // "Ray"
+console.log(user.isAdult); // true
+
+// Returning an array
+function getMinMax(numbers) {
+    return [Math.min(...numbers), Math.max(...numbers)];
+}
+
+const [min, max] = getMinMax([4, 2, 9, 1, 7]);
+console.log(`Min: ${min}, Max: ${max}`);  // "Min: 1, Max: 9"
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Call add(3, 5)"] --> B["a = 3, b = 5"]
+                    B --> C["Calculate a + b = 8"]
+                    C --> D["return 8"]
+                    D --> E["const sum = 8"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style E fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="expressions" class="lesson-section">
+                <h2>Function Expressions</h2>
+                <p>A <strong>function expression</strong> stores a function in a variable. The function itself can be named or anonymous (unnamed).</p>
+
+                <pre><code class="language-javascript">
+// Anonymous function expression
+const multiply = function(a, b) {
+    return a * b;
+};
+
+console.log(multiply(4, 5));  // 20
+
+// Named function expression (name useful for debugging)
+const divide = function divideNumbers(a, b) {
+    if (b === 0) return "Cannot divide by zero";
+    return a / b;
+};
+
+console.log(divide(10, 2));  // 5
+                </code></pre>
+
+                <h3>Declarations vs. Expressions</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Declaration</th>
+                                <th>Expression</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Syntax</td><td><code>function name() {}</code></td><td><code>const name = function() {}</code></td></tr>
+                            <tr><td>Hoisted?</td><td>Yes — can call before definition</td><td>No — must define before calling</td></tr>
+                            <tr><td>Named?</td><td>Always named</td><td>Can be anonymous</td></tr>
+                            <tr><td>Use case</td><td>General-purpose functions</td><td>Callbacks, conditional definitions</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <pre><code class="language-javascript">
+// ❌ Function expressions are NOT hoisted
+// sayBye();  // Error: Cannot access 'sayBye' before initialization
+
+const sayBye = function() {
+    console.log("Goodbye!");
+};
+
+sayBye();  // "Goodbye!" — works after definition
+                </code></pre>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="arrow-functions" class="lesson-section">
+                <h2>Arrow Functions</h2>
+                <p><strong>Arrow functions</strong> (introduced in ES6) provide a shorter syntax for writing function expressions. They use the <code>=></code> "fat arrow" notation.</p>
+
+                <h3>Basic Syntax</h3>
+                <pre><code class="language-javascript">
+// Traditional function expression
+const add = function(a, b) {
+    return a + b;
+};
+
+// Arrow function — same thing, shorter
+const addArrow = (a, b) => {
+    return a + b;
+};
+
+// Even shorter — implicit return (single expression)
+const addShort = (a, b) => a + b;
+
+console.log(addShort(3, 7));  // 10
+                </code></pre>
+
+                <h3>Arrow Function Shortcuts</h3>
+                <pre><code class="language-javascript">
+// One parameter — parentheses optional
+const double = n => n * 2;
+console.log(double(5));  // 10
+
+// No parameters — empty parentheses required
+const getRandom = () => Math.floor(Math.random() * 100);
+console.log(getRandom());  // random number 0–99
+
+// Multiple parameters — parentheses required
+const greet = (first, last) => `Hello, ${first} ${last}!`;
+console.log(greet("Ray", "De La Paz"));  // "Hello, Ray De La Paz!"
+
+// Returning an object — wrap in parentheses
+const makeUser = (name, age) => ({ name, age, active: true });
+console.log(makeUser("Alex", 28));
+// { name: "Alex", age: 28, active: true }
+                </code></pre>
+
+                <h3>Arrow Functions in Practice</h3>
+                <p>Arrow functions really shine as <strong>callbacks</strong> — short functions you pass to other functions.</p>
+
+                <pre><code class="language-javascript">
+const numbers = [1, 2, 3, 4, 5];
+
+// Traditional function
+const doubled = numbers.map(function(num) {
+    return num * 2;
+});
+
+// Arrow function — much cleaner
+const doubledArrow = numbers.map(num => num * 2);
+
+console.log(doubledArrow);  // [2, 4, 6, 8, 10]
+
+// Filtering with arrow function
+const evens = numbers.filter(n => n % 2 === 0);
+console.log(evens);  // [2, 4]
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 When to Use Which?</h4>
+                    <p><strong>Arrow functions</strong> are great for short callbacks, array methods, and simple utilities. <strong>Function declarations</strong> are better for top-level functions and methods that need their own <code>this</code> context (you'll learn about <code>this</code> later). A good rule of thumb: if the function has a name and stands on its own, use a declaration. If it's short and passed inline, use an arrow.</p>
+                </div>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Function Declaration"] --> B["function name() { }"]
+                    C["Function Expression"] --> D["const name = function() { }"]
+                    E["Arrow Function"] --> F["const name = () => { }"]
+                    B --> G["Hoisted ✅"]
+                    D --> H["Not hoisted ❌"]
+                    F --> H
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style E fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="best-practices" class="lesson-section">
+                <h2>Best Practices</h2>
+
+                <h3>1. Do One Thing</h3>
+                <p>Each function should have a single, clear purpose. If you find yourself naming it "doThisAndThat," it should probably be two functions.</p>
+
+                <pre><code class="language-javascript">
+// ❌ Does too much
+function processUser(name, email, age) {
+    // validates, formats, saves, sends welcome email...
+}
+
+// ✅ Each function has one job
+function validateEmail(email) {
+    return email.includes("@");
+}
+
+function formatName(name) {
+    return name.trim().toLowerCase();
+}
+                </code></pre>
+
+                <h3>2. Use Descriptive Names</h3>
+                <pre><code class="language-javascript">
+// ❌ Vague
+function process(d) { /* ... */ }
+function calc(x, y) { /* ... */ }
+
+// ✅ Clear and descriptive
+function calculateTax(subtotal, taxRate) { /* ... */ }
+function formatPhoneNumber(rawNumber) { /* ... */ }
+function isValidPassword(password) { /* ... */ }
+                </code></pre>
+
+                <h3>3. Keep Functions Short</h3>
+                <p>If a function is longer than about 20 lines, consider breaking it into smaller helper functions. Short functions are easier to test, debug, and reuse.</p>
+
+                <h3>4. Use Early Returns</h3>
+                <pre><code class="language-javascript">
+// ❌ Nested
+function getDiscount(price, isMember) {
+    let discount = 0;
+    if (price > 0) {
+        if (isMember) {
+            discount = price * 0.1;
+        }
+    }
+    return discount;
+}
+
+// ✅ Guard clauses with early returns
+function getDiscount(price, isMember) {
+    if (price &lt;= 0) return 0;
+    if (!isMember) return 0;
+    return price * 0.1;
+}
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Functions Are the Building Blocks</h4>
+                    <p>Good functions are like good LEGO bricks — small, well-shaped, and easy to snap together. When you write a function, ask: <em>"Could someone understand what this does just from its name and parameters?"</em></p>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Mini Utility Library</h3>
+                    <p><strong>Objective:</strong> Build a small collection of reusable helper functions using declarations, expressions, and arrow functions.</p>
+
+                    <h4>Instructions:</h4>
+                    <pre><code class="language-javascript">
+// Mini Utility Library
+
+// 1. capitalize(str) — Function Declaration
+// Takes a string and returns it with the first letter
+// capitalized and the rest lowercase.
+// capitalize("hello")   → "Hello"
+// capitalize("jAVAsCRIPT") → "Javascript"
+
+// 2. clamp(value, min, max) — Function Expression
+// Returns the value if it's within the range,
+// otherwise returns the nearest boundary.
+// clamp(5, 1, 10)   → 5
+// clamp(-3, 1, 10)  → 1
+// clamp(15, 1, 10)  → 10
+
+// 3. pluralize(count, singular, plural) — Arrow Function
+// Returns the correct word form based on count.
+// Use a default parameter for 'plural' (singular + "s").
+// pluralize(1, "cat")        → "1 cat"
+// pluralize(3, "cat")        → "3 cats"
+// pluralize(2, "child", "children") → "2 children"
+
+// 4. temperatureConverter(value, fromUnit) — Your choice!
+// Converts between Celsius and Fahrenheit.
+// temperatureConverter(32, "F")  → "32°F = 0°C"
+// temperatureConverter(100, "C") → "100°C = 212°F"
+// If fromUnit is invalid, return "Invalid unit"
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>capitalize:</strong> Use <code>str[0].toUpperCase()</code> for the first character and <code>str.slice(1).toLowerCase()</code> for the rest.</p>
+                        <p><strong>clamp:</strong> Use <code>Math.max(min, Math.min(max, value))</code> or chain conditionals.</p>
+                        <p><strong>pluralize:</strong> Set the default parameter <code>plural = singular + "s"</code>, then use a ternary to pick the right form.</p>
+                        <p><strong>temperatureConverter:</strong> F to C: <code>(value - 32) * 5/9</code>. C to F: <code>value * 9/5 + 32</code>.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+// 1. capitalize — Function Declaration
+function capitalize(str) {
+    if (!str) return "";
+    return str[0].toUpperCase() + str.slice(1).toLowerCase();
+}
+
+console.log(capitalize("hello"));       // "Hello"
+console.log(capitalize("jAVAsCRIPT")); // "Javascript"
+console.log(capitalize(""));           // ""
+
+// 2. clamp — Function Expression
+const clamp = function(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+};
+
+console.log(clamp(5, 1, 10));   // 5
+console.log(clamp(-3, 1, 10));  // 1
+console.log(clamp(15, 1, 10));  // 10
+
+// 3. pluralize — Arrow Function
+const pluralize = (count, singular, plural = singular + "s") =>
+    `${count} ${count === 1 ? singular : plural}`;
+
+console.log(pluralize(1, "cat"));              // "1 cat"
+console.log(pluralize(3, "cat"));              // "3 cats"
+console.log(pluralize(2, "child", "children")); // "2 children"
+
+// 4. temperatureConverter
+function temperatureConverter(value, fromUnit) {
+    const unit = fromUnit.toUpperCase();
+
+    if (unit === "F") {
+        const celsius = ((value - 32) * 5 / 9).toFixed(1);
+        return `${value}°F = ${celsius}°C`;
+    }
+    if (unit === "C") {
+        const fahrenheit = (value * 9 / 5 + 32).toFixed(1);
+        return `${value}°C = ${fahrenheit}°F`;
+    }
+
+    return "Invalid unit";
+}
+
+console.log(temperatureConverter(32, "F"));   // "32°F = 0.0°C"
+console.log(temperatureConverter(100, "C"));  // "100°C = 212.0°F"
+console.log(temperatureConverter(72, "K"));   // "Invalid unit"
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does a function return if it has no <code>return</code> statement?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="null is a specific value — JavaScript doesn't assign it automatically.">A) null</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="A function without an explicit return statement (or with just 'return;') returns undefined.">B) undefined</button>
+                            <button class="quiz-option" data-correct="false" data-hint="0 is a number — functions don't default to returning numbers.">C) 0</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Functions without return still 'return' — they just return undefined.">D) Nothing (error)</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Which can be called before it's defined in the code?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Function declarations are hoisted — JavaScript moves them to the top of their scope before execution. Expressions and arrows are not hoisted.">A) Function declaration</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Function expressions are stored in variables, which are not hoisted with their values.">B) Function expression</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Arrow functions are a type of expression — they follow the same no-hoisting rules.">C) Arrow function</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Only declarations are hoisted — expressions and arrows must be defined first.">D) All of the above</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What is the output of <code>const fn = n => n * 3; console.log(fn(4));</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="n * 3 multiplies the parameter by 3, not adds 3.">A) 7</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The arrow function multiplies its argument by 3. fn(4) computes 4 * 3 = 12.">B) 12</button>
+                            <button class="quiz-option" data-correct="false" data-hint="This is valid arrow function syntax — no error occurs.">C) Error</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The implicit return means the expression's value (4 * 3) is returned automatically.">D) undefined</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Function declarations</strong> are hoisted and use the <code>function</code> keyword</li>
+                        <li><strong>Function expressions</strong> store a function in a variable and are <em>not</em> hoisted</li>
+                        <li><strong>Arrow functions</strong> (<code>=></code>) are concise expressions, ideal for callbacks</li>
+                        <li><strong>Parameters</strong> are placeholders; <strong>arguments</strong> are the actual values passed in</li>
+                        <li><strong>Default parameters</strong> provide fallback values for missing arguments</li>
+                        <li><strong><code>return</code></strong> sends a value back to the caller — without it, functions return <code>undefined</code></li>
+                        <li>Write functions that <strong>do one thing</strong>, have <strong>clear names</strong>, and use <strong>early returns</strong></li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" target="_blank" rel="noopener">MDN — Functions Guide</a></li>
+                    <li><a href="https://javascript.info/function-basics" target="_blank" rel="noopener">javascript.info — Functions</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" rel="noopener">MDN — Arrow Functions</a></li>
+                    <li><a href="https://javascript.info/arrow-functions-basics" target="_blank" rel="noopener">javascript.info — Arrow Functions</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you can create reusable functions, the next big question is: <strong>where can your variables be accessed?</strong> In the next lesson, you'll explore <strong>scope and hoisting</strong> — understanding which parts of your code can see which variables, and why that matters for writing bug-free programs.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_06.html" class="prev-lesson">← Previous: Loops</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_08.html" class="next-lesson">Next: Scope &amp; Hoisting →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

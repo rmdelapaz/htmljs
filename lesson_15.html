@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how to respond to user interactions with JavaScript events — clicks, key presses, form submissions, and more — using addEventListener and event delegation.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 15: Events &amp; Event Listeners - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 4</a></li>
+            <li aria-current="page">Lesson 15: Events &amp; Event Listeners</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>⚡ Lesson 15: Events &amp; Event Listeners</h1>
+                <p class="lead">Everything you've learned so far runs once when the page loads. Events are what make pages <em>respond</em> — to clicks, key presses, form submissions, and more. This is where JavaScript gets truly interactive.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Attach event listeners to elements with <code>addEventListener</code></li>
+                        <li>Handle common events: click, input, submit, keydown, and more</li>
+                        <li>Use the <code>event</code> object to access event details</li>
+                        <li>Prevent default browser behavior with <code>preventDefault()</code></li>
+                        <li>Explain event propagation — bubbling and capturing</li>
+                        <li>Use <strong>event delegation</strong> to handle events on dynamic content</li>
+                        <li>Remove event listeners when they're no longer needed</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 55 minutes</p>
+                    <p><strong>Project:</strong> Build an interactive task list with event delegation</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-are-events" class="toc-link">What Are Events?</a></li>
+                        <li><a href="#add-event-listener" class="toc-link">addEventListener()</a></li>
+                        <li><a href="#common-events" class="toc-link">Common Event Types</a></li>
+                        <li><a href="#event-object" class="toc-link">The Event Object</a></li>
+                        <li><a href="#prevent-default" class="toc-link">Preventing Default Behavior</a></li>
+                        <li><a href="#propagation" class="toc-link">Event Propagation</a></li>
+                        <li><a href="#delegation" class="toc-link">Event Delegation</a></li>
+                        <li><a href="#removing-listeners" class="toc-link">Removing Event Listeners</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="what-are-events" class="lesson-section">
+                <h2>What Are Events?</h2>
+
+                <p>An <strong>event</strong> is something that happens in the browser — a user clicks a button, types in a text field, hovers over an image, scrolls the page, or submits a form. JavaScript lets you <strong>listen</strong> for these events and <strong>respond</strong> with code.</p>
+
+                <p>Think of it like a doorbell: the event is someone pressing the button, and the event listener is the code that runs when it rings — maybe you open the door, maybe you check a camera, maybe you ignore it. You decide what happens.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["User Action<br/>(click, type, scroll)"] --> B["Browser Fires<br/>an Event"]
+                    B --> C["Your Listener<br/>Catches It"]
+                    C --> D["Your Code<br/>Responds"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="add-event-listener" class="lesson-section">
+                <h2>addEventListener()</h2>
+
+                <p>The modern way to listen for events is <code>addEventListener</code>. It takes two required arguments: the <strong>event type</strong> (a string) and a <strong>callback function</strong> (what to do when it happens).</p>
+
+                <pre><code class="language-javascript">
+const button = document.querySelector("#my-button");
+
+// Basic pattern: element.addEventListener(eventType, callback)
+button.addEventListener("click", function () {
+    console.log("Button was clicked!");
+});
+                </code></pre>
+
+                <h3>Using Arrow Functions</h3>
+                <p>Arrow functions are a clean, common choice for event callbacks.</p>
+
+                <pre><code class="language-javascript">
+button.addEventListener("click", () => {
+    console.log("Clicked with an arrow function!");
+});
+                </code></pre>
+
+                <h3>Using Named Functions</h3>
+                <p>Named functions are useful when you want to reuse the same handler or remove it later.</p>
+
+                <pre><code class="language-javascript">
+function handleClick() {
+    console.log("Button clicked!");
+}
+
+button.addEventListener("click", handleClick);
+
+// ❌ Common mistake — this CALLS the function immediately!
+// button.addEventListener("click", handleClick());
+// Pass the function reference, don't call it
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Why Not Inline Handlers?</h4>
+                    <p>You might see older code with <code>onclick="..."</code> directly in the HTML. This approach mixes HTML and JavaScript, only allows one handler per event, and is harder to maintain. Always use <code>addEventListener</code> instead.</p>
+                    <pre><code class="language-html">
+&lt;!-- ❌ Old-school inline handler — avoid this --&gt;
+&lt;button onclick="alert('clicked!')"&gt;Click Me&lt;/button&gt;
+
+&lt;!-- ✅ Clean HTML + addEventListener in your script --&gt;
+&lt;button id="my-btn"&gt;Click Me&lt;/button&gt;
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="common-events" class="lesson-section">
+                <h2>Common Event Types</h2>
+
+                <h3>Mouse Events</h3>
+                <pre><code class="language-javascript">
+const box = document.querySelector(".box");
+
+box.addEventListener("click", () => {
+    console.log("Clicked!");
+});
+
+box.addEventListener("dblclick", () => {
+    console.log("Double-clicked!");
+});
+
+box.addEventListener("mouseenter", () => {
+    box.style.backgroundColor = "#eff6ff";
+});
+
+box.addEventListener("mouseleave", () => {
+    box.style.backgroundColor = "";
+});
+                </code></pre>
+
+                <h3>Keyboard Events</h3>
+                <pre><code class="language-javascript">
+document.addEventListener("keydown", (event) => {
+    console.log(`Key pressed: ${event.key}`);
+});
+
+document.addEventListener("keyup", (event) => {
+    console.log(`Key released: ${event.key}`);
+});
+
+// Listen on a specific input
+const searchInput = document.querySelector("#search");
+searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        console.log("Search submitted:", searchInput.value);
+    }
+});
+                </code></pre>
+
+                <h3>Form &amp; Input Events</h3>
+                <pre><code class="language-javascript">
+const input = document.querySelector("#username");
+
+// Fires on every keystroke / change
+input.addEventListener("input", (event) => {
+    console.log("Current value:", event.target.value);
+});
+
+// Fires when the field loses focus (after editing)
+input.addEventListener("change", (event) => {
+    console.log("Final value:", event.target.value);
+});
+
+// Fires when the input gains focus
+input.addEventListener("focus", () => {
+    input.style.outline = "2px solid #3b82f6";
+});
+
+// Fires when the input loses focus
+input.addEventListener("blur", () => {
+    input.style.outline = "";
+});
+                </code></pre>
+
+                <h3>Page &amp; Window Events</h3>
+                <pre><code class="language-javascript">
+// When the entire page has loaded
+window.addEventListener("load", () => {
+    console.log("Page fully loaded (including images)");
+});
+
+// When the DOM is ready (before images finish loading)
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM is ready!");
+});
+
+// When the user scrolls
+window.addEventListener("scroll", () => {
+    console.log("Scroll position:", window.scrollY);
+});
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Event</th>
+                                <th>When It Fires</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Mouse</td><td><code>click</code></td><td>Element is clicked</td></tr>
+                            <tr><td>Mouse</td><td><code>dblclick</code></td><td>Element is double-clicked</td></tr>
+                            <tr><td>Mouse</td><td><code>mouseenter</code> / <code>mouseleave</code></td><td>Pointer enters / leaves element</td></tr>
+                            <tr><td>Keyboard</td><td><code>keydown</code> / <code>keyup</code></td><td>Key is pressed / released</td></tr>
+                            <tr><td>Form</td><td><code>input</code></td><td>Value changes (every keystroke)</td></tr>
+                            <tr><td>Form</td><td><code>change</code></td><td>Value changes (on blur / commit)</td></tr>
+                            <tr><td>Form</td><td><code>submit</code></td><td>Form is submitted</td></tr>
+                            <tr><td>Focus</td><td><code>focus</code> / <code>blur</code></td><td>Element gains / loses focus</td></tr>
+                            <tr><td>Page</td><td><code>DOMContentLoaded</code></td><td>DOM tree is built</td></tr>
+                            <tr><td>Page</td><td><code>load</code></td><td>Everything has loaded</td></tr>
+                            <tr><td>Page</td><td><code>scroll</code></td><td>User scrolls the page</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="event-object" class="lesson-section">
+                <h2>The Event Object</h2>
+
+                <p>Every event handler receives an <strong>event object</strong> as its first argument. This object contains details about what happened — which element was clicked, which key was pressed, where the mouse was, and more.</p>
+
+                <pre><code class="language-javascript">
+button.addEventListener("click", (event) => {
+    // The element that was clicked
+    console.log(event.target);         // &lt;button id="my-button"&gt;...&lt;/button&gt;
+
+    // The element the listener is attached to
+    console.log(event.currentTarget);  // Same as above (usually)
+
+    // The type of event
+    console.log(event.type);           // "click"
+
+    // Mouse position relative to the viewport
+    console.log(event.clientX, event.clientY);
+
+    // Timestamp
+    console.log(event.timeStamp);
+});
+                </code></pre>
+
+                <h3>event.target vs. event.currentTarget</h3>
+                <p>This distinction matters when an event bubbles up from a child element.</p>
+
+                <pre><code class="language-javascript">
+// HTML: &lt;div id="card"&gt;&lt;button&gt;Click&lt;/button&gt;&lt;/div&gt;
+
+const card = document.querySelector("#card");
+
+card.addEventListener("click", (event) => {
+    // If the BUTTON inside the card is clicked:
+    console.log(event.target);         // &lt;button&gt; (what was actually clicked)
+    console.log(event.currentTarget);  // &lt;div id="card"&gt; (where the listener lives)
+});
+                </code></pre>
+
+                <h3>Keyboard Event Properties</h3>
+                <pre><code class="language-javascript">
+document.addEventListener("keydown", (event) => {
+    console.log(event.key);       // "a", "Enter", "ArrowUp", "Shift"
+    console.log(event.code);      // "KeyA", "Enter", "ArrowUp", "ShiftLeft"
+    console.log(event.shiftKey);  // true if Shift was held
+    console.log(event.ctrlKey);   // true if Ctrl was held
+    console.log(event.altKey);    // true if Alt was held
+    console.log(event.metaKey);   // true if Cmd (Mac) / Win key was held
+
+    // Check for keyboard shortcuts
+    if (event.ctrlKey && event.key === "s") {
+        event.preventDefault();   // Stop the browser from saving
+        console.log("Custom save!");
+    }
+});
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 event.key vs. event.code</h4>
+                    <p><code>event.key</code> gives the character produced (e.g., <code>"a"</code> or <code>"A"</code> with Shift). <code>event.code</code> gives the physical key (<code>"KeyA"</code> regardless of Shift or keyboard layout). Use <code>key</code> for character input, <code>code</code> for game controls or shortcuts that should work on any keyboard layout.</p>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="prevent-default" class="lesson-section">
+                <h2>Preventing Default Behavior</h2>
+
+                <p>Many events have a <strong>default action</strong> — clicking a link navigates to a URL, submitting a form reloads the page, pressing space scrolls down. <code>preventDefault()</code> cancels that default behavior so you can handle it yourself.</p>
+
+                <h3>Forms — The Most Common Use Case</h3>
+                <pre><code class="language-javascript">
+const form = document.querySelector("#signup-form");
+
+form.addEventListener("submit", (event) => {
+    // Stop the page from reloading
+    event.preventDefault();
+
+    // Now handle the form data with JavaScript
+    const name = document.querySelector("#name").value;
+    const email = document.querySelector("#email").value;
+    console.log("Submitted:", { name, email });
+});
+                </code></pre>
+
+                <h3>Links</h3>
+                <pre><code class="language-javascript">
+const link = document.querySelector("a.internal");
+
+link.addEventListener("click", (event) => {
+    event.preventDefault();  // Don't navigate
+    console.log("Link clicked but not followed:", link.href);
+    // Handle navigation with JavaScript instead
+});
+                </code></pre>
+
+                <h3>Other Defaults</h3>
+                <pre><code class="language-javascript">
+// Prevent right-click context menu
+document.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    console.log("Custom right-click menu would go here");
+});
+
+// Prevent spacebar from scrolling when a game is active
+document.addEventListener("keydown", (event) => {
+    if (event.key === " " && gameIsActive) {
+        event.preventDefault();  // Stop scrolling
+        jump();                  // Do game action instead
+    }
+});
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Don't Overuse preventDefault()</h4>
+                    <p>Blocking default behavior can hurt usability and accessibility. Don't prevent right-click, text selection, or standard keyboard shortcuts without good reason. Users expect standard browser behavior to work.</p>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="propagation" class="lesson-section">
+                <h2>Event Propagation</h2>
+
+                <p>When you click a button inside a <code>&lt;div&gt;</code> inside the <code>&lt;body&gt;</code>, the click event doesn't just fire on the button — it travels through the DOM. This is called <strong>propagation</strong>, and it has three phases.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["1. CAPTURING PHASE<br/>Event travels DOWN<br/>document → html → body → div → button"] --> B["2. TARGET PHASE<br/>Event reaches the<br/>clicked element"]
+                    B --> C["3. BUBBLING PHASE<br/>Event travels UP<br/>button → div → body → html → document"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Bubbling (Default Behavior)</h3>
+                <p>By default, event listeners fire during the <strong>bubbling phase</strong> — the event starts at the target and bubbles up through each ancestor.</p>
+
+                <pre><code class="language-javascript">
+// HTML: &lt;div id="outer"&gt;&lt;div id="inner"&gt;&lt;button&gt;Click&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+
+document.querySelector("#outer").addEventListener("click", () => {
+    console.log("Outer div");
+});
+
+document.querySelector("#inner").addEventListener("click", () => {
+    console.log("Inner div");
+});
+
+document.querySelector("button").addEventListener("click", () => {
+    console.log("Button");
+});
+
+// Clicking the button logs:
+// "Button"     ← target
+// "Inner div"  ← bubbles up
+// "Outer div"  ← bubbles up more
+                </code></pre>
+
+                <h3>stopPropagation()</h3>
+                <p>If you want to stop the event from bubbling up to parent elements, use <code>stopPropagation()</code>.</p>
+
+                <pre><code class="language-javascript">
+document.querySelector("button").addEventListener("click", (event) => {
+    event.stopPropagation();  // Stop here — don't bubble up
+    console.log("Only the button handler runs");
+});
+                </code></pre>
+
+                <h3>Capturing Phase</h3>
+                <p>You can listen during the capturing phase (top-down) by passing a third argument. This is rarely needed, but good to know.</p>
+
+                <pre><code class="language-javascript">
+// Third argument: { capture: true } or just true
+document.querySelector("#outer").addEventListener("click", () => {
+    console.log("Outer (capture phase — fires FIRST)");
+}, true);
+
+document.querySelector("button").addEventListener("click", () => {
+    console.log("Button (normal bubbling phase)");
+});
+
+// Clicking the button:
+// "Outer (capture phase — fires FIRST)"
+// "Button (normal bubbling phase)"
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 When to Use stopPropagation()</h4>
+                    <p>Use <code>stopPropagation()</code> sparingly. It can break event delegation (covered next) and make debugging harder. Usually, checking <code>event.target</code> in your handler is a better approach than stopping propagation entirely.</p>
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="delegation" class="lesson-section">
+                <h2>Event Delegation</h2>
+
+                <p>Event delegation is a powerful pattern that takes advantage of bubbling. Instead of attaching a listener to every child element, you attach <strong>one listener to the parent</strong> and use <code>event.target</code> to figure out which child was clicked.</p>
+
+                <h3>The Problem</h3>
+                <pre><code class="language-javascript">
+// ❌ Adding a listener to every button — doesn't work for new buttons!
+const buttons = document.querySelectorAll(".item-btn");
+buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        console.log("Item clicked:", btn.textContent);
+    });
+});
+
+// If you add a new button later, it won't have a listener
+// You'd have to manually attach one every time
+                </code></pre>
+
+                <h3>The Solution: Delegation</h3>
+                <pre><code class="language-javascript">
+// ✅ One listener on the parent — works for current AND future children
+const list = document.querySelector("#task-list");
+
+list.addEventListener("click", (event) => {
+    // Check if the clicked element is a button
+    if (event.target.matches(".item-btn")) {
+        console.log("Item clicked:", event.target.textContent);
+    }
+});
+
+// New buttons added later automatically work!
+const newBtn = document.createElement("button");
+newBtn.classList.add("item-btn");
+newBtn.textContent = "New Task";
+list.appendChild(newBtn);
+// Clicking this new button triggers the same handler
+                </code></pre>
+
+                <h3>Using closest() for Nested Targets</h3>
+                <p>Sometimes the click target is a child of the element you care about (like an icon inside a button). Use <code>closest()</code> to find the nearest ancestor matching a selector.</p>
+
+                <pre><code class="language-javascript">
+// HTML: &lt;button class="delete-btn"&gt;&lt;span class="icon"&gt;🗑️&lt;/span&gt; Delete&lt;/button&gt;
+
+list.addEventListener("click", (event) => {
+    // event.target might be the &lt;span&gt; icon, not the button
+    const deleteBtn = event.target.closest(".delete-btn");
+
+    if (deleteBtn) {
+        const taskId = deleteBtn.dataset.taskId;
+        console.log("Delete task:", taskId);
+    }
+});
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Event Delegation Pattern"] --> B["1. Attach listener<br/>to PARENT element"]
+                    B --> C["2. Event bubbles up<br/>from clicked child"]
+                    C --> D["3. Check event.target<br/>or use closest()"]
+                    D --> E["4. Run handler only<br/>if it matches"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style D fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                    style E fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Why Event Delegation Is Great</h4>
+                    <ul>
+                        <li><strong>Works with dynamic content</strong> — new elements automatically get handled</li>
+                        <li><strong>Better performance</strong> — one listener instead of hundreds</li>
+                        <li><strong>Less code</strong> — no need to loop through elements</li>
+                        <li><strong>Easier cleanup</strong> — only one listener to remove</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 8 -->
+            <section id="removing-listeners" class="lesson-section">
+                <h2>Removing Event Listeners</h2>
+
+                <p>Sometimes you need to stop listening — maybe a button should only work once, or you're cleaning up when a component is removed. Use <code>removeEventListener</code> with a reference to the <strong>same function</strong>.</p>
+
+                <pre><code class="language-javascript">
+function handleClick() {
+    console.log("This only fires once!");
+    button.removeEventListener("click", handleClick);
+}
+
+button.addEventListener("click", handleClick);
+                </code></pre>
+
+                <h3>The { once: true } Shortcut</h3>
+                <p>If you want a listener to fire only once, pass <code>{ once: true }</code> as the third argument. The browser removes it automatically after it fires.</p>
+
+                <pre><code class="language-javascript">
+button.addEventListener("click", () => {
+    console.log("This only runs once, then auto-removes!");
+}, { once: true });
+                </code></pre>
+
+                <div class="card card-danger">
+                    <h4>❌ Common Pitfall: Anonymous Functions Can't Be Removed</h4>
+                    <p>You can't remove an anonymous function because there's no reference to it. Always use named functions if you plan to remove a listener later.</p>
+                    <pre><code class="language-javascript">
+// ❌ Can't remove — no reference to the function
+button.addEventListener("click", () => {
+    console.log("You can't remove me!");
+});
+button.removeEventListener("click", ???);  // What goes here?
+
+// ✅ Named function — can be removed
+function handleClick() {
+    console.log("You CAN remove me!");
+}
+button.addEventListener("click", handleClick);
+button.removeEventListener("click", handleClick);  // Works!
+                    </code></pre>
+                </div>
+
+                <h3>AbortController — Remove Multiple Listeners at Once</h3>
+                <p>For more complex cleanup, use an <code>AbortController</code>. When you abort it, <em>all</em> listeners associated with its signal are removed at once.</p>
+
+                <pre><code class="language-javascript">
+const controller = new AbortController();
+
+button.addEventListener("click", handleClick, { signal: controller.signal });
+input.addEventListener("input", handleInput, { signal: controller.signal });
+window.addEventListener("scroll", handleScroll, { signal: controller.signal });
+
+// Later: remove ALL three listeners at once
+controller.abort();
+                </code></pre>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Interactive Task List</h3>
+                    <p><strong>Objective:</strong> Build a task list that uses event delegation to handle adding, completing, and deleting tasks. Create a new HTML file or use the console.</p>
+
+                    <pre><code class="language-html">
+&lt;!-- Save this as tasks.html and open in a browser --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Task List&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: sans-serif; padding: 2rem; background: #f1f5f9; }
+        .task-app { max-width: 500px; margin: 0 auto; }
+        .add-form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .add-form input {
+            flex: 1; padding: 0.5rem; border: 2px solid #cbd5e1;
+            border-radius: 6px; font-size: 1rem;
+        }
+        .add-form button {
+            padding: 0.5rem 1rem; background: #3b82f6; color: white;
+            border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;
+        }
+        #task-list { list-style: none; padding: 0; }
+        .task-item {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.75rem; background: white; border-radius: 8px;
+            margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .task-item.done .task-text { text-decoration: line-through; color: #94a3b8; }
+        .task-text { flex: 1; }
+        .complete-btn { background: #22c55e; color: white; border: none;
+            border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; }
+        .delete-btn { background: #ef4444; color: white; border: none;
+            border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; }
+        .counter { text-align: center; color: #64748b; margin-top: 1rem; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="task-app"&gt;
+        &lt;h1&gt;📋 Task List&lt;/h1&gt;
+        &lt;form class="add-form" id="add-form"&gt;
+            &lt;input type="text" id="task-input" placeholder="Add a new task..."
+                   aria-label="New task" required&gt;
+            &lt;button type="submit"&gt;Add&lt;/button&gt;
+        &lt;/form&gt;
+        &lt;ul id="task-list"&gt;&lt;/ul&gt;
+        &lt;p class="counter" id="counter"&gt;0 tasks&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+    // TODO: Complete each task
+
+    // 1. Listen for the form "submit" event
+    //    - Prevent the default form submission
+    //    - Get the input value (trim whitespace)
+    //    - If empty, return early
+    //    - Create a new &lt;li class="task-item"&gt; with this HTML inside:
+    //      &lt;span class="task-text"&gt;{task}&lt;/span&gt;
+    //      &lt;button class="complete-btn"&gt;✅&lt;/button&gt;
+    //      &lt;button class="delete-btn"&gt;🗑️&lt;/button&gt;
+    //    - Append it to #task-list
+    //    - Clear the input and refocus it
+    //    - Update the counter
+
+    // 2. Use event delegation on #task-list to handle clicks:
+    //    - If a .complete-btn is clicked: toggle the "done" class
+    //      on the parent .task-item
+    //    - If a .delete-btn is clicked: remove the parent .task-item
+    //    - Update the counter after each action
+
+    // 3. Write an updateCounter() function that counts the &lt;li&gt;
+    //    elements in #task-list and updates #counter text
+
+    // 4. Bonus: Add keyboard support
+    //    - Press Escape in the input to clear it
+    //    - Listen on the document for "d" key to toggle
+    //      a "dark-mode" class on the body
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>1:</strong> Use <code>form.addEventListener("submit", ...)</code> with <code>event.preventDefault()</code>. Build the <code>&lt;li&gt;</code> with <code>document.createElement</code> and set its <code>innerHTML</code>.</p>
+                        <p><strong>2:</strong> Use <code>taskList.addEventListener("click", ...)</code> and check <code>event.target.matches(".complete-btn")</code> or <code>event.target.matches(".delete-btn")</code>. Use <code>event.target.closest(".task-item")</code> to find the parent.</p>
+                        <p><strong>3:</strong> Use <code>taskList.querySelectorAll("li").length</code> to count tasks.</p>
+                        <p><strong>4:</strong> Listen for <code>keydown</code> on the input for Escape, and on <code>document</code> for the "d" key (but only if the input isn't focused).</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+const form = document.querySelector("#add-form");
+const taskInput = document.querySelector("#task-input");
+const taskList = document.querySelector("#task-list");
+const counter = document.querySelector("#counter");
+
+// Helper: update the task counter
+function updateCounter() {
+    const total = taskList.querySelectorAll("li").length;
+    const done = taskList.querySelectorAll("li.done").length;
+    counter.textContent = `${total} task${total !== 1 ? "s" : ""} (${done} done)`;
+}
+
+// 1. Handle form submission
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const text = taskInput.value.trim();
+    if (!text) return;
+
+    const li = document.createElement("li");
+    li.classList.add("task-item");
+    li.innerHTML = `
+        &lt;span class="task-text"&gt;${text}&lt;/span&gt;
+        &lt;button class="complete-btn"&gt;✅&lt;/button&gt;
+        &lt;button class="delete-btn"&gt;🗑️&lt;/button&gt;
+    `;
+
+    taskList.appendChild(li);
+    taskInput.value = "";
+    taskInput.focus();
+    updateCounter();
+});
+
+// 2. Event delegation for complete and delete
+taskList.addEventListener("click", (event) => {
+    const taskItem = event.target.closest(".task-item");
+    if (!taskItem) return;
+
+    if (event.target.matches(".complete-btn")) {
+        taskItem.classList.toggle("done");
+    }
+
+    if (event.target.matches(".delete-btn")) {
+        taskItem.remove();
+    }
+
+    updateCounter();
+});
+
+// 4. Bonus: Keyboard support
+taskInput.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+        taskInput.value = "";
+    }
+});
+
+document.addEventListener("keydown", (event) => {
+    // Only toggle dark mode if not typing in the input
+    if (event.key === "d" && document.activeElement !== taskInput) {
+        document.body.classList.toggle("dark-mode");
+    }
+});
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>addEventListener</code> require as its two arguments?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="querySelector selects elements. addEventListener takes an event type string and a function.">A) A CSS selector and a function</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="addEventListener takes a string event type (like 'click' or 'submit') and a callback function that runs when the event fires.">B) An event type string and a callback function</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The event type is a simple string, not an event object. The event object is passed TO the callback automatically.">C) An event object and a callback function</button>
+                            <button class="quiz-option" data-correct="false" data-hint="A boolean can be a third argument (for capture), but the first two are an event type string and a function.">D) A function and a boolean</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What is <code>event.target</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's event.currentTarget. event.target is the element that actually triggered the event.">A) The element the listener is attached to</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="event.target is the element that originally triggered the event — the one the user actually interacted with. It may be a child of the element the listener is attached to.">B) The element that was actually clicked or interacted with</button>
+                            <button class="quiz-option" data-correct="false" data-hint="event.type gives the type. event.target gives the element.">C) The type of event that occurred</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The parent element would be event.currentTarget (if the listener is on the parent). event.target is the originating element.">D) The parent element of the event</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What does <code>event.preventDefault()</code> do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's what stopPropagation() does. preventDefault() stops the browser's built-in response to the event.">A) Stops the event from bubbling to parent elements</button>
+                            <button class="quiz-option" data-correct="false" data-hint="preventDefault() doesn't remove event listeners. Use removeEventListener() for that.">B) Removes the event listener from the element</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="preventDefault() stops the browser's default response to an event — like navigating on a link click or reloading on a form submit. Your JavaScript code still runs.">C) Cancels the browser's built-in behavior for that event</button>
+                            <button class="quiz-option" data-correct="false" data-hint="preventDefault() doesn't stop your JavaScript handler. It stops the browser's default action (like following a link or submitting a form).">D) Prevents all JavaScript handlers from running</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> What is the main advantage of event delegation?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Event delegation doesn't change when events fire — it changes WHERE the listener is attached.">A) Events fire faster on child elements</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Delegation doesn't block propagation. It USES propagation (bubbling) to work.">B) It prevents event propagation automatically</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Event delegation places one listener on a parent. Because events bubble up, it catches events from all children — including ones added dynamically after the listener was set up.">C) One listener handles events for all current and future children</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Event delegation doesn't change what information the event object carries.">D) It gives you access to more event properties</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> How can you make a listener fire only once?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The second argument is the callback function, not options. Options go in the third argument.">A) <code>addEventListener("click", { once: true })</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Passing { once: true } as the third argument tells the browser to automatically remove the listener after it fires once.">B) <code>addEventListener("click", handler, { once: true })</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no 'once' method on elements. Use { once: true } as the third argument to addEventListener.">C) <code>element.once("click", handler)</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="preventDefault stops the browser default, not the listener. Use { once: true } to auto-remove.">D) <code>event.preventDefault()</code> inside the handler</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong><code>addEventListener(type, callback)</code></strong> is the modern way to respond to user interactions</li>
+                        <li>Common events include <code>click</code>, <code>input</code>, <code>submit</code>, <code>keydown</code>, <code>focus</code>, <code>blur</code>, and <code>scroll</code></li>
+                        <li>The <strong>event object</strong> provides details like <code>target</code>, <code>key</code>, <code>clientX</code>/<code>clientY</code>, and modifier keys</li>
+                        <li><strong><code>preventDefault()</code></strong> stops the browser's default action (like form submission or link navigation)</li>
+                        <li>Events <strong>bubble up</strong> from child to parent — this is normal and useful</li>
+                        <li><strong>Event delegation</strong> puts one listener on a parent to handle all children, including dynamically added ones</li>
+                        <li>Use <strong><code>event.target.matches()</code></strong> or <strong><code>closest()</code></strong> in delegation to identify which child was clicked</li>
+                        <li>Use <strong>named functions</strong> if you need to remove a listener later, or use <strong><code>{ once: true }</code></strong> for one-shot listeners</li>
+                        <li><strong><code>AbortController</code></strong> can remove multiple listeners at once with a single <code>abort()</code> call</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener" target="_blank" rel="noopener">MDN — addEventListener()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events" target="_blank" rel="noopener">MDN — Introduction to Events</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Event" target="_blank" rel="noopener">MDN — Event Interface</a></li>
+                    <li><a href="https://javascript.info/introduction-browser-events" target="_blank" rel="noopener">javascript.info — Browser Events</a></li>
+                    <li><a href="https://javascript.info/event-delegation" target="_blank" rel="noopener">javascript.info — Event Delegation</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You can now <em>respond</em> to anything a user does on the page. But what about adding entirely new elements — building lists, creating cards, or removing items dynamically? The next lesson covers <strong>creating and removing elements</strong>, completing your DOM toolkit.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_14.html" class="prev-lesson">← Previous: Selecting &amp; Modifying Elements</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_16.html" class="next-lesson">Next: Creating &amp; Removing Elements →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

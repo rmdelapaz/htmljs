@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master JavaScript array methods — map, filter, reduce, find, forEach, sort, and method chaining for clean, powerful data transformations.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 11: Array Methods - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 3</a></li>
+            <li aria-current="page">Lesson 11: Array Methods</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>⚡ Lesson 11: Array Methods</h1>
+                <p class="lead">Stop writing manual loops. JavaScript's built-in array methods let you transform, filter, and reduce data in clean, expressive one-liners.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Transform every element with <code>map()</code></li>
+                        <li>Keep only matching elements with <code>filter()</code></li>
+                        <li>Collapse an array into a single value with <code>reduce()</code></li>
+                        <li>Test conditions with <code>every()</code> and <code>some()</code></li>
+                        <li>Sort arrays with <code>sort()</code> and custom comparators</li>
+                        <li>Chain methods together for multi-step transformations</li>
+                        <li>Choose the right method for common data tasks</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 55 minutes</p>
+                    <p><strong>Project:</strong> Build a product catalog data pipeline</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#foreach" class="toc-link">forEach — Do Something with Each</a></li>
+                        <li><a href="#map" class="toc-link">map — Transform Every Element</a></li>
+                        <li><a href="#filter" class="toc-link">filter — Keep What Matches</a></li>
+                        <li><a href="#reduce" class="toc-link">reduce — Collapse to One Value</a></li>
+                        <li><a href="#find-some-every" class="toc-link">find, some &amp; every</a></li>
+                        <li><a href="#sort" class="toc-link">sort — Ordering Arrays</a></li>
+                        <li><a href="#chaining" class="toc-link">Method Chaining</a></li>
+                        <li><a href="#choosing" class="toc-link">Choosing the Right Method</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>In previous lessons, you used <code>for</code> loops and <code>for...of</code> to process arrays. Those work fine, but JavaScript provides a set of <strong>higher-order methods</strong> — functions that take another function as an argument — that make common tasks much cleaner.</p>
+                <p>Instead of writing a loop, creating an empty array, and pushing results, you call a single method that does it all. The result is code that's shorter, more readable, and less prone to bugs.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Original Array"] --> B["map()"]
+                    A --> C["filter()"]
+                    A --> D["reduce()"]
+                    B --> E["New Array<br/>(same length)"]
+                    C --> F["New Array<br/>(fewer items)"]
+                    D --> G["Single Value"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style E fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style F fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style G fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                </div>
+
+                <p>All of these methods share the same pattern: you pass in a <strong>callback function</strong> that describes what to do with each element. The method handles the looping for you.</p>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="foreach" class="lesson-section">
+                <h2>forEach — Do Something with Each</h2>
+                <p>You already saw <code>forEach</code> briefly in Lesson 9. It runs a function for each element but <strong>doesn't return anything</strong>. Use it for side effects like logging, updating the DOM, or sending data.</p>
+
+                <pre><code class="language-javascript">
+const names = ["Alice", "Bob", "Carol"];
+
+names.forEach((name, index) => {
+    console.log(`${index + 1}. ${name}`);
+});
+// 1. Alice
+// 2. Bob
+// 3. Carol
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ forEach Returns undefined</h4>
+                    <p>If you need a new array, use <code>map</code> or <code>filter</code> instead. A common mistake is trying to use <code>forEach</code> to build a new array — it's the wrong tool for that.</p>
+                    <pre><code class="language-javascript">
+// ❌ Wrong — forEach returns undefined
+const doubled = names.forEach(n => n.toUpperCase());
+console.log(doubled);  // undefined!
+
+// ✅ Right — use map to create a new array
+const uppercased = names.map(n => n.toUpperCase());
+console.log(uppercased);  // ["ALICE", "BOB", "CAROL"]
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="map" class="lesson-section">
+                <h2>map — Transform Every Element</h2>
+                <p><code>map()</code> creates a <strong>new array</strong> by applying a function to every element. The new array always has the <strong>same length</strong> as the original.</p>
+
+                <pre><code class="language-javascript">
+const prices = [10, 20, 30, 40];
+
+// Add 8% tax to each price
+const withTax = prices.map(price => price * 1.08);
+console.log(withTax);  // [10.8, 21.6, 32.4, 43.2]
+
+// Original is unchanged
+console.log(prices);   // [10, 20, 30, 40]
+                </code></pre>
+
+                <h3>Compare: Loop vs. map</h3>
+                <pre><code class="language-javascript">
+const names = ["alice", "bob", "carol"];
+
+// ❌ Manual loop — more code, more room for error
+const upper1 = [];
+for (const name of names) {
+    upper1.push(name.toUpperCase());
+}
+
+// ✅ map — one clean line
+const upper2 = names.map(name => name.toUpperCase());
+
+// Both produce: ["ALICE", "BOB", "CAROL"]
+                </code></pre>
+
+                <h3>map with Objects</h3>
+                <pre><code class="language-javascript">
+const users = [
+    { name: "Alice", age: 28 },
+    { name: "Bob", age: 34 },
+    { name: "Carol", age: 22 }
+];
+
+// Extract just the names
+const names = users.map(user => user.name);
+console.log(names);  // ["Alice", "Bob", "Carol"]
+
+// Create display strings
+const labels = users.map(user => `${user.name} (${user.age})`);
+console.log(labels);  // ["Alice (28)", "Bob (34)", "Carol (22)"]
+
+// Transform each object
+const withBirthYear = users.map(user => ({
+    ...user,
+    birthYear: 2026 - user.age
+}));
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 map Always Returns the Same Number of Elements</h4>
+                    <p>If you start with 5 elements, you'll get 5 back. If you need fewer elements, use <code>filter</code>. If you need a single value, use <code>reduce</code>.</p>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="filter" class="lesson-section">
+                <h2>filter — Keep What Matches</h2>
+                <p><code>filter()</code> creates a <strong>new array</strong> containing only the elements where the callback returns <code>true</code>. Elements that return <code>false</code> are excluded.</p>
+
+                <pre><code class="language-javascript">
+const scores = [85, 42, 93, 67, 78, 55, 91];
+
+// Keep only passing scores (70+)
+const passing = scores.filter(score => score >= 70);
+console.log(passing);  // [85, 93, 67, 78, 91]
+// Wait — 67 isn't >= 70! Let me fix that:
+
+const actuallyPassing = scores.filter(score => score >= 70);
+console.log(actuallyPassing);  // [85, 93, 78, 91]
+
+// Original unchanged
+console.log(scores);  // [85, 42, 93, 67, 78, 55, 91]
+                </code></pre>
+
+                <h3>Filtering Objects</h3>
+                <pre><code class="language-javascript">
+const products = [
+    { name: "Laptop", price: 999, inStock: true },
+    { name: "Phone", price: 699, inStock: false },
+    { name: "Tablet", price: 449, inStock: true },
+    { name: "Watch", price: 299, inStock: true },
+    { name: "Monitor", price: 549, inStock: false }
+];
+
+// Only in-stock products
+const available = products.filter(p => p.inStock);
+console.log(available.length);  // 3
+
+// Products under $500
+const affordable = products.filter(p => p.price < 500);
+console.log(affordable);
+// [{ name: "Tablet", ... }, { name: "Watch", ... }]
+
+// Combine conditions
+const deals = products.filter(p => p.inStock && p.price < 500);
+console.log(deals.map(p => p.name));  // ["Tablet", "Watch"]
+                </code></pre>
+
+                <h3>Removing Items with filter</h3>
+                <pre><code class="language-javascript">
+const todos = ["Buy milk", "Walk dog", "Code project", "Walk dog"];
+
+// Remove all instances of "Walk dog" (non-mutating!)
+const updated = todos.filter(todo => todo !== "Walk dog");
+console.log(updated);  // ["Buy milk", "Code project"]
+console.log(todos);    // Original unchanged
+                </code></pre>
+
+                <div class="mermaid">
+                    graph LR
+                    A["[85, 42, 93, 67, 78]"] --> B["filter(s => s >= 70)"]
+                    B --> C["85 ✅"]
+                    B --> D["42 ❌"]
+                    B --> E["93 ✅"]
+                    B --> F["67 ❌"]
+                    B --> G["78 ✅"]
+                    C --> H["[85, 93, 78]"]
+                    E --> H
+                    G --> H
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style H fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style F fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="reduce" class="lesson-section">
+                <h2>reduce — Collapse to One Value</h2>
+                <p><code>reduce()</code> processes every element and accumulates them into a <strong>single value</strong> — a number, string, object, or even another array. It's the most powerful (and most confusing) array method.</p>
+
+                <pre><code class="language-javascript">
+// Syntax: array.reduce((accumulator, currentValue) => ..., initialValue)
+
+const numbers = [10, 20, 30, 40];
+
+// Sum all numbers
+const total = numbers.reduce((sum, num) => sum + num, 0);
+console.log(total);  // 100
+                </code></pre>
+
+                <h3>How reduce Works Step by Step</h3>
+                <pre><code class="language-javascript">
+const numbers = [10, 20, 30, 40];
+
+const total = numbers.reduce((sum, num) => {
+    console.log(`sum: ${sum}, num: ${num}, result: ${sum + num}`);
+    return sum + num;
+}, 0);
+
+// sum: 0,  num: 10, result: 10
+// sum: 10, num: 20, result: 30
+// sum: 30, num: 30, result: 60
+// sum: 60, num: 40, result: 100
+                </code></pre>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Initial: 0"] --> B["+ 10 = 10"]
+                    B --> C["+ 20 = 30"]
+                    C --> D["+ 30 = 60"]
+                    D --> E["+ 40 = 100"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style E fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Common reduce Patterns</h3>
+                <pre><code class="language-javascript">
+const cart = [
+    { item: "Shirt", price: 25 },
+    { item: "Pants", price: 45 },
+    { item: "Shoes", price: 80 }
+];
+
+// Sum prices
+const cartTotal = cart.reduce((total, product) => total + product.price, 0);
+console.log(cartTotal);  // 150
+
+// Find the maximum value
+const scores = [72, 95, 88, 63, 91];
+const highest = scores.reduce((max, score) => score > max ? score : max, scores[0]);
+console.log(highest);  // 95
+
+// Count occurrences
+const fruits = ["apple", "banana", "apple", "cherry", "banana", "apple"];
+const counts = fruits.reduce((tally, fruit) => {
+    tally[fruit] = (tally[fruit] || 0) + 1;
+    return tally;
+}, {});
+console.log(counts);  // { apple: 3, banana: 2, cherry: 1 }
+
+// Group by category
+const items = [
+    { name: "Apple", type: "fruit" },
+    { name: "Carrot", type: "vegetable" },
+    { name: "Banana", type: "fruit" },
+    { name: "Broccoli", type: "vegetable" }
+];
+
+const grouped = items.reduce((groups, item) => {
+    const key = item.type;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item.name);
+    return groups;
+}, {});
+console.log(grouped);
+// { fruit: ["Apple", "Banana"], vegetable: ["Carrot", "Broccoli"] }
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Always Provide an Initial Value</h4>
+                    <p>If you omit the initial value, <code>reduce</code> uses the first element as the starting accumulator and begins iteration from the second element. This works for simple sums but fails with empty arrays and causes subtle bugs. Always pass an explicit initial value.</p>
+                    <pre><code class="language-javascript">
+// ❌ No initial value — crashes on empty arrays
+// [].reduce((sum, n) => sum + n);  // TypeError!
+
+// ✅ Always provide an initial value
+[].reduce((sum, n) => sum + n, 0);  // 0 — no crash
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="find-some-every" class="lesson-section">
+                <h2>find, some &amp; every</h2>
+                <p>These methods answer <strong>questions</strong> about your array rather than transforming it.</p>
+
+                <h3>find() — First Match (Review)</h3>
+                <p>You saw <code>find</code> in Lesson 9. It returns the <strong>first element</strong> matching the condition, or <code>undefined</code>.</p>
+
+                <pre><code class="language-javascript">
+const users = [
+    { name: "Alice", role: "admin" },
+    { name: "Bob", role: "editor" },
+    { name: "Carol", role: "admin" }
+];
+
+const firstAdmin = users.find(u => u.role === "admin");
+console.log(firstAdmin);  // { name: "Alice", role: "admin" }
+                </code></pre>
+
+                <h3>some() — Does At Least One Match?</h3>
+                <p><code>some()</code> returns <code>true</code> if <strong>at least one</strong> element passes the test. It short-circuits — stops as soon as it finds a match.</p>
+
+                <pre><code class="language-javascript">
+const ages = [15, 22, 17, 19, 14];
+
+const hasAdult = ages.some(age => age >= 18);
+console.log(hasAdult);  // true
+
+const allTeens = ages.some(age => age >= 30);
+console.log(allTeens);  // false
+
+// Practical: check if cart has any out-of-stock items
+const cart = [
+    { name: "Laptop", inStock: true },
+    { name: "Phone", inStock: false },
+    { name: "Tablet", inStock: true }
+];
+const hasUnavailable = cart.some(item => !item.inStock);
+console.log(hasUnavailable);  // true
+                </code></pre>
+
+                <h3>every() — Do All Match?</h3>
+                <p><code>every()</code> returns <code>true</code> only if <strong>all</strong> elements pass the test. It short-circuits on the first failure.</p>
+
+                <pre><code class="language-javascript">
+const scores = [85, 92, 78, 95, 88];
+
+const allPassing = scores.every(score => score >= 70);
+console.log(allPassing);  // true
+
+const allExcellent = scores.every(score => score >= 90);
+console.log(allExcellent);  // false (78 and 88 fail)
+
+// Practical: check if all form fields are filled
+const formFields = ["Ray", "ray@example.com", "Hello there!"];
+const allFilled = formFields.every(field => field.trim().length > 0);
+console.log(allFilled);  // true
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Returns</th>
+                                <th>Question It Answers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>find(fn)</code></td><td>Element or <code>undefined</code></td><td>What's the first match?</td></tr>
+                            <tr><td><code>findIndex(fn)</code></td><td>Index or <code>-1</code></td><td>Where's the first match?</td></tr>
+                            <tr><td><code>some(fn)</code></td><td><code>true</code> / <code>false</code></td><td>Does any element match?</td></tr>
+                            <tr><td><code>every(fn)</code></td><td><code>true</code> / <code>false</code></td><td>Do all elements match?</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="sort" class="lesson-section">
+                <h2>sort — Ordering Arrays</h2>
+                <p><code>sort()</code> arranges elements in place. By default it sorts <strong>alphabetically as strings</strong> — which produces surprising results with numbers.</p>
+
+                <pre><code class="language-javascript">
+// String sorting — works as expected
+const fruits = ["cherry", "apple", "banana"];
+fruits.sort();
+console.log(fruits);  // ["apple", "banana", "cherry"]
+
+// ❌ Number sorting — DEFAULT IS WRONG!
+const numbers = [40, 100, 1, 5, 25];
+numbers.sort();
+console.log(numbers);  // [1, 100, 25, 40, 5] — alphabetical, not numeric!
+                </code></pre>
+
+                <h3>Custom Compare Functions</h3>
+                <p>Pass a compare function to control the sort order. The function takes two elements <code>(a, b)</code> and returns:</p>
+                <ul>
+                    <li><strong>Negative</strong> → <code>a</code> comes first</li>
+                    <li><strong>Positive</strong> → <code>b</code> comes first</li>
+                    <li><strong>Zero</strong> → keep original order</li>
+                </ul>
+
+                <pre><code class="language-javascript">
+const numbers = [40, 100, 1, 5, 25];
+
+// ✅ Ascending (smallest first)
+numbers.sort((a, b) => a - b);
+console.log(numbers);  // [1, 5, 25, 40, 100]
+
+// ✅ Descending (largest first)
+numbers.sort((a, b) => b - a);
+console.log(numbers);  // [100, 40, 25, 5, 1]
+                </code></pre>
+
+                <h3>Sorting Objects</h3>
+                <pre><code class="language-javascript">
+const users = [
+    { name: "Carol", age: 22 },
+    { name: "Alice", age: 28 },
+    { name: "Bob", age: 34 }
+];
+
+// Sort by age (ascending)
+users.sort((a, b) => a.age - b.age);
+console.log(users.map(u => u.name));  // ["Carol", "Alice", "Bob"]
+
+// Sort by name (alphabetical)
+users.sort((a, b) => a.name.localeCompare(b.name));
+console.log(users.map(u => u.name));  // ["Alice", "Bob", "Carol"]
+                </code></pre>
+
+                <div class="card card-danger">
+                    <h4>❌ sort() Mutates the Original Array</h4>
+                    <p>Unlike <code>map</code> and <code>filter</code>, <code>sort()</code> modifies the array in place. If you need the original order preserved, copy first.</p>
+                    <pre><code class="language-javascript">
+const original = [3, 1, 4, 1, 5];
+
+// ✅ Sort a copy, keep the original intact
+const sorted = [...original].sort((a, b) => a - b);
+console.log(sorted);    // [1, 1, 3, 4, 5]
+console.log(original);  // [3, 1, 4, 1, 5] — unchanged!
+                    </code></pre>
+                </div>
+
+                <h3>reverse()</h3>
+                <pre><code class="language-javascript">
+const letters = ["a", "b", "c", "d"];
+
+// Reverse in place (also mutates!)
+letters.reverse();
+console.log(letters);  // ["d", "c", "b", "a"]
+
+// Non-mutating reverse
+const nums = [1, 2, 3];
+const reversed = [...nums].reverse();
+console.log(reversed);  // [3, 2, 1]
+console.log(nums);      // [1, 2, 3] — unchanged
+                </code></pre>
+            </section>
+
+            <!-- Section 8 -->
+            <section id="chaining" class="lesson-section">
+                <h2>Method Chaining</h2>
+                <p>Since <code>map</code>, <code>filter</code>, and <code>sort</code> return arrays, you can <strong>chain</strong> them together to build multi-step data pipelines. Each method's output feeds into the next.</p>
+
+                <pre><code class="language-javascript">
+const products = [
+    { name: "Laptop", price: 999, category: "electronics" },
+    { name: "Shirt", price: 29, category: "clothing" },
+    { name: "Phone", price: 699, category: "electronics" },
+    { name: "Pants", price: 49, category: "clothing" },
+    { name: "Tablet", price: 449, category: "electronics" },
+    { name: "Hat", price: 19, category: "clothing" }
+];
+
+// Pipeline: electronics → sorted by price → formatted strings
+const result = products
+    .filter(p => p.category === "electronics")    // Keep electronics
+    .sort((a, b) => a.price - b.price)            // Sort cheapest first
+    .map(p => `${p.name}: $${p.price}`);          // Format as strings
+
+console.log(result);
+// ["Tablet: $449", "Phone: $699", "Laptop: $999"]
+                </code></pre>
+
+                <div class="mermaid">
+                    graph LR
+                    A["6 products"] -->|"filter(electronics)"| B["3 products"]
+                    B -->|"sort(by price)"| C["3 products<br/>(sorted)"]
+                    C -->|"map(format)"| D["3 strings"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Chaining with reduce</h3>
+                <pre><code class="language-javascript">
+// Total cost of all in-stock electronics
+const totalElectronics = products
+    .filter(p => p.category === "electronics")
+    .reduce((sum, p) => sum + p.price, 0);
+
+console.log(totalElectronics);  // 2147
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Chain Order Matters</h4>
+                    <p>Put <code>filter</code> <strong>before</strong> <code>map</code> when possible — it reduces the number of elements that <code>map</code> has to process. Filter first, transform second.</p>
+                    <pre><code class="language-javascript">
+// ✅ Better — filter first, then map (processes fewer elements)
+products.filter(p => p.price > 100).map(p => p.name);
+
+// ❌ Wasteful — maps everything, then filters
+products.map(p => p.name).filter(name => /* can't access price anymore! */);
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 9 -->
+            <section id="choosing" class="lesson-section">
+                <h2>Choosing the Right Method</h2>
+                <p>With so many options, here's how to pick the right method for the job.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>I Want To...</th>
+                                <th>Use</th>
+                                <th>Returns</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Do something with each element</td><td><code>forEach()</code></td><td><code>undefined</code></td></tr>
+                            <tr><td>Transform every element</td><td><code>map()</code></td><td>New array (same length)</td></tr>
+                            <tr><td>Keep elements that match</td><td><code>filter()</code></td><td>New array (0 to same length)</td></tr>
+                            <tr><td>Combine into one value</td><td><code>reduce()</code></td><td>Any single value</td></tr>
+                            <tr><td>Find the first match</td><td><code>find()</code></td><td>Element or <code>undefined</code></td></tr>
+                            <tr><td>Check if any match</td><td><code>some()</code></td><td><code>true</code> / <code>false</code></td></tr>
+                            <tr><td>Check if all match</td><td><code>every()</code></td><td><code>true</code> / <code>false</code></td></tr>
+                            <tr><td>Reorder elements</td><td><code>sort()</code></td><td>Same array (mutated!)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mermaid">
+                    graph TD
+                    A["What do I need?"] --> B{"A new array?"}
+                    B -->|"Yes, same length"| C["map()"]
+                    B -->|"Yes, fewer items"| D["filter()"]
+                    B -->|"No"| E{"A single value?"}
+                    E -->|"One element"| F["find()"]
+                    E -->|"A sum/count/object"| G["reduce()"]
+                    E -->|"true/false"| H{"All or any?"}
+                    H -->|"Any match?"| I["some()"]
+                    H -->|"All match?"| J["every()"]
+                    E -->|"Just run code"| K["forEach()"]
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style G fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Product Catalog Pipeline</h3>
+                    <p><strong>Objective:</strong> Use array methods to process product data — no manual loops allowed!</p>
+
+                    <pre><code class="language-javascript">
+const products = [
+    { id: 1, name: "Wireless Mouse", price: 29.99, category: "accessories", rating: 4.5, inStock: true },
+    { id: 2, name: "Mechanical Keyboard", price: 89.99, category: "accessories", rating: 4.8, inStock: true },
+    { id: 3, name: "USB-C Hub", price: 34.99, category: "accessories", rating: 4.2, inStock: false },
+    { id: 4, name: "Monitor Stand", price: 49.99, category: "furniture", rating: 4.0, inStock: true },
+    { id: 5, name: "Desk Lamp", price: 39.99, category: "furniture", rating: 4.6, inStock: true },
+    { id: 6, name: "Webcam HD", price: 59.99, category: "electronics", rating: 4.3, inStock: false },
+    { id: 7, name: "Headphones", price: 149.99, category: "electronics", rating: 4.7, inStock: true },
+    { id: 8, name: "Mousepad XL", price: 14.99, category: "accessories", rating: 4.1, inStock: true }
+];
+
+// TODO: Solve each challenge using array methods (no for/while loops!)
+
+// 1. Get an array of all product names
+// Expected: ["Wireless Mouse", "Mechanical Keyboard", ...]
+
+// 2. Get only in-stock products
+// Expected: array of 6 product objects
+
+// 3. Get in-stock accessories sorted by price (cheapest first)
+// Expected: [Mousepad XL, Wireless Mouse, Mechanical Keyboard]
+
+// 4. Calculate the total value of all in-stock products
+// Expected: 374.94 (sum of prices where inStock is true)
+
+// 5. Are all products rated 4.0 or higher?
+// Expected: true
+
+// 6. Create a "sale" version: in-stock products with 20% off,
+//    formatted as "Product Name — $XX.XX (was $XX.XX)"
+//    sorted by sale price ascending
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>1:</strong> <code>map</code> extracting the <code>name</code> property.</p>
+                        <p><strong>2:</strong> <code>filter</code> checking <code>inStock</code>.</p>
+                        <p><strong>3:</strong> Chain <code>filter</code> → <code>filter</code> → <code>sort</code>.</p>
+                        <p><strong>4:</strong> <code>filter</code> → <code>reduce</code> with price accumulation.</p>
+                        <p><strong>5:</strong> <code>every</code> checking <code>rating >= 4.0</code>.</p>
+                        <p><strong>6:</strong> Chain <code>filter</code> → <code>map</code> (compute sale price) → <code>sort</code> → <code>map</code> (format string).</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+// 1. All product names
+const names = products.map(p => p.name);
+console.log(names);
+
+// 2. In-stock products
+const inStock = products.filter(p => p.inStock);
+console.log(inStock.length);  // 6
+
+// 3. In-stock accessories sorted by price
+const accessories = products
+    .filter(p => p.inStock && p.category === "accessories")
+    .sort((a, b) => a.price - b.price);
+console.log(accessories.map(p => p.name));
+// ["Mousepad XL", "Wireless Mouse", "Mechanical Keyboard"]
+
+// 4. Total value of in-stock products
+const totalValue = products
+    .filter(p => p.inStock)
+    .reduce((sum, p) => sum + p.price, 0);
+console.log(totalValue.toFixed(2));  // "374.94"
+
+// 5. All rated 4.0+?
+const allHighRated = products.every(p => p.rating >= 4.0);
+console.log(allHighRated);  // true
+
+// 6. Sale version
+const saleList = products
+    .filter(p => p.inStock)
+    .map(p => ({
+        ...p,
+        salePrice: +(p.price * 0.80).toFixed(2)
+    }))
+    .sort((a, b) => a.salePrice - b.salePrice)
+    .map(p => `${p.name} — $${p.salePrice.toFixed(2)} (was $${p.price.toFixed(2)})`);
+
+console.log(saleList);
+// [
+//   "Mousepad XL — $11.99 (was $14.99)",
+//   "Wireless Mouse — $23.99 (was $29.99)",
+//   "Desk Lamp — $31.99 (was $39.99)",
+//   "Monitor Stand — $39.99 (was $49.99)",
+//   "Mechanical Keyboard — $71.99 (was $89.99)",
+//   "Headphones — $119.99 (was $149.99)"
+// ]
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>map()</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's what reduce() does — collapses an array into one value.">A) A single value</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="map() always returns a new array with the same number of elements, each transformed by the callback function.">B) A new array with the same number of elements</button>
+                            <button class="quiz-option" data-correct="false" data-hint="filter() returns fewer elements. map() keeps the same count but transforms each element.">C) A new array with fewer elements</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's forEach(). map() always returns a new array.">D) undefined</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What does <code>[1,2,3].filter(n => n > 1)</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="filter() returns a new array, not a single value.">A) true</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The element 1 is not greater than 1, so it's excluded.">B) [1, 2, 3]</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="filter() keeps only elements where the callback returns true. 2 > 1 is true, 3 > 1 is true, but 1 > 1 is false.">C) [2, 3]</button>
+                            <button class="quiz-option" data-correct="false" data-hint="filter() returns all matching elements, not just the first one.">D) [2]</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What is the second argument to <code>reduce()</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The callback function is the first argument, not the second.">A) The callback function</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The second argument is the initial value of the accumulator. Always provide one to avoid errors on empty arrays!">B) The initial value of the accumulator</button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no maximum iteration argument. reduce() always processes all elements.">C) The maximum number of iterations</button>
+                            <button class="quiz-option" data-correct="false" data-hint="You access the index through the callback's third parameter, not as a separate argument.">D) The starting index</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> Which method modifies the original array?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="map() returns a new array — the original is unchanged.">A) map()</button>
+                            <button class="quiz-option" data-correct="false" data-hint="filter() returns a new array — the original is unchanged.">B) filter()</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="sort() modifies the original array in place. To sort without mutation, copy the array first: [...arr].sort()">C) sort()</button>
+                            <button class="quiz-option" data-correct="false" data-hint="reduce() returns a new value — the original array is unchanged.">D) reduce()</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong><code>forEach</code></strong> runs code for each element but returns nothing — use for side effects</li>
+                        <li><strong><code>map</code></strong> transforms every element → new array, same length</li>
+                        <li><strong><code>filter</code></strong> keeps matching elements → new array, fewer items</li>
+                        <li><strong><code>reduce</code></strong> collapses to a single value — sums, counts, grouping, etc.</li>
+                        <li><strong><code>some</code></strong> checks if any element matches; <strong><code>every</code></strong> checks if all match</li>
+                        <li><strong><code>sort</code></strong> orders in place — use <code>(a, b) => a - b</code> for numbers, <code>localeCompare</code> for strings</li>
+                        <li><strong>Method chaining</strong> builds clean data pipelines: <code>filter</code> → <code>sort</code> → <code>map</code></li>
+                        <li>Put <code>filter</code> before <code>map</code> for better performance</li>
+                        <li>Always provide an initial value for <code>reduce</code></li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map" target="_blank" rel="noopener">MDN — Array.map()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter" target="_blank" rel="noopener">MDN — Array.filter()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce" target="_blank" rel="noopener">MDN — Array.reduce()</a></li>
+                    <li><a href="https://javascript.info/array-methods" target="_blank" rel="noopener">javascript.info — Array Methods</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You've now mastered arrays and their methods. The final lesson in this module covers <strong>strings and template literals</strong> — string methods for searching, slicing, and transforming text, plus template literal features you haven't seen yet.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_10.html" class="prev-lesson">← Previous: Objects</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_12.html" class="next-lesson">Next: Strings &amp; Template Literals →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

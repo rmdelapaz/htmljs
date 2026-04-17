@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how to declare variables with let, const, and var, and understand JavaScript's core data types: strings, numbers, booleans, null, and undefined.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 3: Variables &amp; Data Types - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1</a></li>
+            <li aria-current="page">Lesson 3: Variables &amp; Data Types</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>⚡ Lesson 3: Variables &amp; Data Types</h1>
+                <p class="lead">Store information in variables and understand the different types of data JavaScript can work with.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Declare variables using <code>let</code>, <code>const</code>, and <code>var</code></li>
+                        <li>Explain the difference between <code>let</code>, <code>const</code>, and <code>var</code></li>
+                        <li>Identify JavaScript's primitive data types: string, number, boolean, null, undefined, symbol, bigint</li>
+                        <li>Use <code>typeof</code> to check a value's type</li>
+                        <li>Follow naming conventions and best practices for variables</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 50 minutes</p>
+                    <p><strong>Project:</strong> Build a user profile using variables of different types</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#what-are-variables" class="toc-link">What Are Variables?</a></li>
+                        <li><a href="#let-const-var" class="toc-link">let, const, and var</a></li>
+                        <li><a href="#naming-rules" class="toc-link">Naming Rules &amp; Conventions</a></li>
+                        <li><a href="#data-types" class="toc-link">JavaScript Data Types</a></li>
+                        <li><a href="#typeof" class="toc-link">Checking Types with typeof</a></li>
+                        <li><a href="#type-conversion" class="toc-link">Type Conversion Basics</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>Programs need to store and work with information: a user's name, a score, a list of products, whether someone is logged in. <strong>Variables</strong> are how you store that information in JavaScript, and <strong>data types</strong> define what kind of information it is.</p>
+                <p>This lesson covers the absolute fundamentals — the building blocks you'll use in every single program you write.</p>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="what-are-variables" class="lesson-section">
+                <h2>What Are Variables?</h2>
+                <p>A <strong>variable</strong> is a named container that stores a value. Think of it as a labeled box — the label is the variable name, and the contents are the value.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["let username"] --> B["📦 'Ray'"]
+                    C["let score"] --> D["📦 95"]
+                    E["let isLoggedIn"] --> F["📦 true"]
+                    style B fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style F fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+
+                <pre><code class="language-javascript">
+// Declaring a variable and assigning a value
+let username = "Ray";
+let score = 95;
+let isLoggedIn = true;
+
+// Reading (using) the variables
+console.log(username);    // "Ray"
+console.log(score);       // 95
+console.log(isLoggedIn);  // true
+                </code></pre>
+
+                <p>The <code>=</code> sign in JavaScript is the <strong>assignment operator</strong> — it stores the value on the right into the variable on the left. It does <em>not</em> mean "equals" in the mathematical sense (we'll cover that in the next lesson).</p>
+
+                <pre><code class="language-javascript">
+// You can change a variable's value later
+let mood = "happy";
+console.log(mood);  // "happy"
+
+mood = "excited";
+console.log(mood);  // "excited"
+                </code></pre>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="let-const-var" class="lesson-section">
+                <h2>let, const, and var</h2>
+                <p>JavaScript has three keywords for declaring variables. Here's when to use each:</p>
+
+                <h3><code>let</code> — For Values That Change</h3>
+                <pre><code class="language-javascript">
+let count = 0;
+count = 1;    // ✅ Allowed — let variables can be reassigned
+count = 2;    // ✅ Still fine
+                </code></pre>
+
+                <h3><code>const</code> — For Values That Don't Change</h3>
+                <pre><code class="language-javascript">
+const PI = 3.14159;
+const SITE_NAME = "My Website";
+
+PI = 3.0;  // ❌ ERROR! Cannot reassign a const
+                </code></pre>
+                <p><code>const</code> stands for "constant." Once assigned, the value <strong>cannot be reassigned</strong>.</p>
+
+                <h3><code>var</code> — The Old Way (Avoid)</h3>
+                <pre><code class="language-javascript">
+var oldSchool = "I'm from the 90s";
+var oldSchool = "I can be redeclared!"; // ✅ var allows this (confusing!)
+                </code></pre>
+                <p><code>var</code> was the only option before 2015 (ES6). It has quirks that cause bugs — it can be redeclared, it ignores block scope, and it gets "hoisted" in confusing ways. You'll see it in older code, but <strong>always use <code>let</code> or <code>const</code> in new code</strong>.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Keyword</th>
+                                <th>Reassign?</th>
+                                <th>Redeclare?</th>
+                                <th>Scope</th>
+                                <th>Use When</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>const</code></td>
+                                <td>❌ No</td>
+                                <td>❌ No</td>
+                                <td>Block</td>
+                                <td>Value won't change (default choice)</td>
+                            </tr>
+                            <tr>
+                                <td><code>let</code></td>
+                                <td>✅ Yes</td>
+                                <td>❌ No</td>
+                                <td>Block</td>
+                                <td>Value will change (counters, toggles, etc.)</td>
+                            </tr>
+                            <tr>
+                                <td><code>var</code></td>
+                                <td>✅ Yes</td>
+                                <td>✅ Yes</td>
+                                <td>Function</td>
+                                <td>Legacy code only — avoid in new code</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ The Rule of Thumb</h4>
+                    <p>Start with <code>const</code> by default. Switch to <code>let</code> only when you know the value needs to change. Never use <code>var</code> unless maintaining old code.</p>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="naming-rules" class="lesson-section">
+                <h2>Naming Rules &amp; Conventions</h2>
+
+                <h3>Hard Rules (Must Follow)</h3>
+                <ul>
+                    <li>Names can contain letters, digits, underscores (<code>_</code>), and dollar signs (<code>$</code>)</li>
+                    <li>Names <strong>must start</strong> with a letter, <code>_</code>, or <code>$</code> (not a digit)</li>
+                    <li>Names are <strong>case-sensitive</strong> — <code>score</code> and <code>Score</code> are different variables</li>
+                    <li>Names <strong>cannot be reserved words</strong> like <code>let</code>, <code>const</code>, <code>function</code>, <code>return</code>, etc.</li>
+                </ul>
+
+                <h3>Conventions (Should Follow)</h3>
+                <ul>
+                    <li>Use <strong>camelCase</strong> for variables and functions: <code>firstName</code>, <code>totalScore</code>, <code>isActive</code></li>
+                    <li>Use <strong>UPPER_SNAKE_CASE</strong> for constants that are truly fixed: <code>MAX_RETRIES</code>, <code>API_URL</code></li>
+                    <li>Use <strong>descriptive names</strong>: <code>userAge</code> instead of <code>x</code>, <code>itemCount</code> instead of <code>n</code></li>
+                    <li>Start boolean variables with <code>is</code>, <code>has</code>, or <code>can</code>: <code>isLoggedIn</code>, <code>hasPermission</code></li>
+                </ul>
+
+                <pre><code class="language-javascript">
+// ❌ Poor names
+let x = "Ray";
+let n = 42;
+let flag = true;
+
+// ✅ Good names
+let userName = "Ray";
+let highScore = 42;
+let isGameOver = true;
+
+// ✅ Constants
+const MAX_LIVES = 3;
+const BASE_URL = "https://api.example.com";
+                </code></pre>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="data-types" class="lesson-section">
+                <h2>JavaScript Data Types</h2>
+                <p>Every value in JavaScript has a <strong>type</strong>. JavaScript has seven <strong>primitive</strong> (simple) types and one <strong>complex</strong> type (objects). For now, we'll focus on the five you'll use most.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["JavaScript Data Types"] --> B["Primitive Types"]
+                    A --> C["Complex Type"]
+                    B --> D["string"]
+                    B --> E["number"]
+                    B --> F["boolean"]
+                    B --> G["null"]
+                    B --> H["undefined"]
+                    B --> I["symbol (advanced)"]
+                    B --> J["bigint (advanced)"]
+                    C --> K["object (arrays, functions, etc.)"]
+                    style A fill:#f0f0ff,stroke:#6366f1,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>String — Text</h3>
+                <p>Strings hold text. Wrap them in single quotes, double quotes, or backticks (template literals).</p>
+                <pre><code class="language-javascript">
+let greeting = "Hello, World!";      // double quotes
+let language = 'JavaScript';          // single quotes
+let message = `Welcome, ${userName}`; // backticks (template literal)
+
+// String length
+console.log(greeting.length);  // 13
+
+// Combining strings (concatenation)
+let fullGreeting = greeting + " " + language;
+console.log(fullGreeting);  // "Hello, World! JavaScript"
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Template Literals (Backticks)</h4>
+                    <p>Backtick strings let you embed variables and expressions directly using <code>${...}</code>. This is called <strong>string interpolation</strong> and it's much cleaner than concatenation with <code>+</code>.</p>
+                </div>
+
+                <pre><code class="language-javascript">
+let name = "Ray";
+let age = 30;
+
+// ❌ Clunky concatenation
+console.log("My name is " + name + " and I am " + age + " years old.");
+
+// ✅ Clean template literal
+console.log(`My name is ${name} and I am ${age} years old.`);
+                </code></pre>
+
+                <h3>Number — All Numbers</h3>
+                <p>JavaScript uses a single <code>number</code> type for both integers and decimals (no separate int/float).</p>
+                <pre><code class="language-javascript">
+let score = 100;        // integer
+let temperature = 72.5; // decimal
+let negative = -15;     // negative
+
+// Special numeric values
+let inf = Infinity;
+let nan = NaN;  // "Not a Number" — result of invalid math
+
+console.log(0 / 0);       // NaN
+console.log(1 / 0);       // Infinity
+console.log("abc" * 2);   // NaN
+                </code></pre>
+
+                <h3>Boolean — True or False</h3>
+                <p>Booleans have exactly two values: <code>true</code> or <code>false</code>. They're the foundation of all decision-making in code.</p>
+                <pre><code class="language-javascript">
+let isLoggedIn = true;
+let hasPermission = false;
+
+// Booleans are often the result of comparisons
+let isAdult = age >= 18;  // true if age is 18 or higher
+console.log(isAdult);      // true (if age is 30)
+                </code></pre>
+
+                <h3>Null — Intentionally Empty</h3>
+                <p><code>null</code> means "I explicitly set this to nothing." It's an intentional absence of value.</p>
+                <pre><code class="language-javascript">
+let selectedItem = null;  // Nothing is selected yet
+console.log(selectedItem);  // null
+                </code></pre>
+
+                <h3>Undefined — Not Yet Assigned</h3>
+                <p><code>undefined</code> means "this variable exists but hasn't been given a value yet."</p>
+                <pre><code class="language-javascript">
+let futureValue;
+console.log(futureValue);  // undefined
+
+// It's also what functions return when they don't explicitly return something
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ null vs. undefined</h4>
+                    <p>Both represent "no value," but they mean different things:</p>
+                    <ul>
+                        <li><code>null</code> = "I <strong>deliberately</strong> set this to empty"</li>
+                        <li><code>undefined</code> = "This <strong>hasn't been assigned</strong> a value yet"</li>
+                    </ul>
+                    <p>Use <code>null</code> when you want to explicitly clear a value. Let JavaScript use <code>undefined</code> for uninitialized variables.</p>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="typeof" class="lesson-section">
+                <h2>Checking Types with typeof</h2>
+                <p>The <code>typeof</code> operator tells you what type a value is. This is invaluable for debugging.</p>
+
+                <pre><code class="language-javascript">
+console.log(typeof "Hello");     // "string"
+console.log(typeof 42);          // "number"
+console.log(typeof true);        // "boolean"
+console.log(typeof undefined);   // "undefined"
+console.log(typeof null);        // "object" (this is a famous JS bug!)
+
+// Using typeof with variables
+let price = 9.99;
+console.log(typeof price);  // "number"
+
+let name = "JavaScript";
+console.log(typeof name);  // "string"
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ The typeof null Bug</h4>
+                    <p><code>typeof null</code> returns <code>"object"</code> instead of <code>"null"</code>. This is a well-known bug from the earliest days of JavaScript (1995) that was never fixed because it would break existing websites. Just be aware of it — to check for <code>null</code>, use <code>value === null</code> instead of <code>typeof</code>.</p>
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="type-conversion" class="lesson-section">
+                <h2>Type Conversion Basics</h2>
+                <p>Sometimes you need to convert between types. JavaScript offers both <strong>explicit</strong> conversion (you do it on purpose) and <strong>implicit</strong> conversion (JavaScript does it automatically — sometimes with surprising results).</p>
+
+                <h3>Explicit Conversion (You Control It)</h3>
+                <pre><code class="language-javascript">
+// String to Number
+let input = "42";
+let num = Number(input);
+console.log(num);          // 42
+console.log(typeof num);   // "number"
+
+// Number to String
+let price = 19.99;
+let priceText = String(price);
+console.log(priceText);        // "19.99"
+console.log(typeof priceText); // "string"
+
+// To Boolean
+console.log(Boolean(1));       // true
+console.log(Boolean(0));       // false
+console.log(Boolean("hello")); // true
+console.log(Boolean(""));      // false
+                </code></pre>
+
+                <h3>Implicit Conversion (JavaScript Guesses)</h3>
+                <pre><code class="language-javascript">
+// The + operator with strings does concatenation, not addition!
+console.log("5" + 3);    // "53" (string — JS converts 3 to "3")
+console.log("5" - 3);    // 2   (number — JS converts "5" to 5)
+console.log("5" * 2);    // 10  (number)
+console.log(true + 1);   // 2   (true becomes 1)
+                </code></pre>
+
+                <div class="card card-danger">
+                    <h4>❌ Watch Out for Implicit Conversion</h4>
+                    <p>Implicit type conversion (also called "coercion") is one of JavaScript's biggest gotchas. The <code>+</code> operator is especially tricky because it concatenates strings but adds numbers. Always be explicit about conversions to avoid surprises.</p>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Build a User Profile</h3>
+                    <p><strong>Objective:</strong> Create variables of different types to represent a user profile, then display them in the console.</p>
+
+                    <h4>Instructions:</h4>
+                    <ol>
+                        <li>Open your <code>js-practice</code> project (or create a new HTML file)</li>
+                        <li>In your <code>app.js</code>, create variables for a user profile:</li>
+                    </ol>
+
+                    <pre><code class="language-javascript">
+// User Profile
+// Use const for values that won't change
+// Use let for values that might change
+
+// TODO: Create these variables:
+// - firstName (string)
+// - lastName (string)
+// - age (number)
+// - email (string)
+// - isPremiumMember (boolean)
+// - accountBalance (number with decimals)
+// - nickname (null — not set yet)
+
+// TODO: Log each variable with its type
+// Example: console.log(`firstName: ${firstName} (${typeof firstName})`);
+
+// TODO: Create a greeting using template literals
+// Example output: "Hello, Ray De La Paz! You are 30 years old."
+
+// TODO: Try changing a let variable and logging it again
+// TODO: Try changing a const variable — what happens?
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p>Use <code>const</code> for firstName, lastName, and email (these typically don't change during a session). Use <code>let</code> for age, isPremiumMember, accountBalance, and nickname (these could change).</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+// User Profile
+const firstName = "Ray";
+const lastName = "De La Paz";
+let age = 30;
+const email = "ray@example.com";
+let isPremiumMember = false;
+let accountBalance = 149.99;
+let nickname = null;
+
+// Log each variable with its type
+console.log(`firstName: ${firstName} (${typeof firstName})`);
+console.log(`lastName: ${lastName} (${typeof lastName})`);
+console.log(`age: ${age} (${typeof age})`);
+console.log(`email: ${email} (${typeof email})`);
+console.log(`isPremiumMember: ${isPremiumMember} (${typeof isPremiumMember})`);
+console.log(`accountBalance: ${accountBalance} (${typeof accountBalance})`);
+console.log(`nickname: ${nickname} (${typeof nickname})`);
+
+// Greeting with template literal
+console.log(`Hello, ${firstName} ${lastName}! You are ${age} years old.`);
+
+// Change some values
+age = 31;
+isPremiumMember = true;
+nickname = "Ace";
+accountBalance = accountBalance - 29.99;
+
+console.log("\n--- After updates ---");
+console.log(`Age: ${age}`);
+console.log(`Premium: ${isPremiumMember}`);
+console.log(`Nickname: ${nickname}`);
+console.log(`Balance: $${accountBalance}`);
+
+// Try changing a const — uncomment to see the error:
+// firstName = "Raymond";  // TypeError: Assignment to constant variable
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Which keyword should you use by default when declaring a variable?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="var is the legacy keyword and should be avoided in modern code.">A) var</button>
+                            <button class="quiz-option" data-correct="false" data-hint="let is for variables that need to change. Start with const and switch to let only if needed.">B) let</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="const is the safest default. It prevents accidental reassignment. Switch to let only when you know the value needs to change.">C) const</button>
+                            <button class="quiz-option" data-correct="false" data-hint="define is not a JavaScript keyword for variables.">D) define</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What is the result of <code>typeof null</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That would make sense, but it's not what JavaScript returns.">A) "null"</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="This is a famous bug from JavaScript's earliest days. typeof null returns 'object' instead of 'null'.">B) "object"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="undefined and null are different values in JavaScript.">C) "undefined"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="boolean represents true/false values, not null.">D) "boolean"</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What does <code>"5" + 3</code> evaluate to?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="When + is used with a string, JavaScript concatenates instead of adding.">A) 8</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The + operator concatenates when one operand is a string. JavaScript converts 3 to '3' and joins them: '5' + '3' = '53'.">B) "53"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript won't throw an error — it will try to handle the mixed types.">C) Error</button>
+                            <button class="quiz-option" data-correct="false" data-hint="NaN occurs with invalid math operations, but this is valid string concatenation.">D) NaN</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Variables</strong> store values — use <code>const</code> by default, <code>let</code> when values change, avoid <code>var</code></li>
+                        <li><strong>Strings</strong> hold text — use backticks (<code>`template literals`</code>) for clean interpolation</li>
+                        <li><strong>Numbers</strong> cover both integers and decimals in a single type</li>
+                        <li><strong>Booleans</strong> are <code>true</code> or <code>false</code> — the basis of all logic</li>
+                        <li><strong>null</strong> = deliberately empty; <strong>undefined</strong> = not yet assigned</li>
+                        <li><code>typeof</code> checks a value's type (but watch out for <code>typeof null</code>)</li>
+                        <li>Be careful with <strong>implicit type conversion</strong>, especially <code>+</code> with strings</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener">MDN — Grammar and Types</a></li>
+                    <li><a href="https://javascript.info/variables" target="_blank" rel="noopener">javascript.info — Variables</a></li>
+                    <li><a href="https://javascript.info/types" target="_blank" rel="noopener">javascript.info — Data Types</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you can store data in variables, the next step is learning how to <strong>work with that data</strong>. In Lesson 4, you'll learn about <strong>operators and expressions</strong> — arithmetic, comparison, logical operations, and more.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Congratulations!</h3>
+                    <p>You've completed Lesson 3. You now understand variables and data types — the foundation of everything in JavaScript!</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_02.html" class="prev-lesson">← Previous: Linking Scripts &amp; the Console</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_04.html" class="next-lesson">Next: Operators &amp; Expressions →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

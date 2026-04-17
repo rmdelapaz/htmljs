@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master JavaScript loops — for, while, for...of, and for...in — to repeat actions, process collections, and iterate efficiently.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 6: Loops - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 2</a></li>
+            <li aria-current="page">Lesson 6: Loops</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🔁 Lesson 6: Loops</h1>
+                <p class="lead">Stop repeating yourself — let JavaScript do the repetition for you with loops that process data, count, and iterate.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Write <code>for</code> loops to repeat code a specific number of times</li>
+                        <li>Use <code>while</code> and <code>do...while</code> loops for condition-based repetition</li>
+                        <li>Iterate over arrays with <code>for...of</code></li>
+                        <li>Iterate over object keys with <code>for...in</code></li>
+                        <li>Control loop execution with <code>break</code> and <code>continue</code></li>
+                        <li>Avoid common pitfalls like infinite loops and off-by-one errors</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 50 minutes</p>
+                    <p><strong>Project:</strong> Build a star-rating display and a simple search filter</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#for-loop" class="toc-link">The for Loop</a></li>
+                        <li><a href="#while-loop" class="toc-link">while &amp; do...while</a></li>
+                        <li><a href="#for-of" class="toc-link">for...of — Iterating Arrays</a></li>
+                        <li><a href="#for-in" class="toc-link">for...in — Iterating Object Keys</a></li>
+                        <li><a href="#break-continue" class="toc-link">break &amp; continue</a></li>
+                        <li><a href="#common-pitfalls" class="toc-link">Common Pitfalls</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>Imagine you have an array of 100 products and you need to display each one. Without loops, you'd write 100 nearly identical lines of code. <strong>Loops</strong> let you write the instruction once and repeat it as many times as needed.</p>
+                <p>JavaScript gives you several loop types, each suited to different situations. By the end of this lesson, you'll know which one to reach for and why.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Start"] --> B{"More items?"}
+                    B -->|Yes| C["Process current item"]
+                    C --> D["Move to next item"]
+                    D --> B
+                    B -->|No| E["Done"]
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style E fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="for-loop" class="lesson-section">
+                <h2>The for Loop</h2>
+                <p>The <code>for</code> loop is the most common loop. It's ideal when you know <strong>how many times</strong> you want to repeat something.</p>
+
+                <h3>Anatomy of a for Loop</h3>
+                <pre><code class="language-javascript">
+//       initialization;  condition;    update
+for (let i = 0;          i &lt; 5;       i++) {
+    console.log(`Iteration ${i}`);
+}
+// Output: 0, 1, 2, 3, 4  (runs 5 times)
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Part</th>
+                                <th>What It Does</th>
+                                <th>Runs When</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>let i = 0</code></td><td>Creates the counter variable</td><td>Once, before the loop starts</td></tr>
+                            <tr><td><code>i &lt; 5</code></td><td>Checks if the loop should continue</td><td>Before each iteration</td></tr>
+                            <tr><td><code>i++</code></td><td>Updates the counter</td><td>After each iteration</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mermaid">
+                    graph TD
+                    A["let i = 0"] --> B{"i < 5?"}
+                    B -->|Yes| C["Run loop body"]
+                    C --> D["i++"]
+                    D --> B
+                    B -->|No| E["Exit loop"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Looping Through Arrays by Index</h3>
+                <pre><code class="language-javascript">
+const fruits = ["apple", "banana", "cherry", "date"];
+
+for (let i = 0; i &lt; fruits.length; i++) {
+    console.log(`${i + 1}. ${fruits[i]}`);
+}
+// "1. apple"
+// "2. banana"
+// "3. cherry"
+// "4. date"
+                </code></pre>
+
+                <h3>Counting Backwards</h3>
+                <pre><code class="language-javascript">
+// Countdown from 5 to 1
+for (let i = 5; i >= 1; i--) {
+    console.log(i);
+}
+console.log("Liftoff! 🚀");
+                </code></pre>
+
+                <h3>Skipping Values</h3>
+                <pre><code class="language-javascript">
+// Count by 2s
+for (let i = 0; i &lt;= 10; i += 2) {
+    console.log(i);  // 0, 2, 4, 6, 8, 10
+}
+                </code></pre>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="while-loop" class="lesson-section">
+                <h2>while &amp; do...while</h2>
+                <p>Use <code>while</code> when you don't know in advance how many iterations you need — the loop keeps running as long as the condition is <code>true</code>.</p>
+
+                <h3>while Loop</h3>
+                <pre><code class="language-javascript">
+let attempts = 0;
+let password = "";
+
+while (password !== "secret123") {
+    attempts++;
+    // Simulating user input
+    password = attempts === 3 ? "secret123" : "wrong";
+    console.log(`Attempt ${attempts}: ${password === "secret123" ? "✅ Correct!" : "❌ Wrong"}`);
+}
+console.log(`Logged in after ${attempts} attempts.`);
+// Attempt 1: ❌ Wrong
+// Attempt 2: ❌ Wrong
+// Attempt 3: ✅ Correct!
+// Logged in after 3 attempts.
+                </code></pre>
+
+                <h3>do...while Loop</h3>
+                <p>The <code>do...while</code> loop guarantees the body runs <strong>at least once</strong> because it checks the condition <em>after</em> each iteration.</p>
+
+                <pre><code class="language-javascript">
+let number;
+
+do {
+    number = Math.floor(Math.random() * 10) + 1;
+    console.log(`Rolled: ${number}`);
+} while (number !== 7);
+
+console.log("You rolled a 7! 🎲");
+// The loop always runs at least once, then keeps
+// going until you roll a 7
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["while loop"] --> B{"Condition true?"}
+                    B -->|Yes| C["Run body"]
+                    C --> B
+                    B -->|No| D["Exit"]
+
+                    E["do...while loop"] --> F["Run body"]
+                    F --> G{"Condition true?"}
+                    G -->|Yes| F
+                    G -->|No| H["Exit"]
+
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style G fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style D fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style H fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 for vs. while</h4>
+                    <p>Use <code>for</code> when you know how many times to loop (or when iterating over a collection with an index). Use <code>while</code> when the loop depends on a condition that could change unpredictably — like waiting for user input, a random result, or a network response.</p>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="for-of" class="lesson-section">
+                <h2>for...of — Iterating Arrays</h2>
+                <p>The <code>for...of</code> loop is the cleanest way to iterate over arrays (and other iterables like strings). It gives you the <strong>value</strong> directly — no index needed.</p>
+
+                <pre><code class="language-javascript">
+const colors = ["red", "green", "blue", "purple"];
+
+for (const color of colors) {
+    console.log(color);
+}
+// "red"
+// "green"
+// "blue"
+// "purple"
+                </code></pre>
+
+                <h3>Comparing for vs. for...of</h3>
+                <pre><code class="language-javascript">
+const scores = [95, 87, 72, 100, 68];
+
+// Traditional for — you manage the index yourself
+for (let i = 0; i &lt; scores.length; i++) {
+    console.log(`Score ${i + 1}: ${scores[i]}`);
+}
+
+// for...of — cleaner when you don't need the index
+for (const score of scores) {
+    console.log(`Score: ${score}`);
+}
+                </code></pre>
+
+                <h3>Iterating Over Strings</h3>
+                <pre><code class="language-javascript">
+const word = "Hello";
+
+for (const char of word) {
+    console.log(char);
+}
+// "H", "e", "l", "l", "o"
+                </code></pre>
+
+                <h3>When You Need Both Index and Value</h3>
+                <pre><code class="language-javascript">
+const tasks = ["Buy groceries", "Walk the dog", "Write code"];
+
+// Use entries() to get both index and value
+for (const [index, task] of tasks.entries()) {
+    console.log(`${index + 1}. ${task}`);
+}
+// "1. Buy groceries"
+// "2. Walk the dog"
+// "3. Write code"
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Prefer for...of for Arrays</h4>
+                    <p>When you just need the values (no index manipulation), <code>for...of</code> is the modern, readable choice. Use a traditional <code>for</code> loop when you need the index for calculations or when looping backwards.</p>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="for-in" class="lesson-section">
+                <h2>for...in — Iterating Object Keys</h2>
+                <p>The <code>for...in</code> loop iterates over the <strong>keys</strong> (property names) of an object. It's designed for objects, not arrays.</p>
+
+                <pre><code class="language-javascript">
+const user = {
+    name: "Ray",
+    role: "Developer",
+    level: "Senior",
+    city: "Henderson"
+};
+
+for (const key in user) {
+    console.log(`${key}: ${user[key]}`);
+}
+// "name: Ray"
+// "role: Developer"
+// "level: Senior"
+// "city: Henderson"
+                </code></pre>
+
+                <div class="card card-danger">
+                    <h4>❌ Don't Use for...in on Arrays</h4>
+                    <p><code>for...in</code> iterates over <strong>keys</strong>, and for arrays, the keys are string indices (<code>"0"</code>, <code>"1"</code>, <code>"2"</code>). It can also pick up inherited properties. Always use <code>for...of</code> or a traditional <code>for</code> loop for arrays.</p>
+                    <pre><code class="language-javascript">
+const colors = ["red", "green", "blue"];
+
+// ❌ for...in on arrays — keys are strings!
+for (const key in colors) {
+    console.log(typeof key);  // "string" — not a number!
+}
+
+// ✅ for...of on arrays — gives you values
+for (const color of colors) {
+    console.log(color);  // "red", "green", "blue"
+}
+                    </code></pre>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Loop</th>
+                                <th>Best For</th>
+                                <th>Gives You</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>for</code></td><td>Counting, index-based iteration</td><td>Control over start, end, step</td></tr>
+                            <tr><td><code>while</code></td><td>Unknown number of iterations</td><td>Condition-based looping</td></tr>
+                            <tr><td><code>for...of</code></td><td>Arrays, strings, iterables</td><td>Values directly</td></tr>
+                            <tr><td><code>for...in</code></td><td>Object properties</td><td>Keys (property names)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="break-continue" class="lesson-section">
+                <h2>break &amp; continue</h2>
+                <p>These keywords give you finer control over loop execution.</p>
+
+                <h3>break — Exit Early</h3>
+                <p><code>break</code> immediately stops the loop and moves to the code after it.</p>
+
+                <pre><code class="language-javascript">
+// Find the first number greater than 50
+const numbers = [12, 35, 8, 67, 42, 91, 23];
+
+for (const num of numbers) {
+    if (num > 50) {
+        console.log(`Found it: ${num}`);
+        break;  // Stop searching — we found what we need
+    }
+}
+// "Found it: 67"
+// (doesn't check 42, 91, or 23)
+                </code></pre>
+
+                <h3>continue — Skip and Move On</h3>
+                <p><code>continue</code> skips the rest of the current iteration and jumps to the next one.</p>
+
+                <pre><code class="language-javascript">
+// Print only even numbers
+for (let i = 1; i &lt;= 10; i++) {
+    if (i % 2 !== 0) {
+        continue;  // Skip odd numbers
+    }
+    console.log(i);
+}
+// 2, 4, 6, 8, 10
+                </code></pre>
+
+                <h3>Real-World Example: Processing Valid Data</h3>
+                <pre><code class="language-javascript">
+const inputs = ["hello", "", "world", null, "JavaScript", undefined, ""];
+
+for (const input of inputs) {
+    if (!input) {
+        continue;  // Skip empty strings, null, undefined
+    }
+    console.log(`Processing: ${input.toUpperCase()}`);
+}
+// "Processing: HELLO"
+// "Processing: WORLD"
+// "Processing: JAVASCRIPT"
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Start loop"] --> B{"More items?"}
+                    B -->|Yes| C{"Should skip?"}
+                    C -->|Yes — continue| B
+                    C -->|No| D["Process item"]
+                    D --> E{"Should exit?"}
+                    E -->|Yes — break| F["Exit loop"]
+                    E -->|No| B
+                    B -->|No| F
+                    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style E fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style F fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="common-pitfalls" class="lesson-section">
+                <h2>Common Pitfalls</h2>
+
+                <h3>1. Infinite Loops</h3>
+                <p>If the condition never becomes <code>false</code>, the loop runs forever and freezes your browser.</p>
+
+                <pre><code class="language-javascript">
+// ❌ INFINITE LOOP — i never changes!
+// for (let i = 0; i &lt; 10; ) {
+//     console.log(i);  // Prints 0 forever
+// }
+
+// ❌ INFINITE LOOP — condition always true!
+// let count = 0;
+// while (count &lt; 5) {
+//     console.log(count);
+//     // Forgot count++!
+// }
+
+// ✅ Always make sure the loop can exit
+let count = 0;
+while (count &lt; 5) {
+    console.log(count);
+    count++;  // This makes the condition eventually false
+}
+                </code></pre>
+
+                <div class="card card-danger">
+                    <h4>❌ Browser Freeze Recovery</h4>
+                    <p>If you accidentally create an infinite loop and your browser freezes, close the tab (not the whole browser). In Chrome DevTools, you can also press the "Pause" button in the Sources panel to stop script execution.</p>
+                </div>
+
+                <h3>2. Off-by-One Errors</h3>
+                <p>Starting or ending at the wrong number — the most classic loop bug.</p>
+
+                <pre><code class="language-javascript">
+const items = ["a", "b", "c"];  // indices 0, 1, 2
+
+// ❌ Off-by-one: uses &lt;= instead of &lt;
+// for (let i = 0; i &lt;= items.length; i++) {
+//     console.log(items[i]);  // Last iteration: items[3] → undefined!
+// }
+
+// ✅ Correct: &lt; length (not &lt;=)
+for (let i = 0; i &lt; items.length; i++) {
+    console.log(items[i]);  // "a", "b", "c"
+}
+                </code></pre>
+
+                <h3>3. Modifying an Array While Looping</h3>
+                <pre><code class="language-javascript">
+// ❌ Dangerous — removing items shifts indices!
+const nums = [1, 2, 3, 4, 5];
+// for (let i = 0; i &lt; nums.length; i++) {
+//     if (nums[i] % 2 === 0) {
+//         nums.splice(i, 1);  // Removes the element, but shifts everything
+//     }
+// }
+
+// ✅ Safer — loop backwards or use filter()
+const odds = nums.filter(n => n % 2 !== 0);
+console.log(odds);  // [1, 3, 5]
+                </code></pre>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Star Rating &amp; Search Filter</h3>
+                    <p><strong>Objective:</strong> Practice different loop types by building two mini-programs.</p>
+
+                    <h4>Part 1: Star Rating Display</h4>
+                    <pre><code class="language-javascript">
+// TODO: Write a function that takes a rating (1–5)
+// and returns a string of stars
+// Example: starRating(3) → "★★★☆☆"
+// Example: starRating(5) → "★★★★★"
+
+// Hint: Use a for loop to build the string
+// Use "★" for filled stars and "☆" for empty stars
+                    </code></pre>
+
+                    <h4>Part 2: Simple Search Filter</h4>
+                    <pre><code class="language-javascript">
+// TODO: Given this array of products, find and log
+// only the ones that contain the search term
+
+// const products = [
+//     "Wireless Mouse",
+//     "USB Keyboard",
+//     "Wireless Headphones",
+//     "Monitor Stand",
+//     "Wireless Charger"
+// ];
+// const searchTerm = "wireless";
+
+// Expected output:
+// "Found: Wireless Mouse"
+// "Found: Wireless Headphones"
+// "Found: Wireless Charger"
+// "3 results found."
+
+// Hint: Use .toLowerCase() on both the product name
+// and search term for case-insensitive matching
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>Part 1:</strong> Use a <code>for</code> loop from 1 to 5. Inside the loop, use the ternary operator: <code>i &lt;= rating ? "★" : "☆"</code>. Append each star to a result string.</p>
+                        <p><strong>Part 2:</strong> Use <code>for...of</code> to iterate the products array. Use <code>.toLowerCase().includes()</code> to check if the product name contains the search term. Keep a counter for the number of matches.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+// Part 1: Star Rating Display
+function starRating(rating) {
+    let stars = "";
+    for (let i = 1; i &lt;= 5; i++) {
+        stars += i &lt;= rating ? "★" : "☆";
+    }
+    return stars;
+}
+
+console.log(starRating(1));  // "★☆☆☆☆"
+console.log(starRating(3));  // "★★★☆☆"
+console.log(starRating(5));  // "★★★★★"
+
+// Part 2: Simple Search Filter
+const products = [
+    "Wireless Mouse",
+    "USB Keyboard",
+    "Wireless Headphones",
+    "Monitor Stand",
+    "Wireless Charger"
+];
+const searchTerm = "wireless";
+let matchCount = 0;
+
+for (const product of products) {
+    if (product.toLowerCase().includes(searchTerm.toLowerCase())) {
+        console.log(`Found: ${product}`);
+        matchCount++;
+    }
+}
+
+console.log(`${matchCount} result${matchCount === 1 ? "" : "s"} found.`);
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> How many times does this loop run?</p>
+                        <pre><code class="language-javascript">for (let i = 0; i &lt; 3; i++) {
+    console.log(i);
+}</code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The loop starts at 0 and runs while i < 3, so it includes 0, 1, and 2.">A) 2</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The loop runs for i = 0, 1, and 2. When i becomes 3, the condition i < 3 is false and the loop stops.">B) 3</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The condition is < 3 (not <= 3), so 3 itself is not included.">C) 4</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Count the values: 0, 1, 2 — that's three iterations.">D) 1</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Which loop should you use to iterate over an array's values?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="for...in gives you keys (string indices) — it's designed for objects.">A) for...in</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="for...of gives you the values directly and is the cleanest way to iterate over arrays.">B) for...of</button>
+                            <button class="quiz-option" data-correct="false" data-hint="while loops work but require manual index management — not ideal for simple array iteration.">C) while</button>
+                            <button class="quiz-option" data-correct="false" data-hint="do...while guarantees at least one run, but you'd still need to manage an index manually.">D) do...while</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What does <code>continue</code> do inside a loop?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's what 'break' does — continue has a different purpose.">A) Exits the loop entirely</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="'continue' skips the rest of the current iteration's code and jumps to the next iteration of the loop.">B) Skips to the next iteration</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'continue' affects the current loop iteration, not anything after the loop.">C) Skips the code after the loop</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'continue' doesn't restart — it moves forward to the next iteration.">D) Restarts the loop from the beginning</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong><code>for</code></strong> — best when you know how many iterations you need or need index control</li>
+                        <li><strong><code>while</code></strong> — best when the number of iterations depends on a changing condition</li>
+                        <li><strong><code>do...while</code></strong> — guarantees at least one iteration</li>
+                        <li><strong><code>for...of</code></strong> — cleanest way to iterate over arrays and strings (gives values)</li>
+                        <li><strong><code>for...in</code></strong> — iterates over object keys (don't use on arrays)</li>
+                        <li><strong><code>break</code></strong> exits a loop early; <strong><code>continue</code></strong> skips to the next iteration</li>
+                        <li>Watch out for <strong>infinite loops</strong> and <strong>off-by-one errors</strong></li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" target="_blank" rel="noopener">MDN — Loops and Iteration</a></li>
+                    <li><a href="https://javascript.info/while-for" target="_blank" rel="noopener">javascript.info — Loops: while and for</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of" target="_blank" rel="noopener">MDN — for...of</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in" target="_blank" rel="noopener">MDN — for...in</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You can now make decisions <em>and</em> repeat actions. Next, you'll learn to package reusable logic into <strong>functions</strong> — the building blocks that keep your code organized, DRY, and powerful.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_05.html" class="prev-lesson">← Previous: Conditionals</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_07.html" class="next-lesson">Next: Functions →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

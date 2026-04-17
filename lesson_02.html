@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how to link JavaScript to HTML pages using the script tag, use the browser console, and write your first console.log statements.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 2: Linking Scripts &amp; the Console - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1</a></li>
+            <li aria-current="page">Lesson 2: Linking Scripts &amp; the Console</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>⚡ Lesson 2: Linking Scripts &amp; the Console</h1>
+                <p class="lead">Connect JavaScript to your HTML pages and start writing real code using the browser console and external script files.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Add JavaScript to an HTML page using the <code>&lt;script&gt;</code> tag</li>
+                        <li>Understand the difference between inline scripts and external script files</li>
+                        <li>Use <code>console.log()</code> to output messages to the browser console</li>
+                        <li>Open and use the DevTools Console for testing and debugging</li>
+                        <li>Explain why script placement matters (head vs. body, <code>defer</code> attribute)</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 40 minutes</p>
+                    <p><strong>Project:</strong> Create an HTML page linked to an external JavaScript file</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#inline-scripts" class="toc-link">Inline Scripts</a></li>
+                        <li><a href="#external-scripts" class="toc-link">External Script Files</a></li>
+                        <li><a href="#script-placement" class="toc-link">Script Placement &amp; Loading</a></li>
+                        <li><a href="#console" class="toc-link">The Browser Console</a></li>
+                        <li><a href="#console-methods" class="toc-link">Console Methods</a></li>
+                        <li><a href="#comments" class="toc-link">JavaScript Comments</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1: Introduction -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>In the previous lesson, you learned <em>what</em> JavaScript is. Now it's time to learn <em>how</em> to actually get JavaScript running on a page. There are two ways to include JavaScript in an HTML document: writing it directly inside the HTML (inline) or linking to a separate <code>.js</code> file (external). Both use the <code>&lt;script&gt;</code> tag.</p>
+                <p>You'll also meet your new best friend: the <strong>browser console</strong>. The console is where you'll test code, see output, and debug problems throughout this entire course.</p>
+            </section>
+
+            <!-- Section 2: Inline Scripts -->
+            <section id="inline-scripts" class="lesson-section">
+                <h2>Inline Scripts</h2>
+                <p>The simplest way to add JavaScript to an HTML page is to write it directly inside a <code>&lt;script&gt;</code> tag. This is called an <strong>inline script</strong>.</p>
+
+                <pre><code class="language-html">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;My First JS Page&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Hello!&lt;/h1&gt;
+    &lt;p&gt;Check the console for a message.&lt;/p&gt;
+
+    &lt;script&gt;
+        console.log("Hello from JavaScript!");
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </code></pre>
+
+                <p>When the browser reaches the <code>&lt;script&gt;</code> tag, it pauses rendering, executes the JavaScript code inside, and then continues. The message <code>"Hello from JavaScript!"</code> appears in the browser's console (not on the page itself).</p>
+
+                <div class="card card-warning">
+                    <h4>⚠️ When to Use Inline Scripts</h4>
+                    <p>Inline scripts are fine for quick tests and tiny snippets, but for real projects you should use external files. Inline scripts mix behavior (JS) with structure (HTML), making your code harder to maintain. Think of it like inline CSS vs. a stylesheet.</p>
+                </div>
+            </section>
+
+            <!-- Section 3: External Script Files -->
+            <section id="external-scripts" class="lesson-section">
+                <h2>External Script Files</h2>
+                <p>The professional approach is to write JavaScript in a separate <code>.js</code> file and link it with the <code>src</code> attribute on a <code>&lt;script&gt;</code> tag. This is exactly like how you link CSS with a <code>&lt;link&gt;</code> tag.</p>
+
+                <h3>The HTML file (index.html)</h3>
+                <pre><code class="language-html">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;External Script Demo&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;My Page&lt;/h1&gt;
+
+    &lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </code></pre>
+
+                <h3>The JavaScript file (app.js)</h3>
+                <pre><code class="language-javascript">
+// app.js — your first external script
+console.log("This message comes from app.js!");
+console.log("The script is linked and running.");
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Benefits of External Scripts</h4>
+                    <ul>
+                        <li><strong>Separation of concerns</strong> — HTML stays clean, JS lives in its own file</li>
+                        <li><strong>Reusability</strong> — the same <code>.js</code> file can be linked from multiple pages</li>
+                        <li><strong>Caching</strong> — browsers cache external files, so returning visitors load pages faster</li>
+                        <li><strong>Easier debugging</strong> — errors point to a specific file and line number</li>
+                    </ul>
+                </div>
+
+                <blockquote>
+                    <strong>⚠️ Important:</strong> When a <code>&lt;script&gt;</code> tag has a <code>src</code> attribute, any code <em>inside</em> the tag is ignored. Don't mix them — use one or the other.
+                </blockquote>
+
+                <pre><code class="language-html">
+&lt;!-- ❌ BAD — the inline code is ignored when src is present --&gt;
+&lt;script src="app.js"&gt;
+    console.log("This will NOT run!");
+&lt;/script&gt;
+
+&lt;!-- ✅ GOOD — use separate tags --&gt;
+&lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+    console.log("This WILL run.");
+&lt;/script&gt;
+                </code></pre>
+            </section>
+
+            <!-- Section 4: Script Placement -->
+            <section id="script-placement" class="lesson-section">
+                <h2>Script Placement &amp; Loading</h2>
+                <p>Where you place the <code>&lt;script&gt;</code> tag matters. When the browser encounters a script, it <strong>stops parsing the HTML</strong> to download and execute it. This can cause problems if your script tries to access HTML elements that haven't been created yet.</p>
+
+                <h3>Three Common Approaches</h3>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Option 1: Script in &lt;head&gt;<br/>(blocks page rendering)"] --> D["❌ Elements don't exist yet"]
+                    B["Option 2: Script before &lt;/body&gt;<br/>(safe — HTML is parsed first)"] --> E["✅ All elements exist"]
+                    C["Option 3: Script in &lt;head&gt; with defer<br/>(modern best practice)"] --> F["✅ Downloads in parallel,<br/>runs after HTML is parsed"]
+                    style A fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style B fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Option 1: Script in the <code>&lt;head&gt;</code> (Risky)</h3>
+                <pre><code class="language-html">
+&lt;head&gt;
+    &lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 id="title"&gt;Hello&lt;/h1&gt;
+&lt;/body&gt;
+                </code></pre>
+                <p>Problem: <code>app.js</code> runs before the <code>&lt;h1&gt;</code> exists. If your script tries to find that element, it will get <code>null</code>.</p>
+
+                <h3>Option 2: Script Before <code>&lt;/body&gt;</code> (Safe)</h3>
+                <pre><code class="language-html">
+&lt;body&gt;
+    &lt;h1 id="title"&gt;Hello&lt;/h1&gt;
+
+    &lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+                </code></pre>
+                <p>The HTML is fully parsed before the script runs. This is the traditional safe approach.</p>
+
+                <h3>Option 3: <code>defer</code> Attribute (Modern Best Practice)</h3>
+                <pre><code class="language-html">
+&lt;head&gt;
+    &lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+                </code></pre>
+                <p>The <code>defer</code> attribute tells the browser: <strong>"Download this script in the background, but don't run it until the HTML is fully parsed."</strong> This gives you the best of both worlds — the script is in the <code>&lt;head&gt;</code> (clean structure) but runs after the page is ready.</p>
+
+                <div class="card card-info">
+                    <h4>💡 Our Approach in This Course</h4>
+                    <p>We'll primarily use <strong>Option 2</strong> (script before <code>&lt;/body&gt;</code>) because it's the most explicit and easiest to understand. As you get comfortable, you can switch to <code>defer</code>. Both are correct.</p>
+                </div>
+            </section>
+
+            <!-- Section 5: The Browser Console -->
+            <section id="console" class="lesson-section">
+                <h2>The Browser Console</h2>
+                <p>The <strong>console</strong> is a panel in your browser's Developer Tools where JavaScript output appears. It's also where you can type JavaScript commands and run them instantly. You'll use it constantly.</p>
+
+                <h3>How to Open the Console</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Browser</th>
+                                <th>Shortcut (Windows/Linux)</th>
+                                <th>Shortcut (Mac)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Chrome</td>
+                                <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd></td>
+                                <td><kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>J</kbd></td>
+                            </tr>
+                            <tr>
+                                <td>Firefox</td>
+                                <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd></td>
+                                <td><kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>K</kbd></td>
+                            </tr>
+                            <tr>
+                                <td>Edge</td>
+                                <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd></td>
+                                <td><kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>J</kbd></td>
+                            </tr>
+                            <tr>
+                                <td>Any Browser</td>
+                                <td colspan="2"><kbd>F12</kbd> then click the <strong>Console</strong> tab</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>Once open, you can type any JavaScript directly into the console and press <kbd>Enter</kbd> to run it. Try these:</p>
+
+                <pre><code class="language-javascript">
+2 + 2
+"Hello" + " " + "World"
+Math.random()
+                </code></pre>
+
+                <div class="card card-output">
+                    <h4>Output:</h4>
+                    <pre><code>4
+"Hello World"
+0.7423189156482... (random number between 0 and 1)
+                    </code></pre>
+                </div>
+
+                <p>The console is your <strong>JavaScript playground</strong>. Any time you want to test a quick idea, try it in the console first.</p>
+            </section>
+
+            <!-- Section 6: Console Methods -->
+            <section id="console-methods" class="lesson-section">
+                <h2>Console Methods</h2>
+                <p><code>console.log()</code> is the most common way to output information, but the console object has several other useful methods:</p>
+
+                <pre><code class="language-javascript">
+// Standard output
+console.log("Regular message");
+
+// Informational (often styled with a blue icon)
+console.info("This is informational");
+
+// Warning (yellow background / icon)
+console.warn("This is a warning!");
+
+// Error (red background / icon)
+console.error("Something went wrong!");
+
+// Table format (great for arrays and objects)
+console.table(["apple", "banana", "cherry"]);
+
+// Grouping related messages
+console.group("My Group");
+console.log("Message 1");
+console.log("Message 2");
+console.groupEnd();
+
+// Timing how long something takes
+console.time("timer");
+// ... some code ...
+console.timeEnd("timer");
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Pro Tip: console.log() is Your #1 Debugging Tool</h4>
+                    <p>When your code isn't working as expected, sprinkling <code>console.log()</code> statements throughout your code is the quickest way to understand what's happening. Print variable values, check which branches of code execute, and verify data formats. You'll use this technique constantly.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Console Output ≠ Page Output</h4>
+                    <p><code>console.log()</code> prints to the <strong>DevTools Console</strong>, not to the web page itself. Users visiting your site won't see console messages unless they open DevTools. To display something on the page, you'll learn to manipulate the DOM in Module 4.</p>
+                </div>
+            </section>
+
+            <!-- Section 7: Comments -->
+            <section id="comments" class="lesson-section">
+                <h2>JavaScript Comments</h2>
+                <p>Comments are notes in your code that the browser ignores. They're for <strong>humans</strong> — to explain what your code does, leave reminders, or temporarily disable code.</p>
+
+                <pre><code class="language-javascript">
+// This is a single-line comment
+// Everything after // on this line is ignored
+
+console.log("This runs"); // Comments can go after code too
+
+/*
+  This is a multi-line comment.
+  It can span as many lines as you need.
+  Great for longer explanations.
+*/
+
+/* You can also use multi-line syntax on one line */
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 When to Comment</h4>
+                    <p>Comment to explain <strong>why</strong>, not <strong>what</strong>. Good code is mostly self-explanatory. Use comments for non-obvious decisions, workarounds, or TODOs.</p>
+                </div>
+
+                <pre><code class="language-javascript">
+// ❌ Bad comment — just restates the code
+let age = 25; // set age to 25
+
+// ✅ Good comment — explains WHY
+let age = 25; // Default age for demo accounts (per product spec)
+                </code></pre>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Your First JS Project</h3>
+                    <p><strong>Objective:</strong> Create an HTML page linked to an external JavaScript file and verify it works using the console.</p>
+
+                    <h4>Instructions:</h4>
+                    <ol>
+                        <li>Create a new project folder called <code>js-practice</code></li>
+                        <li>Inside it, create two files: <code>index.html</code> and <code>app.js</code></li>
+                        <li>Write the HTML below in <code>index.html</code>:</li>
+                    </ol>
+
+                    <pre><code class="language-html">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;JS Practice&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;JavaScript Practice&lt;/h1&gt;
+    &lt;p&gt;Open the console to see messages.&lt;/p&gt;
+
+    &lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+
+                    <ol start="4">
+                        <li>Write the following in <code>app.js</code>:</li>
+                    </ol>
+
+                    <pre><code class="language-javascript">
+// My first external JavaScript file!
+console.log("app.js is connected and running!");
+
+// Experiment with different console methods
+console.log("Regular log message");
+console.warn("This is a warning");
+console.error("This is an error (not a real one!)");
+console.info("Here's some info");
+
+// Try some math
+console.log("5 + 3 =", 5 + 3);
+console.log("10 * 4 =", 10 * 4);
+
+// Try a table
+console.table(["HTML", "CSS", "JavaScript"]);
+                    </code></pre>
+
+                    <ol start="5">
+                        <li>Open <code>index.html</code> in your browser (using Live Server or double-click)</li>
+                        <li>Open the Console (<kbd>F12</kbd> → Console tab)</li>
+                        <li>Verify you see all the messages</li>
+                    </ol>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p>If you see nothing in the console, check that <code>app.js</code> is in the same folder as <code>index.html</code>. Also check for typos in the filename — <code>src="app.js"</code> must match the actual file name exactly (case-sensitive on some systems).</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ What You Should See</summary>
+                        <p>The console should display: a regular log message, a yellow warning, a red error message, an info message, two math results (8 and 40), and a table with three rows showing HTML, CSS, and JavaScript. If you see all of these, your external script is linked correctly!</p>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> Where is the recommended place to put a <code>&lt;script&gt;</code> tag that links to an external file?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="This works but can cause issues if the script tries to access elements that haven't loaded yet.">
+                                A) Inside the &lt;head&gt; (without defer)
+                            </button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Placing the script just before &lt;/body&gt; ensures all HTML elements exist before the script runs.">
+                                B) Just before the closing &lt;/body&gt; tag
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="Script tags should be inside &lt;head&gt; or &lt;body&gt;, not outside them.">
+                                C) After the &lt;/html&gt; tag
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="The &lt;title&gt; tag is for the page title. Scripts don't go there.">
+                                D) Inside the &lt;title&gt; tag
+                            </button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What does <code>console.log()</code> do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="console.log() outputs to DevTools, not the visible page. Users won't see it unless they open the console.">
+                                A) Displays text on the web page
+                            </button>
+                            <button class="quiz-option" data-correct="true" data-explanation="console.log() prints messages to the browser's Developer Tools Console — your primary debugging tool.">
+                                B) Prints a message to the browser's Developer Tools Console
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="console.log() outputs information — it doesn't save anything to a file.">
+                                C) Saves data to a file
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="Alert boxes are created with alert(), not console.log().">
+                                D) Creates a popup alert box
+                            </button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What does the <code>defer</code> attribute do on a <code>&lt;script&gt;</code> tag?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="defer doesn't prevent execution — it delays it until the HTML is fully parsed.">
+                                A) Prevents the script from running
+                            </button>
+                            <button class="quiz-option" data-correct="true" data-explanation="defer tells the browser to download the script in the background and execute it only after the HTML document is fully parsed.">
+                                B) Downloads the script in parallel and runs it after HTML parsing completes
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="defer doesn't make scripts run faster — it changes WHEN they run relative to the HTML.">
+                                C) Makes the script run faster
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="defer doesn't convert scripts to inline. It's an attribute for external script files.">
+                                D) Converts the script to inline
+                            </button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Add JavaScript with the <code>&lt;script&gt;</code> tag — either inline or linked via <code>src</code></li>
+                        <li><strong>External scripts</strong> (separate <code>.js</code> files) are the professional standard</li>
+                        <li>Place scripts <strong>before <code>&lt;/body&gt;</code></strong> or use <code>defer</code> in the <code>&lt;head&gt;</code></li>
+                        <li><code>console.log()</code> prints to the <strong>DevTools Console</strong> — your #1 debugging tool</li>
+                        <li>Other console methods: <code>.warn()</code>, <code>.error()</code>, <code>.table()</code>, <code>.group()</code></li>
+                        <li>Comments (<code>//</code> and <code>/* */</code>) explain your code for humans</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script" target="_blank" rel="noopener">MDN — The &lt;script&gt; element</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/console" target="_blank" rel="noopener">MDN — Console API reference</a></li>
+                    <li><a href="https://javascript.info/hello-world" target="_blank" rel="noopener">javascript.info — Hello, world!</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you can run JavaScript, it's time to learn the building blocks of the language. In the next lesson, you'll learn about <strong>variables and data types</strong> — how to store and work with information in JavaScript.</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Congratulations!</h3>
+                    <p>You've completed Lesson 2. You can now link JavaScript to HTML and use the console. You're writing real code!</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_01.html" class="prev-lesson">← Previous: Welcome to JavaScript</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_03.html" class="next-lesson">Next: Variables &amp; Data Types →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

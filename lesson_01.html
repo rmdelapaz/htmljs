@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Welcome to JavaScript — learn what JavaScript is, how it fits with HTML and CSS, and why it's the language of the web.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 1: Welcome to JavaScript - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 1</a></li>
+            <li aria-current="page">Lesson 1: Welcome to JavaScript</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>⚡ Lesson 1: Welcome to JavaScript</h1>
+                <p class="lead">Discover what JavaScript is, how it brings web pages to life, and why it's the most important language for front-end development.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain what JavaScript is and what role it plays alongside HTML and CSS</li>
+                        <li>Describe the difference between front-end and back-end JavaScript</li>
+                        <li>Understand how the browser executes JavaScript</li>
+                        <li>Identify real-world examples of JavaScript in action on web pages</li>
+                        <li>Outline what you'll build throughout this course</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 30 minutes</p>
+                    <p><strong>Project:</strong> Explore JavaScript on live websites using DevTools</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#intro" class="toc-link">Introduction</a></li>
+                        <li><a href="#what-is-js" class="toc-link">What Is JavaScript?</a></li>
+                        <li><a href="#three-layers" class="toc-link">The Three Layers of the Web</a></li>
+                        <li><a href="#js-in-action" class="toc-link">JavaScript in Action</a></li>
+                        <li><a href="#how-browsers-run-js" class="toc-link">How Browsers Run JavaScript</a></li>
+                        <li><a href="#brief-history" class="toc-link">A Brief History</a></li>
+                        <li><a href="#frontend-vs-backend" class="toc-link">Front-End vs. Back-End JavaScript</a></li>
+                        <li><a href="#course-roadmap" class="toc-link">What You'll Build in This Course</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1: Introduction -->
+            <section id="intro" class="lesson-section">
+                <h2>Introduction</h2>
+                <p>You already know how to build web pages. With HTML you can structure content — headings, paragraphs, images, links. With CSS you can style that content — colors, layouts, fonts, responsive design. But so far, your pages are <strong>static</strong>. They look great, but they don't <em>do</em> anything.</p>
+                <p>That's where <strong>JavaScript</strong> comes in. JavaScript is the programming language that makes web pages interactive. It's what happens when you click a button and a menu slides open, when you type in a search box and suggestions appear, or when a page updates without reloading. If HTML is the skeleton and CSS is the skin, JavaScript is the <strong>brain and muscles</strong>.</p>
+
+                <blockquote>
+                    <strong>💡 Key Insight:</strong> Every modern website you use — Google, YouTube, Amazon, Reddit — relies heavily on JavaScript. Learning it opens the door to building the kind of web experiences you use every day.
+                </blockquote>
+            </section>
+
+            <!-- Section 2: What Is JavaScript? -->
+            <section id="what-is-js" class="lesson-section">
+                <h2>What Is JavaScript?</h2>
+                <p>JavaScript is a <strong>programming language</strong> — a way to give instructions to a computer. Specifically, it's the programming language that web browsers understand natively. When you write JavaScript and include it in a web page, the browser reads your instructions and executes them.</p>
+
+                <p>Here's what makes JavaScript special:</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>What It Means</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Runs in the browser</strong></td>
+                                <td>No extra software needed — every browser has a JavaScript engine built in</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Interpreted</strong></td>
+                                <td>The browser reads and runs your code line by line (no compile step)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dynamic</strong></td>
+                                <td>You can change variables, create elements, and modify the page while it's running</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Event-driven</strong></td>
+                                <td>Code runs in response to user actions — clicks, typing, scrolling, etc.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Versatile</strong></td>
+                                <td>Used for front-end, back-end, mobile apps, games, and more</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-accent">
+                    <h4>📖 Definition</h4>
+                    <p><strong>JavaScript</strong> is a high-level, interpreted programming language that runs in web browsers to add interactivity, manipulate page content, and respond to user actions.</p>
+                </div>
+            </section>
+
+            <!-- Section 3: Three Layers of the Web -->
+            <section id="three-layers" class="lesson-section">
+                <h2>The Three Layers of the Web</h2>
+                <p>Every web page is built from three technologies that work together. You already know two of them. JavaScript is the third.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["🏗️ HTML<br/>Structure & Content"] --> D["🌐 Web Page"]
+                    B["🎨 CSS<br/>Style & Layout"] --> D
+                    C["⚡ JavaScript<br/>Behavior & Interactivity"] --> D
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#f0f0ff,stroke:#6366f1,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Layer</th>
+                                <th>Technology</th>
+                                <th>Role</th>
+                                <th>Analogy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Structure</td>
+                                <td>HTML</td>
+                                <td>Defines <em>what</em> is on the page (headings, text, images, forms)</td>
+                                <td>The skeleton of a building</td>
+                            </tr>
+                            <tr>
+                                <td>Presentation</td>
+                                <td>CSS</td>
+                                <td>Defines <em>how</em> things look (colors, spacing, layout)</td>
+                                <td>The paint, wallpaper, and furniture</td>
+                            </tr>
+                            <tr>
+                                <td>Behavior</td>
+                                <td>JavaScript</td>
+                                <td>Defines <em>what happens</em> when users interact (clicks, input, animations)</td>
+                                <td>The electricity, plumbing, and elevator</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ You're Already Two-Thirds There</h4>
+                    <p>You've already mastered HTML and CSS. Adding JavaScript completes the trifecta. You'll be surprised how quickly things click when you can already see the page you're working with.</p>
+                </div>
+            </section>
+
+            <!-- Section 4: JavaScript in Action -->
+            <section id="js-in-action" class="lesson-section">
+                <h2>JavaScript in Action</h2>
+                <p>JavaScript is everywhere on the web. Here are common things JavaScript does that you've experienced as a user, probably hundreds of times:</p>
+
+                <h3>Interactive UI Elements</h3>
+                <ul>
+                    <li><strong>Dropdown menus</strong> that open when you hover or click</li>
+                    <li><strong>Tabs and accordions</strong> that show/hide content</li>
+                    <li><strong>Image carousels</strong> that slide between photos</li>
+                    <li><strong>Modal dialogs</strong> (popup boxes) for confirmations or forms</li>
+                </ul>
+
+                <h3>Dynamic Content</h3>
+                <ul>
+                    <li><strong>Live search suggestions</strong> as you type in a search box</li>
+                    <li><strong>Infinite scroll</strong> loading more content as you scroll down</li>
+                    <li><strong>Real-time updates</strong> like chat messages or notification badges</li>
+                    <li><strong>Form validation</strong> that checks your input before you submit</li>
+                </ul>
+
+                <h3>Data & Communication</h3>
+                <ul>
+                    <li><strong>Fetching data</strong> from servers without reloading the page</li>
+                    <li><strong>Saving preferences</strong> like dark mode or language settings</li>
+                    <li><strong>Shopping carts</strong> that remember what you've added</li>
+                </ul>
+
+                <div class="card card-warning">
+                    <h4>⚠️ JavaScript ≠ Java</h4>
+                    <p>Despite the similar name, <strong>JavaScript and Java are completely different languages</strong>. JavaScript was named to ride the popularity wave of Java in the 1990s — a marketing decision, not a technical one. They share some syntax conventions but are otherwise unrelated.</p>
+                </div>
+            </section>
+
+            <!-- Section 5: How Browsers Run JavaScript -->
+            <section id="how-browsers-run-js" class="lesson-section">
+                <h2>How Browsers Run JavaScript</h2>
+                <p>Every modern web browser includes a <strong>JavaScript engine</strong> — a built-in program that reads and executes JavaScript code. You don't need to install anything extra.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Browser</th>
+                                <th>JavaScript Engine</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Chrome / Edge</td>
+                                <td>V8</td>
+                            </tr>
+                            <tr>
+                                <td>Firefox</td>
+                                <td>SpiderMonkey</td>
+                            </tr>
+                            <tr>
+                                <td>Safari</td>
+                                <td>JavaScriptCore (Nitro)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>Here's what happens when a browser loads a page with JavaScript:</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Browser requests page"] --> B["Server sends HTML"]
+                    B --> C["Browser parses HTML"]
+                    C --> D["Finds &lt;link&gt; tags → loads CSS"]
+                    C --> E["Finds &lt;script&gt; tags → loads JS"]
+                    D --> F["Builds the render tree"]
+                    E --> G["JS engine executes code"]
+                    F --> H["Page is displayed"]
+                    G --> H
+                    H --> I["JS listens for user events"]
+                    I --> J["User clicks / types / scrolls"]
+                    J --> K["JS responds — updates the page"]
+                    K --> I
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style H fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style K fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+
+                <p>The key takeaway: JavaScript runs <strong>after</strong> the page loads, and then stays active, waiting for the user to do something. This is why JavaScript is called an <strong>event-driven</strong> language.</p>
+            </section>
+
+            <!-- Section 6: Brief History -->
+            <section id="brief-history" class="lesson-section">
+                <h2>A Brief History</h2>
+                <p>JavaScript has a famously fast origin story and has evolved dramatically:</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Milestone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1995</strong></td>
+                                <td>Brendan Eich creates JavaScript in <strong>10 days</strong> at Netscape. Originally called "Mocha," then "LiveScript," then renamed "JavaScript."</td>
+                            </tr>
+                            <tr>
+                                <td><strong>1997</strong></td>
+                                <td>JavaScript is standardized as <strong>ECMAScript</strong> (the official spec). "ES" versions follow.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2009</strong></td>
+                                <td><strong>Node.js</strong> lets JavaScript run outside the browser (on servers).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2015</strong></td>
+                                <td><strong>ES6 (ES2015)</strong> — massive update: <code>let</code>/<code>const</code>, arrow functions, template literals, classes, modules. Modern JS begins.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2015–Now</strong></td>
+                                <td>Annual updates. JavaScript is the <strong>#1 most-used programming language</strong> in the world.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 ECMAScript vs. JavaScript</h4>
+                    <p><strong>ECMAScript</strong> is the official specification (the rules). <strong>JavaScript</strong> is the implementation (what browsers actually run). When people say "ES6" or "ES2015," they're referring to a version of the specification. In practice, the terms are used interchangeably.</p>
+                </div>
+            </section>
+
+            <!-- Section 7: Front-End vs. Back-End -->
+            <section id="frontend-vs-backend" class="lesson-section">
+                <h2>Front-End vs. Back-End JavaScript</h2>
+                <p>JavaScript originally ran only in the browser. Today, thanks to tools like Node.js, it can also run on servers. This course focuses on <strong>front-end (browser) JavaScript</strong> — the kind that directly interacts with your HTML and CSS.</p>
+
+                <div class="mermaid">
+                    graph TB
+                    subgraph FE["Front-End (This Course)"]
+                        direction TB
+                        A["Runs in the browser"]
+                        B["Manipulates HTML & CSS"]
+                        C["Responds to user events"]
+                        D["Fetches data from APIs"]
+                    end
+                    subgraph BE["Back-End (Future Learning)"]
+                        direction TB
+                        E["Runs on a server"]
+                        F["Handles databases"]
+                        G["Processes requests"]
+                        H["Serves files & data"]
+                    end
+                    style FE fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style BE fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-success">
+                    <h4>✅ Why Front-End First?</h4>
+                    <p>Starting with front-end JavaScript means you see <strong>immediate visual results</strong>. Every line of code you write changes something you can see in the browser. That instant feedback loop makes learning faster and more satisfying.</p>
+                </div>
+            </section>
+
+            <!-- Section 8: Course Roadmap -->
+            <section id="course-roadmap" class="lesson-section">
+                <h2>What You'll Build in This Course</h2>
+                <p>Over 22 lessons, you'll go from zero JavaScript knowledge to building complete interactive features. Here's the journey:</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Module 1<br/>Foundations"] --> B["Module 2<br/>Control Flow<br/>& Functions"]
+                    B --> C["Module 3<br/>Data<br/>Structures"]
+                    C --> D["Module 4<br/>The DOM"]
+                    D --> E["Module 5<br/>Interactive<br/>Pages"]
+                    E --> F["Module 6<br/>Capstone"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                    style E fill:#f0f0ff,stroke:#6366f1,stroke-width:2px,color:#1e293b
+                    style F fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+
+                <ul>
+                    <li><strong>Module 1</strong> — Get comfortable with JS basics: variables, types, operators</li>
+                    <li><strong>Module 2</strong> — Control your code: conditionals, loops, functions</li>
+                    <li><strong>Module 3</strong> — Work with data: arrays, objects, powerful methods</li>
+                    <li><strong>Module 4</strong> — Connect JS to the page: select, modify, create HTML elements</li>
+                    <li><strong>Module 5</strong> — Build real features: forms, timers, storage, APIs</li>
+                    <li><strong>Module 6</strong> — Capstone project: put it all together into a complete interactive app</li>
+                </ul>
+
+                <p>Each lesson includes hands-on exercises, quizzes, and code you can run immediately in your browser.</p>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Spot JavaScript in the Wild</h3>
+                    <p><strong>Objective:</strong> Identify JavaScript-powered features on real websites using your browser's DevTools.</p>
+
+                    <h4>Instructions:</h4>
+                    <ol>
+                        <li>Open <strong>Chrome</strong> (or your preferred browser) and navigate to any website you use regularly — Google, YouTube, Amazon, etc.</li>
+                        <li>Right-click anywhere on the page and select <strong>Inspect</strong> (or press <kbd>F12</kbd>) to open DevTools.</li>
+                        <li>Click the <strong>Console</strong> tab at the top of DevTools.</li>
+                        <li>Type the following and press <kbd>Enter</kbd>:</li>
+                    </ol>
+
+                    <pre><code class="language-javascript">
+document.title
+                    </code></pre>
+
+                    <p>You should see the page's title printed in the console. That's JavaScript reading data from the page!</p>
+
+                    <ol start="5">
+                        <li>Now try this:</li>
+                    </ol>
+
+                    <pre><code class="language-javascript">
+document.title = "I changed this with JavaScript!"
+                    </code></pre>
+
+                    <p>Look at your browser tab — the title changed! You just used JavaScript to modify a live web page.</p>
+
+                    <ol start="6">
+                        <li>Try one more — this changes the page's background color:</li>
+                    </ol>
+
+                    <pre><code class="language-javascript">
+document.body.style.backgroundColor = "lightyellow"
+                    </code></pre>
+
+                    <ol start="7">
+                        <li>Interact with the website normally. Click buttons, hover over menus, type in search boxes. For each interaction, ask yourself: <strong>"Is JavaScript making this happen?"</strong></li>
+                    </ol>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p>Almost anything that moves, appears, disappears, or changes without a full page reload is driven by JavaScript. Static text and layout come from HTML and CSS; the <em>behavior</em> comes from JavaScript.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ What You Should Have Seen</summary>
+                        <p><strong>document.title</strong> returned the page title as a string. Assigning a new value changed the browser tab text instantly. <strong>document.body.style.backgroundColor</strong> changed the entire page's background color. These are simple examples of JavaScript manipulating the DOM — something you'll master in Module 4.</p>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What is JavaScript's primary role in web development?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That's HTML's job — defining headings, paragraphs, images, etc.">
+                                A) Structuring content on a page
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's CSS's job — colors, fonts, layout, and responsive design.">
+                                B) Styling how elements look
+                            </button>
+                            <button class="quiz-option" data-correct="true" data-explanation="JavaScript adds interactivity — responding to clicks, updating content dynamically, validating forms, and more.">
+                                C) Adding interactivity and behavior
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="While JavaScript can work with servers via APIs, its primary front-end role is interactivity.">
+                                D) Storing data in databases
+                            </button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> JavaScript and Java are the same language.</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Despite the similar name, they are completely different languages. The name was a marketing decision from the 1990s.">
+                                A) True
+                            </button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! JavaScript was named to capitalize on Java's popularity, but they are entirely separate languages with different design philosophies.">
+                                B) False
+                            </button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> Which of these does a browser need to run JavaScript?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Node.js lets JavaScript run on servers, but browsers have their own built-in engine.">
+                                A) Node.js installed on the computer
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="Unlike languages like C++ or Java, JavaScript doesn't need a separate compile step.">
+                                B) A special compiler
+                            </button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Every modern browser — Chrome, Firefox, Edge, Safari — has a JavaScript engine built in. Nothing extra is needed.">
+                                C) Nothing extra — browsers have a built-in JavaScript engine
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="Plugins are not required. JavaScript support is built into every modern browser.">
+                                D) A browser plugin
+                            </button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>JavaScript</strong> is the programming language of the web — it adds interactivity and behavior to pages built with HTML and CSS</li>
+                        <li>The web has <strong>three layers</strong>: HTML (structure), CSS (presentation), and JavaScript (behavior)</li>
+                        <li>Browsers have <strong>built-in JavaScript engines</strong> — no extra software needed</li>
+                        <li>JavaScript is <strong>event-driven</strong>: it runs code in response to user actions</li>
+                        <li>JavaScript ≠ Java — they're completely different languages</li>
+                        <li>This course focuses on <strong>front-end JavaScript</strong> — code that runs in the browser and interacts with your pages</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/First_steps/What_is_JavaScript" target="_blank" rel="noopener">MDN — What is JavaScript?</a></li>
+                    <li><a href="https://javascript.info/intro" target="_blank" rel="noopener">javascript.info — An Introduction to JavaScript</a></li>
+                    <li><a href="https://developer.chrome.com/docs/devtools/console/" target="_blank" rel="noopener">Chrome DevTools Console documentation</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>In the next lesson, you'll learn how to <strong>link JavaScript to your HTML pages</strong> using the <code>&lt;script&gt;</code> tag and start writing real code in the browser console. Time to write your first lines of JavaScript!</p>
+
+                <div class="card card-accent" style="text-align: center; padding: 2rem;">
+                    <h3>🎉 Congratulations!</h3>
+                    <p>You've completed Lesson 1. You now know what JavaScript is and why it matters. Let's start writing some code!</p>
+                </div>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <span style="visibility: hidden;" class="prev-lesson">← Previous</span>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_02.html" class="next-lesson">Next: Linking Scripts &amp; the Console →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

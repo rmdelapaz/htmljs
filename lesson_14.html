@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to select DOM elements with querySelector and modify their text, classes, styles, and attributes using JavaScript.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 14: Selecting &amp; Modifying Elements - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 4</a></li>
+            <li aria-current="page">Lesson 14: Selecting &amp; Modifying Elements</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🎯 Lesson 14: Selecting &amp; Modifying Elements</h1>
+                <p class="lead">Now that you understand the DOM tree, it's time to reach in and grab elements — then change their text, classes, styles, and attributes with JavaScript.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Select single elements with <code>querySelector</code> and <code>getElementById</code></li>
+                        <li>Select multiple elements with <code>querySelectorAll</code></li>
+                        <li>Read and change element text with <code>textContent</code> and <code>innerHTML</code></li>
+                        <li>Add, remove, and toggle CSS classes with <code>classList</code></li>
+                        <li>Modify inline styles with the <code>style</code> property</li>
+                        <li>Get and set HTML attributes with <code>getAttribute</code> and <code>setAttribute</code></li>
+                        <li>Work with data attributes (<code>data-*</code>)</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 50 minutes</p>
+                    <p><strong>Project:</strong> Build a dynamic profile card editor</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#selecting-one" class="toc-link">Selecting a Single Element</a></li>
+                        <li><a href="#selecting-many" class="toc-link">Selecting Multiple Elements</a></li>
+                        <li><a href="#text-content" class="toc-link">Changing Text Content</a></li>
+                        <li><a href="#classlist" class="toc-link">Working with Classes</a></li>
+                        <li><a href="#styles" class="toc-link">Modifying Inline Styles</a></li>
+                        <li><a href="#attributes" class="toc-link">Attributes &amp; Data Attributes</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="selecting-one" class="lesson-section">
+                <h2>Selecting a Single Element</h2>
+
+                <h3>querySelector() — The Modern Standard</h3>
+                <p><code>querySelector</code> finds the <strong>first element</strong> matching a CSS selector. If you know CSS selectors, you already know how to use it.</p>
+
+                <pre><code class="language-javascript">
+// By tag name
+const heading = document.querySelector("h1");
+
+// By class name (prefix with .)
+const card = document.querySelector(".card");
+
+// By ID (prefix with #)
+const nav = document.querySelector("#main-nav");
+
+// By attribute
+const link = document.querySelector('a[href="#intro"]');
+
+// Complex selectors work too
+const firstItem = document.querySelector("ul.todo-list > li:first-child");
+
+// Returns null if nothing matches
+const nope = document.querySelector(".nonexistent");
+console.log(nope);  // null
+                </code></pre>
+
+                <h3>getElementById() — The Classic</h3>
+                <pre><code class="language-javascript">
+// Only selects by ID — no # prefix needed
+const nav = document.getElementById("main-nav");
+
+// Equivalent to:
+const nav2 = document.querySelector("#main-nav");
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 querySelector vs. getElementById</h4>
+                    <p>Use <code>querySelector</code> for everything — it's more flexible since it accepts any CSS selector. <code>getElementById</code> is slightly faster for ID lookups, but the difference is negligible in practice. Consistency wins.</p>
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="selecting-many" class="lesson-section">
+                <h2>Selecting Multiple Elements</h2>
+
+                <h3>querySelectorAll()</h3>
+                <p><code>querySelectorAll</code> returns <strong>all</strong> matching elements as a <code>NodeList</code>. You can loop over it with <code>forEach</code> or <code>for...of</code>.</p>
+
+                <pre><code class="language-javascript">
+// Get all paragraphs
+const paragraphs = document.querySelectorAll("p");
+console.log(paragraphs.length);  // Number of &lt;p&gt; elements
+
+// Loop with forEach
+paragraphs.forEach(p => {
+    console.log(p.textContent);
+});
+
+// Loop with for...of
+for (const p of paragraphs) {
+    p.style.color = "blue";
+}
+
+// Get all elements with a specific class
+const cards = document.querySelectorAll(".card");
+
+// Complex selectors
+const activeLinks = document.querySelectorAll("nav a.active");
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ NodeList Is Not an Array</h4>
+                    <p>A <code>NodeList</code> supports <code>forEach</code> and <code>for...of</code>, but <strong>not</strong> array methods like <code>map</code>, <code>filter</code>, or <code>reduce</code>. Convert it to an array if you need those.</p>
+                    <pre><code class="language-javascript">
+const items = document.querySelectorAll("li");
+
+// ❌ items.map(...) — TypeError!
+
+// ✅ Convert to array first
+const itemArray = [...items];  // Spread into array
+const texts = itemArray.map(item => item.textContent);
+
+// Or use Array.from()
+const texts2 = Array.from(items).map(item => item.textContent);
+                    </code></pre>
+                </div>
+
+                <h3>Scoped Queries</h3>
+                <p>You can call <code>querySelector</code> on any element, not just <code>document</code>. This limits the search to that element's descendants.</p>
+
+                <pre><code class="language-javascript">
+const sidebar = document.querySelector(".sidebar");
+
+// Only search within the sidebar
+const sidebarLinks = sidebar.querySelectorAll("a");
+const sidebarTitle = sidebar.querySelector("h2");
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Selecting Elements"] --> B["querySelector()"]
+                    A --> C["querySelectorAll()"]
+                    A --> D["getElementById()"]
+                    B --> E["First match<br/>or null"]
+                    C --> F["All matches<br/>(NodeList)"]
+                    D --> G["By ID only<br/>or null"]
+                    style B fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style C fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="text-content" class="lesson-section">
+                <h2>Changing Text Content</h2>
+
+                <h3>textContent — Safe and Simple</h3>
+                <p><code>textContent</code> gets or sets the plain text inside an element. It's the safest option because it treats everything as text (no HTML parsing).</p>
+
+                <pre><code class="language-javascript">
+const heading = document.querySelector("h1");
+
+// Read the text
+console.log(heading.textContent);  // "Hello World"
+
+// Change the text
+heading.textContent = "New Heading!";
+
+// HTML tags are treated as plain text (safe!)
+heading.textContent = "&lt;em&gt;Not italic&lt;/em&gt;";
+// Displays literally: &lt;em&gt;Not italic&lt;/em&gt;
+                </code></pre>
+
+                <h3>innerHTML — Parses HTML</h3>
+                <p><code>innerHTML</code> gets or sets the HTML content inside an element. It parses HTML tags, which is powerful but has security implications.</p>
+
+                <pre><code class="language-javascript">
+const container = document.querySelector(".content");
+
+// Read the HTML
+console.log(container.innerHTML);  // "&lt;p&gt;Hello&lt;/p&gt;&lt;p&gt;World&lt;/p&gt;"
+
+// Set new HTML — tags are parsed and rendered
+container.innerHTML = "&lt;h2&gt;New Section&lt;/h2&gt;&lt;p&gt;With a paragraph.&lt;/p&gt;";
+
+// Add to existing HTML
+container.innerHTML += "&lt;p&gt;Another paragraph&lt;/p&gt;";
+                </code></pre>
+
+                <div class="card card-danger">
+                    <h4>❌ Never Use innerHTML with User Input</h4>
+                    <p>If you insert user-provided text with <code>innerHTML</code>, a malicious user could inject JavaScript code. This is called a <strong>Cross-Site Scripting (XSS)</strong> attack. Always use <code>textContent</code> for user data.</p>
+                    <pre><code class="language-javascript">
+const userInput = '&lt;img src="x" onerror="alert(\'hacked!\')"&gt;';
+
+// ❌ DANGEROUS — this would execute the script
+// element.innerHTML = userInput;
+
+// ✅ SAFE — treats everything as plain text
+element.textContent = userInput;
+                    </code></pre>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Parses HTML?</th>
+                                <th>Safe for User Input?</th>
+                                <th>Use When</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>textContent</code></td><td>No</td><td>Yes</td><td>Setting or reading plain text</td></tr>
+                            <tr><td><code>innerHTML</code></td><td>Yes</td><td>No!</td><td>Inserting HTML you control</td></tr>
+                            <tr><td><code>innerText</code></td><td>No</td><td>Yes</td><td>Reading visible text only (slower)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="classlist" class="lesson-section">
+                <h2>Working with Classes</h2>
+                <p>The <code>classList</code> property provides methods to add, remove, toggle, and check CSS classes. This is how you change an element's appearance dynamically.</p>
+
+                <pre><code class="language-javascript">
+const card = document.querySelector(".card");
+
+// Add a class
+card.classList.add("highlighted");
+// &lt;div class="card highlighted"&gt;
+
+// Remove a class
+card.classList.remove("highlighted");
+// &lt;div class="card"&gt;
+
+// Toggle — add if missing, remove if present
+card.classList.toggle("active");
+// If it had "active" → removes it. If it didn't → adds it.
+
+// Check if a class exists
+if (card.classList.contains("card")) {
+    console.log("It's a card!");  // true
+}
+
+// Add multiple classes at once
+card.classList.add("featured", "new", "sale");
+
+// Remove multiple classes
+card.classList.remove("new", "sale");
+
+// Replace one class with another
+card.classList.replace("featured", "standard");
+                </code></pre>
+
+                <h3>Practical: Toggle Dark Mode</h3>
+                <pre><code class="language-javascript">
+const toggleButton = document.querySelector("#theme-toggle");
+
+toggleButton.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+});
+
+// In CSS:
+// .dark-mode { background: #1a1a2e; color: #eee; }
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ classList vs. className</h4>
+                    <p>The older <code>className</code> property returns all classes as a single string. Modifying it replaces <em>all</em> classes. Use <code>classList</code> instead — it's safer and more precise.</p>
+                    <pre><code class="language-javascript">
+// ❌ className replaces everything
+card.className = "active";  // Removes "card" class too!
+
+// ✅ classList adds/removes individually
+card.classList.add("active");  // Keeps existing classes
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="styles" class="lesson-section">
+                <h2>Modifying Inline Styles</h2>
+                <p>The <code>style</code> property lets you set inline CSS on an element. Property names use <strong>camelCase</strong> instead of kebab-case.</p>
+
+                <pre><code class="language-javascript">
+const box = document.querySelector(".box");
+
+// Set individual styles
+box.style.backgroundColor = "#3b82f6";
+box.style.color = "white";
+box.style.padding = "1rem";
+box.style.borderRadius = "8px";
+box.style.fontSize = "18px";
+
+// Read a style
+console.log(box.style.color);  // "white"
+
+// Remove a style (set to empty string)
+box.style.backgroundColor = "";
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>CSS Property</th>
+                                <th>JavaScript style Property</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>background-color</code></td><td><code>backgroundColor</code></td></tr>
+                            <tr><td><code>font-size</code></td><td><code>fontSize</code></td></tr>
+                            <tr><td><code>border-radius</code></td><td><code>borderRadius</code></td></tr>
+                            <tr><td><code>z-index</code></td><td><code>zIndex</code></td></tr>
+                            <tr><td><code>margin-top</code></td><td><code>marginTop</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Getting Computed Styles</h3>
+                <p><code>element.style</code> only reads <em>inline</em> styles. To see the actual applied styles (including CSS from stylesheets), use <code>getComputedStyle</code>.</p>
+
+                <pre><code class="language-javascript">
+const heading = document.querySelector("h1");
+
+// Only reads inline styles (often empty)
+console.log(heading.style.fontSize);  // "" (not set inline)
+
+// Reads the ACTUAL computed style (from CSS + inline)
+const computed = getComputedStyle(heading);
+console.log(computed.fontSize);      // "32px" (from stylesheet)
+console.log(computed.color);         // "rgb(30, 41, 59)"
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Prefer Classes Over Inline Styles</h4>
+                    <p>For most visual changes, toggle a CSS class instead of setting inline styles. Classes keep your styling in CSS where it belongs. Use inline styles only for dynamic values (like calculated positions or user-chosen colors).</p>
+                    <pre><code class="language-javascript">
+// ✅ Better — toggle a class
+element.classList.add("highlighted");
+
+// ❌ Avoid for static styling
+element.style.backgroundColor = "yellow";
+element.style.fontWeight = "bold";
+element.style.border = "2px solid orange";
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="attributes" class="lesson-section">
+                <h2>Attributes &amp; Data Attributes</h2>
+
+                <h3>Getting and Setting Attributes</h3>
+                <pre><code class="language-javascript">
+const link = document.querySelector("a");
+
+// Read attributes
+console.log(link.getAttribute("href"));     // "https://example.com"
+console.log(link.getAttribute("target"));   // "_blank" or null
+
+// Set attributes
+link.setAttribute("href", "https://new-url.com");
+link.setAttribute("title", "Visit this link");
+
+// Check if an attribute exists
+console.log(link.hasAttribute("target"));   // true or false
+
+// Remove an attribute
+link.removeAttribute("title");
+                </code></pre>
+
+                <h3>Common Properties vs. getAttribute</h3>
+                <p>Many attributes have direct properties on the element. These are usually more convenient.</p>
+
+                <pre><code class="language-javascript">
+const img = document.querySelector("img");
+
+// Direct properties (preferred for common attributes)
+img.src = "new-image.jpg";
+img.alt = "A beautiful sunset";
+img.width = 400;
+
+const link = document.querySelector("a");
+link.href = "https://example.com";
+
+const input = document.querySelector("input");
+input.value = "Hello";
+input.disabled = true;
+input.placeholder = "Enter your name";
+                </code></pre>
+
+                <h3>Data Attributes (data-*)</h3>
+                <p>Custom <code>data-*</code> attributes let you store extra information on HTML elements. Access them through the <code>dataset</code> property.</p>
+
+                <pre><code class="language-html">
+&lt;!-- In your HTML --&gt;
+&lt;button data-action="delete" data-item-id="42" data-confirm="true"&gt;
+    Delete Item
+&lt;/button&gt;
+                </code></pre>
+
+                <pre><code class="language-javascript">
+const btn = document.querySelector("button");
+
+// Read data attributes via dataset
+console.log(btn.dataset.action);    // "delete"
+console.log(btn.dataset.itemId);    // "42" (camelCase!)
+console.log(btn.dataset.confirm);   // "true" (always a string)
+
+// Set data attributes
+btn.dataset.status = "pending";
+// Adds: data-status="pending" to the HTML
+
+// Delete a data attribute
+delete btn.dataset.confirm;
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 data-* Naming Convention</h4>
+                    <p>HTML uses kebab-case (<code>data-item-id</code>), but JavaScript's <code>dataset</code> converts to camelCase (<code>dataset.itemId</code>). The conversion works both ways automatically.</p>
+                </div>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Modifying Elements"] --> B["Text"]
+                    A --> C["Classes"]
+                    A --> D["Styles"]
+                    A --> E["Attributes"]
+                    B --> F["textContent<br/>innerHTML"]
+                    C --> G["classList.add()<br/>.remove()<br/>.toggle()"]
+                    D --> H["style.property<br/>getComputedStyle()"]
+                    E --> I["getAttribute()<br/>setAttribute()<br/>dataset"]
+                    style B fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style C fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style E fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Dynamic Profile Card Editor</h3>
+                    <p><strong>Objective:</strong> Use DOM selection and modification to build an interactive profile card. Create a new HTML file or use the console on any page.</p>
+
+                    <pre><code class="language-html">
+&lt;!-- Save this as profile.html and open in a browser --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Profile Card Editor&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: sans-serif; padding: 2rem; background: #f1f5f9; }
+        .profile-card {
+            max-width: 400px; padding: 2rem; background: white;
+            border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .profile-card h2 { margin-top: 0; }
+        .highlight { border: 3px solid #f59e0b; }
+        .dark { background: #1e293b; color: #e2e8f0; }
+        .hidden { display: none; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="profile-card" id="card"
+         data-user-id="101" data-role="developer"&gt;
+        &lt;h2 id="name"&gt;Jane Doe&lt;/h2&gt;
+        &lt;p id="bio"&gt;Full-stack developer who loves JavaScript.&lt;/p&gt;
+        &lt;p id="location"&gt;📍 Austin, TX&lt;/p&gt;
+        &lt;a id="website" href="https://example.com"&gt;Visit Website&lt;/a&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+    // TODO: Complete each task using DOM methods
+
+    // 1. Change the name to your name
+
+    // 2. Update the bio text
+
+    // 3. Change the location
+
+    // 4. Update the website link (both text and href)
+
+    // 5. Add the "highlight" class to the card
+
+    // 6. Change the card's background color to a light blue
+
+    // 7. Read and log the card's data-user-id
+
+    // 8. Add a new data attribute: data-status="active"
+
+    // 9. Toggle the "dark" class on and off the card
+
+    // 10. Bonus: Create a function that takes a profile object
+    //     and updates all fields at once
+    //     updateProfile({ name: "Ray", bio: "...", location: "...", website: "..." })
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>1-4:</strong> Use <code>querySelector</code> or <code>getElementById</code> to select, then set <code>textContent</code> for text and <code>href</code> for links.</p>
+                        <p><strong>5:</strong> Use <code>classList.add()</code>.</p>
+                        <p><strong>6:</strong> Use <code>style.backgroundColor</code>.</p>
+                        <p><strong>7-8:</strong> Use <code>dataset.userId</code> to read and <code>dataset.status = "active"</code> to set.</p>
+                        <p><strong>9:</strong> Use <code>classList.toggle("dark")</code>.</p>
+                        <p><strong>10:</strong> Write a function that takes an object parameter, destructures it, and sets each field.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+// 1. Change the name
+const nameEl = document.querySelector("#name");
+nameEl.textContent = "Ray De La Paz";
+
+// 2. Update the bio
+document.querySelector("#bio").textContent =
+    "Technical trainer and course developer who loves building things.";
+
+// 3. Change the location
+document.querySelector("#location").textContent = "📍 Henderson, NV";
+
+// 4. Update the website
+const website = document.querySelector("#website");
+website.textContent = "Visit Portfolio";
+website.href = "https://rays-home.netlify.app/";
+
+// 5. Add the highlight class
+const card = document.querySelector("#card");
+card.classList.add("highlight");
+
+// 6. Change background color
+card.style.backgroundColor = "#eff6ff";
+
+// 7. Read data-user-id
+console.log(card.dataset.userId);  // "101"
+
+// 8. Add data-status
+card.dataset.status = "active";
+// Card now has: data-status="active"
+
+// 9. Toggle dark mode
+card.classList.toggle("dark");
+// Call again to toggle off:
+// card.classList.toggle("dark");
+
+// 10. Bonus: Update all fields at once
+function updateProfile({ name, bio, location, website }) {
+    if (name) document.querySelector("#name").textContent = name;
+    if (bio) document.querySelector("#bio").textContent = bio;
+    if (location) document.querySelector("#location").textContent = `📍 ${location}`;
+    if (website) {
+        const el = document.querySelector("#website");
+        el.href = website;
+        el.textContent = "Visit Website";
+    }
+}
+
+updateProfile({
+    name: "Alice Smith",
+    bio: "UX designer and coffee enthusiast.",
+    location: "Portland, OR",
+    website: "https://alice.dev"
+});
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>querySelector</code> return if no element matches?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="undefined is what you get for missing object properties. querySelector returns null.">A) undefined</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="querySelector returns null when no element matches the CSS selector. Always check for null before using the result.">B) null</button>
+                            <button class="quiz-option" data-correct="false" data-hint="querySelectorAll returns an empty NodeList. querySelector returns null for no match.">C) An empty NodeList</button>
+                            <button class="quiz-option" data-correct="false" data-hint="querySelector silently returns null — no error is thrown.">D) It throws an error</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Why should you avoid <code>innerHTML</code> with user input?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="innerHTML works in all modern browsers. The concern is security, not compatibility.">A) It doesn't work in all browsers</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="innerHTML parses HTML, so malicious user input like &lt;script&gt; tags can execute code. This is called Cross-Site Scripting (XSS). Use textContent for user data — it treats everything as plain text.">B) It can execute malicious scripts (XSS attacks)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="innerHTML can actually be faster than multiple DOM operations. The issue is security.">C) It's too slow for dynamic content</button>
+                            <button class="quiz-option" data-correct="false" data-hint="innerHTML works fine with styles. The issue is that it parses HTML and can execute scripts.">D) It removes existing CSS styles</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What method adds a CSS class without removing existing ones?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="className replaces ALL classes with the new value — it doesn't add to existing ones.">A) <code>element.className = &quot;new&quot;</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="classList.add() adds a class while preserving all existing classes on the element.">B) <code>element.classList.add(&quot;new&quot;)</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="classList.toggle() would add it if missing, but also remove it if already present.">C) <code>element.classList.toggle(&quot;new&quot;)</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="setAttribute replaces the entire class attribute, similar to className.">D) <code>element.setAttribute(&quot;class&quot;, &quot;new&quot;)</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> How do you access <code>data-item-id</code> in JavaScript?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Close, but kebab-case is converted to camelCase in the dataset property.">A) <code>element.dataset.item-id</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="data-* attributes are accessed through dataset with camelCase conversion. data-item-id becomes dataset.itemId.">B) <code>element.dataset.itemId</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no 'data' property. Use 'dataset' to access data-* attributes.">C) <code>element.data.itemId</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="This works but is verbose. The dataset property is the modern, cleaner approach.">D) <code>element.getAttribute(&quot;data-item-id&quot;)</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong><code>querySelector</code></strong> and <strong><code>querySelectorAll</code></strong> find elements using CSS selectors</li>
+                        <li><strong><code>textContent</code></strong> safely reads/writes plain text; <strong><code>innerHTML</code></strong> parses HTML (avoid with user data!)</li>
+                        <li><strong><code>classList</code></strong> methods (<code>add</code>, <code>remove</code>, <code>toggle</code>, <code>contains</code>) manage CSS classes precisely</li>
+                        <li><strong><code>style</code></strong> sets inline CSS using camelCase property names</li>
+                        <li>Prefer <strong>toggling classes</strong> over setting inline styles for visual changes</li>
+                        <li><strong><code>dataset</code></strong> accesses <code>data-*</code> attributes with automatic kebab-to-camelCase conversion</li>
+                        <li><strong><code>getComputedStyle</code></strong> reads the actual rendered styles, not just inline ones</li>
+                        <li>Convert <code>NodeList</code> to an array with <code>[...nodeList]</code> to use <code>map</code>/<code>filter</code></li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector" target="_blank" rel="noopener">MDN — querySelector()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList" target="_blank" rel="noopener">MDN — classList</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes" target="_blank" rel="noopener">MDN — Using Data Attributes</a></li>
+                    <li><a href="https://javascript.info/searching-elements-dom" target="_blank" rel="noopener">javascript.info — Searching the DOM</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You can now select and modify elements — but how do you respond when a user <em>clicks a button</em>, <em>submits a form</em>, or <em>presses a key</em>? The next lesson covers <strong>events and event listeners</strong>, the mechanism that makes web pages truly interactive.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_13.html" class="prev-lesson">← Previous: Introduction to the DOM</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_15.html" class="next-lesson">Next: Events &amp; Event Listeners →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

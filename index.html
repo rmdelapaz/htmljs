@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn front-end JavaScript from the ground up. Build interactive, dynamic web pages using vanilla JavaScript — the perfect follow-up to HTML &amp; CSS.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Front-End JavaScript - Home</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <!-- Progress indicator -->
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">
+                ☰
+            </button>
+            <div class="nav-links" id="nav-links">
+                <a href="#introduction">Introduction</a>
+                <a href="#modules">Modules</a>
+                <a href="#prerequisites">Prerequisites</a>
+                <a href="#resources">Resources</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li aria-current="page">Home</li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <div class="container">
+            <!-- Hero Section -->
+            <header>
+                <h1>⚡ Front-End JavaScript</h1>
+                <p class="lead">Make your web pages come alive. Learn JavaScript from the ground up and bring interactivity to the HTML &amp; CSS skills you already have.</p>
+            </header>
+
+            <!-- Overall Progress -->
+            <div id="overall-progress" class="card">
+                <!-- Progress will be inserted by JavaScript -->
+            </div>
+
+            <!-- Introduction Section -->
+            <section id="introduction" class="card">
+                <h2>📚 About This Course</h2>
+                <p>You know how to build beautiful, well-structured web pages with HTML and CSS. Now it's time to make them <strong>do things</strong>. This course teaches you JavaScript — the programming language of the browser — so you can add interactivity, respond to user actions, manipulate the page in real time, and even fetch data from the internet.</p>
+                <p>We start from absolute zero with JavaScript. No prior programming experience is required — just a solid foundation in HTML and CSS (which you built in the prerequisite course). By the end, you'll be writing real, working JavaScript that powers dynamic web pages.</p>
+
+                <h3>What You'll Learn</h3>
+                <ul>
+                    <li>JavaScript fundamentals — variables, data types, operators, and expressions</li>
+                    <li>Control flow — conditionals, loops, and functions</li>
+                    <li>Data structures — arrays, objects, and powerful built-in methods</li>
+                    <li>The DOM — selecting, modifying, creating, and removing HTML elements with JavaScript</li>
+                    <li>Events — responding to clicks, key presses, form submissions, and more</li>
+                    <li>Real-world features — form validation, local storage, timers, and fetching data from APIs</li>
+                    <li>A capstone project that ties it all together</li>
+                </ul>
+
+                <h3>Who This Course Is For</h3>
+                <ul>
+                    <li>Graduates of the <strong>HTML &amp; CSS: Build and Publish Your First Website</strong> course (or anyone comfortable with HTML/CSS)</li>
+                    <li>Aspiring web developers ready to add interactivity to their pages</li>
+                    <li>Anyone curious about programming who wants to see immediate visual results in the browser</li>
+                </ul>
+            </section>
+
+            <!-- Course Modules/Lessons -->
+            <section id="modules">
+                <h2>📖 Course Modules</h2>
+
+                <!-- Module 1 -->
+                <div class="card lesson-card">
+                    <h3>Module 1: JavaScript Foundations</h3>
+                    <p>Get set up and learn the building blocks of JavaScript — how to link scripts, use the console, declare variables, and work with data types and operators.</p>
+                    <ul>
+                        <li><a href="lesson_01.html" class="lesson-link">Lesson 1: Welcome to JavaScript</a></li>
+                        <li><a href="lesson_02.html" class="lesson-link">Lesson 2: Linking Scripts &amp; the Console</a></li>
+                        <li><a href="lesson_03.html" class="lesson-link">Lesson 3: Variables &amp; Data Types</a></li>
+                        <li><a href="lesson_04.html" class="lesson-link">Lesson 4: Operators &amp; Expressions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="card lesson-card">
+                    <h3>Module 2: Control Flow &amp; Functions</h3>
+                    <p>Make decisions with conditionals, repeat actions with loops, and organize your code into reusable functions.</p>
+                    <ul>
+                        <li><a href="lesson_05.html" class="lesson-link">Lesson 5: Conditionals</a></li>
+                        <li><a href="lesson_06.html" class="lesson-link">Lesson 6: Loops</a></li>
+                        <li><a href="lesson_07.html" class="lesson-link">Lesson 7: Functions</a></li>
+                        <li><a href="lesson_08.html" class="lesson-link">Lesson 8: Scope &amp; Hoisting</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="card lesson-card">
+                    <h3>Module 3: Working with Data</h3>
+                    <p>Master arrays, objects, strings, and the powerful built-in methods that make JavaScript a joy to work with.</p>
+                    <ul>
+                        <li><a href="lesson_09.html" class="lesson-link">Lesson 9: Arrays</a></li>
+                        <li><a href="lesson_10.html" class="lesson-link">Lesson 10: Objects</a></li>
+                        <li><a href="lesson_11.html" class="lesson-link">Lesson 11: Array Methods</a></li>
+                        <li><a href="lesson_12.html" class="lesson-link">Lesson 12: Strings &amp; Template Literals</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="card lesson-card">
+                    <h3>Module 4: The DOM</h3>
+                    <p>Connect JavaScript to the page — select elements, change their content and styles, listen for events, and build elements from scratch.</p>
+                    <ul>
+                        <li><a href="lesson_13.html" class="lesson-link">Lesson 13: Introduction to the DOM</a></li>
+                        <li><a href="lesson_14.html" class="lesson-link">Lesson 14: Selecting &amp; Modifying Elements</a></li>
+                        <li><a href="lesson_15.html" class="lesson-link">Lesson 15: Events &amp; Event Listeners</a></li>
+                        <li><a href="lesson_16.html" class="lesson-link">Lesson 16: Creating &amp; Removing Elements</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 5 -->
+                <div class="card lesson-card">
+                    <h3>Module 5: Building Interactive Pages</h3>
+                    <p>Combine everything to build real features — form validation, timers, persistent storage, and fetching live data from APIs.</p>
+                    <ul>
+                        <li><a href="lesson_17.html" class="lesson-link">Lesson 17: Forms &amp; Validation</a></li>
+                        <li><a href="lesson_18.html" class="lesson-link">Lesson 18: Timers &amp; Animation</a></li>
+                        <li><a href="lesson_19.html" class="lesson-link">Lesson 19: Local Storage</a></li>
+                        <li><a href="lesson_20.html" class="lesson-link">Lesson 20: Working with APIs &amp; Fetch</a></li>
+                    </ul>
+                </div>
+
+                <!-- Module 6 -->
+                <div class="card lesson-card">
+                    <h3>Module 6: Capstone &amp; Next Steps</h3>
+                    <p>Build a complete interactive project from scratch, then chart your path forward as a JavaScript developer.</p>
+                    <ul>
+                        <li><a href="lesson_21.html" class="lesson-link">Lesson 21: Building a Complete Project</a></li>
+                        <li><a href="lesson_22.html" class="lesson-link">Lesson 22: Next Steps &amp; Best Practices</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Prerequisites Section -->
+            <section id="prerequisites" class="card">
+                <h2>✅ Prerequisites</h2>
+                <p>Before starting this course, you should have:</p>
+                <ul>
+                    <li>Completed <strong>HTML &amp; CSS: Build and Publish Your First Website</strong> (or equivalent knowledge)</li>
+                    <li>Comfort writing HTML tags, using CSS selectors, and building page layouts</li>
+                    <li>A working VS Code setup with Live Server (covered in the HTML &amp; CSS course)</li>
+                </ul>
+
+                <h3>Required Software</h3>
+                <ul>
+                    <li>A modern web browser (Chrome, Firefox, or Edge recommended)</li>
+                    <li>Visual Studio Code with the Live Server extension</li>
+                    <li>No additional installs needed — JavaScript runs right in the browser!</li>
+                </ul>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="resources" class="card">
+                <h2>📚 Additional Resources</h2>
+
+                <h3>Recommended References</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener">MDN Web Docs — JavaScript</a></li>
+                    <li><a href="https://javascript.info/" target="_blank" rel="noopener">The Modern JavaScript Tutorial (javascript.info)</a></li>
+                    <li><a href="https://eloquentjavascript.net/" target="_blank" rel="noopener">Eloquent JavaScript (free online book)</a></li>
+                </ul>
+
+                <h3>Useful Tools</h3>
+                <ul>
+                    <li><a href="https://developer.chrome.com/docs/devtools/" target="_blank" rel="noopener">Chrome DevTools Documentation</a></li>
+                    <li><a href="https://codepen.io/" target="_blank" rel="noopener">CodePen — online code playground</a></li>
+                    <li><a href="https://jsfiddle.net/" target="_blank" rel="noopener">JSFiddle — quick code experiments</a></li>
+                </ul>
+
+                <h3>Prerequisite Course</h3>
+                <ul>
+                    <li><a href="#">HTML &amp; CSS: Build and Publish Your First Website</a> — the recommended prerequisite for this course</li>
+                </ul>
+            </section>
+
+            <!-- Search Section -->
+            <section class="card">
+                <h2>🔍 Search Course Content</h2>
+                <div style="position: relative;">
+                    <input type="text" id="search-input" placeholder="Search lessons, topics, or keywords..."
+                           aria-label="Search course content">
+                    <div id="search-results" style="display: none; position: absolute; top: 100%; left: 0; right: 0;"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>
