@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how to read form values with JavaScript, prevent default submission, and build robust client-side validation with real-time feedback.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 17: Forms &amp; Validation - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5</a></li>
+            <li aria-current="page">Lesson 17: Forms &amp; Validation</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>📝 Lesson 17: Forms &amp; Validation</h1>
+                <p class="lead">Forms are how users send data to your application — login credentials, search queries, registration info, feedback. In this lesson you'll learn to read form values with JavaScript, intercept submissions, and validate input before it goes anywhere.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Access form elements and read their values with JavaScript</li>
+                        <li>Handle the <code>submit</code> event and use <code>preventDefault()</code></li>
+                        <li>Build validation rules for required fields, length, format, and matching</li>
+                        <li>Provide real-time validation feedback on <code>input</code> and <code>blur</code> events</li>
+                        <li>Display custom error messages and style valid/invalid fields</li>
+                        <li>Use the Constraint Validation API for built-in browser validation</li>
+                        <li>Combine everything into a complete, accessible validation system</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 55 minutes</p>
+                    <p><strong>Project:</strong> Build a registration form with real-time validation</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#forms-in-html" class="toc-link">Forms in HTML — A Quick Refresher</a></li>
+                        <li><a href="#reading-values" class="toc-link">Reading Form Values with JavaScript</a></li>
+                        <li><a href="#handling-submit" class="toc-link">Handling Form Submission</a></li>
+                        <li><a href="#validation-patterns" class="toc-link">Validation Patterns</a></li>
+                        <li><a href="#realtime-validation" class="toc-link">Real-Time Validation</a></li>
+                        <li><a href="#constraint-api" class="toc-link">The Constraint Validation API</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="forms-in-html" class="lesson-section">
+                <h2>Forms in HTML — A Quick Refresher</h2>
+
+                <p>Before we dive into JavaScript, let's make sure the HTML side is solid. A <code>&lt;form&gt;</code> groups related inputs together and defines how and where data is submitted.</p>
+
+                <pre><code class="language-html">
+&lt;form id="signup-form" action="/api/signup" method="POST"&gt;
+    &lt;label for="username"&gt;Username&lt;/label&gt;
+    &lt;input type="text" id="username" name="username" required&gt;
+
+    &lt;label for="email"&gt;Email&lt;/label&gt;
+    &lt;input type="email" id="email" name="email" required&gt;
+
+    &lt;label for="password"&gt;Password&lt;/label&gt;
+    &lt;input type="password" id="password" name="password" required&gt;
+
+    &lt;button type="submit"&gt;Sign Up&lt;/button&gt;
+&lt;/form&gt;
+                </code></pre>
+
+                <h3>Common Input Types</h3>
+                <p>HTML provides many built-in input types, each with its own keyboard behavior and basic validation.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Purpose</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>text</code></td><td>General single-line text</td><td>Name, username</td></tr>
+                            <tr><td><code>email</code></td><td>Email address (validates format)</td><td>user@example.com</td></tr>
+                            <tr><td><code>password</code></td><td>Hidden text input</td><td>Login password</td></tr>
+                            <tr><td><code>number</code></td><td>Numeric value with spinners</td><td>Age, quantity</td></tr>
+                            <tr><td><code>tel</code></td><td>Phone number (mobile keyboard)</td><td>555-1234</td></tr>
+                            <tr><td><code>url</code></td><td>URL (validates format)</td><td>https://example.com</td></tr>
+                            <tr><td><code>checkbox</code></td><td>On/off toggle</td><td>Agree to terms</td></tr>
+                            <tr><td><code>radio</code></td><td>One choice from a group</td><td>Plan selection</td></tr>
+                            <tr><td><code>textarea</code></td><td>Multi-line text (not an input!)</td><td>Comments, bio</td></tr>
+                            <tr><td><code>select</code></td><td>Dropdown menu (not an input!)</td><td>Country, category</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Labels Matter</h4>
+                    <p>Always pair each input with a <code>&lt;label&gt;</code> using the <code>for</code> attribute. This isn't just a best practice — it's essential for accessibility. Screen readers use labels to describe inputs, and clicking a label focuses its associated input, making forms easier to use for everyone.</p>
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="reading-values" class="lesson-section">
+                <h2>Reading Form Values with JavaScript</h2>
+
+                <p>Every form element has a <code>.value</code> property that gives you whatever the user has typed or selected. This is how JavaScript reads form data.</p>
+
+                <h3>Accessing Individual Inputs</h3>
+                <pre><code class="language-javascript">
+// By ID (most common)
+const username = document.querySelector("#username");
+console.log(username.value);  // Whatever the user typed
+
+// The value is always a string — even for number inputs
+const age = document.querySelector("#age");
+console.log(age.value);       // "25" (string!)
+console.log(Number(age.value)); // 25 (number)
+                </code></pre>
+
+                <h3>Different Input Types, Different Properties</h3>
+                <pre><code class="language-javascript">
+// Text, email, password, number, tel, url → use .value
+const email = document.querySelector("#email");
+console.log(email.value);  // "user@example.com"
+
+// Checkbox → use .checked (boolean)
+const terms = document.querySelector("#agree-terms");
+console.log(terms.checked);  // true or false
+
+// Radio buttons → find the checked one
+const plan = document.querySelector('input[name="plan"]:checked');
+console.log(plan?.value);  // "premium" (or undefined if none selected)
+
+// Select dropdown → use .value
+const country = document.querySelector("#country");
+console.log(country.value);  // "US"
+
+// Textarea → use .value (same as text inputs)
+const bio = document.querySelector("#bio");
+console.log(bio.value);  // Multi-line text string
+                </code></pre>
+
+                <h3>Accessing Inputs Through the Form</h3>
+                <p>You can also access inputs through the form element itself using the <code>name</code> attribute. This avoids needing individual IDs for every field.</p>
+
+                <pre><code class="language-javascript">
+const form = document.querySelector("#signup-form");
+
+// Access by name attribute
+console.log(form.elements.username.value);
+console.log(form.elements.email.value);
+
+// Or use bracket notation (useful for names with hyphens)
+console.log(form.elements["first-name"].value);
+
+// form.elements is an HTMLFormControlsCollection — it's live
+console.log(form.elements.length);  // Number of form controls
+                </code></pre>
+
+                <div class="mermaid">
+                    graph LR
+                    A["&lt;form&gt;"] --> B["form.elements"]
+                    B --> C["By name<br/>.username"]
+                    B --> D["By index<br/>[0]"]
+                    B --> E["By ID<br/>.email"]
+                    C --> F[".value"]
+                    D --> F
+                    E --> F
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style E fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style F fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="handling-submit" class="lesson-section">
+                <h2>Handling Form Submission</h2>
+
+                <p>By default, submitting a form reloads the page (or navigates to the <code>action</code> URL). In modern JavaScript, we almost always want to <strong>prevent that default behavior</strong> and handle the data ourselves.</p>
+
+                <h3>The submit Event &amp; preventDefault()</h3>
+                <pre><code class="language-javascript">
+const form = document.querySelector("#signup-form");
+
+form.addEventListener("submit", (event) => {
+    // Stop the browser from reloading the page
+    event.preventDefault();
+
+    // Now we can handle the data ourselves
+    const username = form.elements.username.value;
+    const email = form.elements.email.value;
+
+    console.log("Submitted:", { username, email });
+
+    // Later: validate, then send to server via fetch()
+});
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Why preventDefault() Is Essential</h4>
+                    <p>Without <code>event.preventDefault()</code>, the browser will navigate away from your page when the form is submitted. Your JavaScript code after the submit event won't have time to run — the page is already reloading. Always call it first in your submit handler.</p>
+                </div>
+
+                <h3>Gathering All Form Data at Once</h3>
+                <p>The <code>FormData</code> API gives you a convenient way to collect all form values without reading each input individually.</p>
+
+                <pre><code class="language-javascript">
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+
+    // Get individual values
+    console.log(formData.get("username"));
+    console.log(formData.get("email"));
+
+    // Convert to a plain object
+    const data = Object.fromEntries(formData);
+    console.log(data);
+    // { username: "ray", email: "ray@example.com", password: "..." }
+
+    // Loop through all entries
+    for (const [name, value] of formData) {
+        console.log(`${name}: ${value}`);
+    }
+});
+                </code></pre>
+
+                <h3>Resetting the Form</h3>
+                <pre><code class="language-javascript">
+// After successful submission, clear the form
+form.reset();  // Resets all fields to their initial values
+
+// Or reset individual fields
+form.elements.username.value = "";
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["User clicks Submit"] --> B["submit event fires"]
+                    B --> C["preventDefault()"]
+                    C --> D["Read form values"]
+                    D --> E{"Validate data"}
+                    E -->|Valid| F["Send to server<br/>(fetch)"]
+                    E -->|Invalid| G["Show error<br/>messages"]
+                    F --> H["Show success &amp;<br/>reset form"]
+                    G --> I["User fixes<br/>errors"]
+                    I --> A
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style E fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                    style F fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style G fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style H fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style I fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="validation-patterns" class="lesson-section">
+                <h2>Validation Patterns</h2>
+
+                <p>Client-side validation gives users immediate feedback — no waiting for a server round-trip. Here are the most common validation checks you'll build.</p>
+
+                <h3>Required Fields</h3>
+                <pre><code class="language-javascript">
+function isRequired(value) {
+    return value.trim() !== "";
+}
+
+// Usage
+if (!isRequired(username.value)) {
+    showError(username, "Username is required");
+}
+                </code></pre>
+
+                <h3>Length Validation</h3>
+                <pre><code class="language-javascript">
+function isLengthValid(value, min, max) {
+    const length = value.trim().length;
+    return length >= min && length <= max;
+}
+
+// Username: 3–20 characters
+if (!isLengthValid(username.value, 3, 20)) {
+    showError(username, "Username must be 3–20 characters");
+}
+
+// Password: at least 8 characters
+if (password.value.length < 8) {
+    showError(password, "Password must be at least 8 characters");
+}
+                </code></pre>
+
+                <h3>Pattern Matching with Regular Expressions</h3>
+                <pre><code class="language-javascript">
+// Email: basic format check
+function isValidEmail(value) {
+    // Checks for something@something.something
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+// Username: letters, numbers, underscores only
+function isValidUsername(value) {
+    return /^[a-zA-Z0-9_]+$/.test(value);
+}
+
+// Password: at least one uppercase, one lowercase, one digit
+function isStrongPassword(value) {
+    const hasUpper = /[A-Z]/.test(value);
+    const hasLower = /[a-z]/.test(value);
+    const hasDigit = /\d/.test(value);
+    return hasUpper && hasLower && hasDigit && value.length >= 8;
+}
+                </code></pre>
+
+                <h3>Matching Fields</h3>
+                <pre><code class="language-javascript">
+// Confirm password matches
+function doFieldsMatch(value1, value2) {
+    return value1 === value2;
+}
+
+const password = form.elements.password.value;
+const confirm = form.elements["confirm-password"].value;
+
+if (!doFieldsMatch(password, confirm)) {
+    showError(confirmInput, "Passwords do not match");
+}
+                </code></pre>
+
+                <h3>Checkbox Validation</h3>
+                <pre><code class="language-javascript">
+const terms = document.querySelector("#agree-terms");
+
+if (!terms.checked) {
+    showError(terms, "You must agree to the terms");
+}
+                </code></pre>
+
+                <h3>Putting It Together: A Validate Function</h3>
+                <pre><code class="language-javascript">
+function validateForm(form) {
+    let isValid = true;
+
+    // Clear previous errors
+    clearErrors(form);
+
+    const username = form.elements.username.value;
+    const email = form.elements.email.value;
+    const password = form.elements.password.value;
+
+    if (!isRequired(username)) {
+        showError(form.elements.username, "Username is required");
+        isValid = false;
+    } else if (!isLengthValid(username, 3, 20)) {
+        showError(form.elements.username, "Username must be 3–20 characters");
+        isValid = false;
+    }
+
+    if (!isRequired(email)) {
+        showError(form.elements.email, "Email is required");
+        isValid = false;
+    } else if (!isValidEmail(email)) {
+        showError(form.elements.email, "Please enter a valid email");
+        isValid = false;
+    }
+
+    if (!isRequired(password)) {
+        showError(form.elements.password, "Password is required");
+        isValid = false;
+    } else if (!isStrongPassword(password)) {
+        showError(form.elements.password, "Use 8+ chars with uppercase, lowercase, and a number");
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (validateForm(form)) {
+        console.log("Form is valid — submit to server!");
+    }
+});
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Client-Side Validation Is Not Enough</h4>
+                    <p>Client-side validation is for <strong>user experience</strong> — it gives instant feedback and prevents obvious mistakes. But it can always be bypassed (DevTools, disabled JavaScript, direct API calls). <strong>Always validate on the server too.</strong> Think of client-side validation as a helpful first line of defense, not a security boundary.</p>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="realtime-validation" class="lesson-section">
+                <h2>Real-Time Validation</h2>
+
+                <p>Validating only on submit is the bare minimum. A better experience gives feedback as the user types or tabs away from a field.</p>
+
+                <h3>Choosing the Right Event</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>When It Fires</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>input</code></td><td>Every keystroke / change</td><td>Live character counts, password strength</td></tr>
+                            <tr><td><code>blur</code></td><td>User leaves the field</td><td>Full field validation (email, username)</td></tr>
+                            <tr><td><code>focus</code></td><td>User enters the field</td><td>Showing hints or clearing errors</td></tr>
+                            <tr><td><code>change</code></td><td>Value changes &amp; field loses focus</td><td>Selects, checkboxes, radio buttons</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Validate on blur, Feedback on input</h3>
+                <p>A common pattern: validate when the user <strong>leaves</strong> a field (blur) and provide live feedback as they <strong>type</strong> (input), but only after the first blur. This avoids showing errors before the user has even finished typing.</p>
+
+                <pre><code class="language-javascript">
+// Track which fields have been "touched" (blurred at least once)
+const touched = new Set();
+
+function setupField(input, validateFn) {
+    // Validate when the user leaves the field
+    input.addEventListener("blur", () => {
+        touched.add(input.name);
+        validateFn(input);
+    });
+
+    // Re-validate on input, but only if already touched
+    input.addEventListener("input", () => {
+        if (touched.has(input.name)) {
+            validateFn(input);
+        }
+    });
+}
+
+// Validate the email field
+function validateEmail(input) {
+    const value = input.value.trim();
+    if (!value) {
+        showError(input, "Email is required");
+    } else if (!isValidEmail(value)) {
+        showError(input, "Please enter a valid email");
+    } else {
+        showSuccess(input);
+    }
+}
+
+setupField(form.elements.email, validateEmail);
+                </code></pre>
+
+                <h3>Showing and Clearing Errors</h3>
+                <pre><code class="language-javascript">
+function showError(input, message) {
+    // Remove any existing success state
+    input.classList.remove("input-success");
+    input.classList.add("input-error");
+
+    // Find or create the error message element
+    let error = input.parentElement.querySelector(".error-message");
+    if (!error) {
+        error = document.createElement("span");
+        error.classList.add("error-message");
+        error.setAttribute("role", "alert");  // Accessibility!
+        input.parentElement.append(error);
+    }
+    error.textContent = message;
+}
+
+function showSuccess(input) {
+    input.classList.remove("input-error");
+    input.classList.add("input-success");
+
+    const error = input.parentElement.querySelector(".error-message");
+    if (error) error.remove();
+}
+
+function clearErrors(form) {
+    form.querySelectorAll(".error-message").forEach(el => el.remove());
+    form.querySelectorAll(".input-error, .input-success").forEach(el => {
+        el.classList.remove("input-error", "input-success");
+    });
+}
+                </code></pre>
+
+                <h3>Styling Valid &amp; Invalid States</h3>
+                <pre><code class="language-html">
+&lt;style&gt;
+    .input-error {
+        border-color: #ef4444;
+        background-color: #fef2f2;
+    }
+    .input-success {
+        border-color: #22c55e;
+        background-color: #f0fdf4;
+    }
+    .error-message {
+        color: #ef4444;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+&lt;/style&gt;
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Accessibility Tips for Validation</h4>
+                    <ul>
+                        <li>Use <code>role="alert"</code> on error messages so screen readers announce them immediately</li>
+                        <li>Associate errors with inputs using <code>aria-describedby</code> pointing to the error element's ID</li>
+                        <li>Don't rely only on color — add text messages and/or icons</li>
+                        <li>Focus the first invalid field after a failed submission attempt</li>
+                    </ul>
+                </div>
+
+                <div class="mermaid">
+                    graph LR
+                    A["User types"] --> B{"Field<br/>touched?"}
+                    B -->|No| C["No feedback yet"]
+                    B -->|Yes| D["Validate on input"]
+                    D -->|Valid| E["✅ Green border"]
+                    D -->|Invalid| F["❌ Red border<br/>+ error message"]
+                    G["User leaves field<br/>(blur)"] --> H["Mark as touched"]
+                    H --> D
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                    style C fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,color:#1e293b
+                    style D fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style E fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style F fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style G fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style H fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="constraint-api" class="lesson-section">
+                <h2>The Constraint Validation API</h2>
+
+                <p>The browser has a built-in validation system called the <strong>Constraint Validation API</strong>. When you use HTML attributes like <code>required</code>, <code>minlength</code>, <code>pattern</code>, and <code>type="email"</code>, the browser validates automatically and provides its own error messages. JavaScript can hook into this system.</p>
+
+                <h3>HTML Validation Attributes</h3>
+                <pre><code class="language-html">
+&lt;input type="text" required minlength="3" maxlength="20"
+       pattern="[a-zA-Z0-9_]+"
+       title="Letters, numbers, and underscores only"&gt;
+
+&lt;input type="email" required&gt;
+
+&lt;input type="number" min="1" max="120" step="1"&gt;
+
+&lt;input type="url" required&gt;
+                </code></pre>
+
+                <h3>Checking Validity in JavaScript</h3>
+                <pre><code class="language-javascript">
+const input = document.querySelector("#email");
+
+// Check if the input is valid
+console.log(input.validity.valid);         // true or false
+
+// Check specific validity states
+console.log(input.validity.valueMissing);  // true if required & empty
+console.log(input.validity.typeMismatch);  // true if wrong type (e.g. not email)
+console.log(input.validity.tooShort);      // true if below minlength
+console.log(input.validity.tooLong);       // true if above maxlength
+console.log(input.validity.patternMismatch); // true if doesn't match pattern
+
+// Check the entire form at once
+const form = document.querySelector("#signup-form");
+console.log(form.checkValidity());  // true if ALL fields valid
+                </code></pre>
+
+                <h3>Custom Validation Messages</h3>
+                <pre><code class="language-javascript">
+const email = document.querySelector("#email");
+
+email.addEventListener("invalid", (event) => {
+    // Prevent the browser's default tooltip
+    event.preventDefault();
+
+    // Show your own message
+    if (email.validity.valueMissing) {
+        showError(email, "We need your email to create your account");
+    } else if (email.validity.typeMismatch) {
+        showError(email, "That doesn't look like an email address");
+    }
+});
+
+// Or set a custom message for the browser's built-in tooltip
+email.setCustomValidity("Please enter your company email");
+// IMPORTANT: Clear it when valid, or the field stays "invalid"
+email.addEventListener("input", () => {
+    email.setCustomValidity("");
+});
+                </code></pre>
+
+                <h3>Disabling Built-In Validation</h3>
+                <p>If you want full control with your own custom validation, disable the browser's built-in tooltips with <code>novalidate</code>.</p>
+
+                <pre><code class="language-html">
+&lt;!-- The browser won't show its own error messages --&gt;
+&lt;form id="signup-form" novalidate&gt;
+    &lt;!-- HTML attributes still work with the Constraint API --&gt;
+    &lt;input type="email" required&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;
+                </code></pre>
+
+                <pre><code class="language-javascript">
+// You can still use checkValidity() and validity states
+// but now YOU control what error messages look like
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    if (!form.checkValidity()) {
+        // Show your own custom errors
+        highlightInvalidFields(form);
+    } else {
+        // Form is valid — proceed
+        submitData(form);
+    }
+});
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Which Approach Should You Use?</h4>
+                    <p>For simple forms (contact, newsletter signup), the built-in browser validation with a few HTML attributes might be all you need. For complex forms with custom rules (password strength, field matching, conditional fields), use <code>novalidate</code> and build your own validation — but you can still use the Constraint Validation API's <code>validity</code> object to check individual states.</p>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Registration Form with Real-Time Validation</h3>
+                    <p><strong>Objective:</strong> Build a registration form that validates username, email, password, and password confirmation in real time. Fields validate on blur, then re-validate on input. The form only submits when all fields are valid.</p>
+
+                    <pre><code class="language-html">
+&lt;!-- Save this as registration.html and open in a browser --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Registration Form&lt;/title&gt;
+    &lt;style&gt;
+        * { box-sizing: border-box; margin: 0; }
+        body { font-family: system-ui, sans-serif; background: #f1f5f9; padding: 2rem; }
+        .form-container {
+            max-width: 450px; margin: 0 auto; background: white;
+            padding: 2rem; border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 { margin-bottom: 1.5rem; color: #1e293b; }
+        .form-group { margin-bottom: 1.25rem; }
+        label {
+            display: block; font-weight: 600; margin-bottom: 0.35rem;
+            color: #334155; font-size: 0.9rem;
+        }
+        input {
+            width: 100%; padding: 0.6rem 0.75rem; border: 2px solid #cbd5e1;
+            border-radius: 8px; font-size: 1rem; transition: border-color 0.2s;
+        }
+        input:focus { outline: none; border-color: #6366f1; }
+        input.input-error { border-color: #ef4444; background: #fef2f2; }
+        input.input-success { border-color: #22c55e; background: #f0fdf4; }
+        .error-message {
+            color: #ef4444; font-size: 0.8rem; margin-top: 0.3rem; display: block;
+        }
+        .strength-meter {
+            height: 4px; border-radius: 2px; margin-top: 0.4rem;
+            background: #e2e8f0; overflow: hidden;
+        }
+        .strength-bar {
+            height: 100%; width: 0; border-radius: 2px;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        .strength-text { font-size: 0.8rem; margin-top: 0.2rem; color: #64748b; }
+        button[type="submit"] {
+            width: 100%; padding: 0.75rem; background: #6366f1; color: white;
+            border: none; border-radius: 8px; font-size: 1rem;
+            cursor: pointer; margin-top: 0.5rem; font-weight: 600;
+        }
+        button[type="submit"]:hover { background: #4f46e5; }
+        button[type="submit"]:disabled { background: #94a3b8; cursor: not-allowed; }
+        .success-message {
+            text-align: center; color: #22c55e; font-weight: 600;
+            display: none; padding: 1rem;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="form-container"&gt;
+        &lt;h1&gt;📋 Create an Account&lt;/h1&gt;
+        &lt;form id="register-form" novalidate&gt;
+            &lt;div class="form-group"&gt;
+                &lt;label for="username"&gt;Username&lt;/label&gt;
+                &lt;input type="text" id="username" name="username"
+                       placeholder="3–20 characters, letters/numbers/underscores"&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group"&gt;
+                &lt;label for="email"&gt;Email&lt;/label&gt;
+                &lt;input type="email" id="email" name="email"
+                       placeholder="you@example.com"&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group"&gt;
+                &lt;label for="password"&gt;Password&lt;/label&gt;
+                &lt;input type="password" id="password" name="password"
+                       placeholder="At least 8 characters"&gt;
+                &lt;div class="strength-meter"&gt;
+                    &lt;div class="strength-bar" id="strength-bar"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;span class="strength-text" id="strength-text"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group"&gt;
+                &lt;label for="confirm-password"&gt;Confirm Password&lt;/label&gt;
+                &lt;input type="password" id="confirm-password" name="confirm-password"
+                       placeholder="Re-enter your password"&gt;
+            &lt;/div&gt;
+            &lt;button type="submit"&gt;Create Account&lt;/button&gt;
+        &lt;/form&gt;
+        &lt;div class="success-message" id="success-message"&gt;
+            ✅ Account created successfully!
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+    // TODO: Complete each task
+
+    // 1. Write helper functions:
+    //    - showError(input, message) — adds "input-error" class
+    //      and shows a .error-message span
+    //    - showSuccess(input) — adds "input-success" class
+    //      and removes any .error-message
+    //    - clearErrors(form) — removes all error states
+
+    // 2. Write validation functions for each field:
+    //    - validateUsername: required, 3–20 chars, letters/numbers/underscores
+    //    - validateEmail: required, valid email format
+    //    - validatePassword: required, 8+ chars, uppercase + lowercase + digit
+    //    - validateConfirm: required, matches password
+
+    // 3. Write a password strength meter:
+    //    - On "input" event on the password field
+    //    - Score: +1 for length >= 8, +1 for uppercase, +1 lowercase,
+    //      +1 digit, +1 special char
+    //    - Update the width and color of #strength-bar
+    //    - Update the text in #strength-text
+
+    // 4. Set up real-time validation:
+    //    - Track "touched" fields (blur marks a field as touched)
+    //    - On blur: validate the field
+    //    - On input: re-validate only if already touched
+
+    // 5. Handle form submission:
+    //    - preventDefault
+    //    - Run all validations
+    //    - If all valid: hide the form, show #success-message
+    //    - If invalid: focus the first invalid field
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>1:</strong> For <code>showError</code>, find an existing <code>.error-message</code> in the input's parent or create one with <code>createElement("span")</code>. Add <code>role="alert"</code> for accessibility.</p>
+                        <p><strong>2:</strong> Each validator takes an input element, checks <code>input.value.trim()</code>, calls <code>showError</code> or <code>showSuccess</code>, and returns <code>true</code> or <code>false</code>.</p>
+                        <p><strong>3:</strong> Use separate regex tests: <code>/[A-Z]/</code>, <code>/[a-z]/</code>, <code>/\d/</code>, <code>/[^a-zA-Z0-9]/</code>. Map score 0–1 to red, 2–3 to orange/yellow, 4–5 to green.</p>
+                        <p><strong>4:</strong> Use a <code>Set</code> to track touched field names. On blur, add to the set and validate. On input, check if the name is in the set before validating.</p>
+                        <p><strong>5:</strong> Call all four validators. If any returns <code>false</code>, find the first <code>.input-error</code> and call <code>.focus()</code> on it.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+const form = document.querySelector("#register-form");
+const strengthBar = document.querySelector("#strength-bar");
+const strengthText = document.querySelector("#strength-text");
+const successMessage = document.querySelector("#success-message");
+const touched = new Set();
+
+// 1. Helper functions
+function showError(input, message) {
+    input.classList.remove("input-success");
+    input.classList.add("input-error");
+
+    let error = input.parentElement.querySelector(".error-message");
+    if (!error) {
+        error = document.createElement("span");
+        error.classList.add("error-message");
+        error.setAttribute("role", "alert");
+        input.after(error);
+    }
+    error.textContent = message;
+}
+
+function showSuccess(input) {
+    input.classList.remove("input-error");
+    input.classList.add("input-success");
+    const error = input.parentElement.querySelector(".error-message");
+    if (error) error.remove();
+}
+
+function clearErrors(form) {
+    form.querySelectorAll(".error-message").forEach(el => el.remove());
+    form.querySelectorAll(".input-error, .input-success").forEach(el => {
+        el.classList.remove("input-error", "input-success");
+    });
+}
+
+// 2. Validation functions
+function validateUsername(input) {
+    const value = input.value.trim();
+    if (!value) {
+        showError(input, "Username is required");
+        return false;
+    }
+    if (value.length < 3 || value.length > 20) {
+        showError(input, "Username must be 3–20 characters");
+        return false;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+        showError(input, "Only letters, numbers, and underscores");
+        return false;
+    }
+    showSuccess(input);
+    return true;
+}
+
+function validateEmail(input) {
+    const value = input.value.trim();
+    if (!value) {
+        showError(input, "Email is required");
+        return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        showError(input, "Please enter a valid email address");
+        return false;
+    }
+    showSuccess(input);
+    return true;
+}
+
+function validatePassword(input) {
+    const value = input.value;
+    if (!value) {
+        showError(input, "Password is required");
+        return false;
+    }
+    if (value.length < 8) {
+        showError(input, "Password must be at least 8 characters");
+        return false;
+    }
+    if (!/[A-Z]/.test(value) || !/[a-z]/.test(value) || !/\d/.test(value)) {
+        showError(input, "Include uppercase, lowercase, and a number");
+        return false;
+    }
+    showSuccess(input);
+    return true;
+}
+
+function validateConfirm(input) {
+    const value = input.value;
+    const password = form.elements.password.value;
+    if (!value) {
+        showError(input, "Please confirm your password");
+        return false;
+    }
+    if (value !== password) {
+        showError(input, "Passwords do not match");
+        return false;
+    }
+    showSuccess(input);
+    return true;
+}
+
+// 3. Password strength meter
+form.elements.password.addEventListener("input", () => {
+    const value = form.elements.password.value;
+    let score = 0;
+
+    if (value.length >= 8) score++;
+    if (/[A-Z]/.test(value)) score++;
+    if (/[a-z]/.test(value)) score++;
+    if (/\d/.test(value)) score++;
+    if (/[^a-zA-Z0-9]/.test(value)) score++;
+
+    const percent = (score / 5) * 100;
+    strengthBar.style.width = percent + "%";
+
+    const levels = [
+        { label: "", color: "#e2e8f0" },
+        { label: "Very weak", color: "#ef4444" },
+        { label: "Weak", color: "#f97316" },
+        { label: "Fair", color: "#eab308" },
+        { label: "Strong", color: "#22c55e" },
+        { label: "Very strong", color: "#16a34a" }
+    ];
+
+    strengthBar.style.backgroundColor = levels[score].color;
+    strengthText.textContent = value ? levels[score].label : "";
+    strengthText.style.color = levels[score].color;
+});
+
+// 4. Real-time validation
+const validators = {
+    username: validateUsername,
+    email: validateEmail,
+    password: validatePassword,
+    "confirm-password": validateConfirm
+};
+
+Object.keys(validators).forEach(name => {
+    const input = form.elements[name];
+
+    input.addEventListener("blur", () => {
+        touched.add(name);
+        validators[name](input);
+    });
+
+    input.addEventListener("input", () => {
+        if (touched.has(name)) {
+            validators[name](input);
+        }
+    });
+});
+
+// 5. Handle submission
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    // Mark all fields as touched
+    Object.keys(validators).forEach(name => touched.add(name));
+
+    const results = Object.entries(validators).map(
+        ([name, fn]) => fn(form.elements[name])
+    );
+
+    if (results.every(Boolean)) {
+        form.style.display = "none";
+        successMessage.style.display = "block";
+    } else {
+        const firstInvalid = form.querySelector(".input-error");
+        if (firstInvalid) firstInvalid.focus();
+    }
+});
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> How do you read what the user typed into a text input?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="textContent reads the text inside an element (like a paragraph or span), not an input's value.">A) <code>input.textContent</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The .value property gives you the current content of an input, textarea, or select element. It's always a string.">B) <code>input.value</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="innerHTML reads the HTML inside an element. It doesn't work for reading input values.">C) <code>input.innerHTML</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no .text property on input elements. Use .value instead.">D) <code>input.text</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What does <code>event.preventDefault()</code> do in a submit handler?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Stopping propagation is a separate method (stopPropagation). preventDefault stops the browser's default action.">A) Stops the event from bubbling up to parent elements</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="By default, submitting a form causes the browser to navigate to the action URL (or reload the page). preventDefault() stops that, letting your JavaScript handle the data instead.">B) Stops the browser from reloading the page or navigating away</button>
+                            <button class="quiz-option" data-correct="false" data-hint="preventDefault doesn't clear form data. That's what form.reset() does.">C) Clears all the form fields</button>
+                            <button class="quiz-option" data-correct="false" data-hint="preventDefault doesn't remove the listener. It just prevents the browser's default behavior for this specific event.">D) Removes the event listener after it fires once</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> How do you check if a checkbox is checked?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="For checkboxes, .value gives the value attribute (often 'on'), not whether it's checked.">A) <code>checkbox.value === true</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="The .checked property is a boolean — true if the checkbox is checked, false if it's not. This works for radio buttons too.">B) <code>checkbox.checked</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no .selected property on checkboxes. That's for &lt;option&gt; elements in a &lt;select&gt;.">C) <code>checkbox.selected</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="getAttribute returns the HTML attribute string, not the current state. The checked property reflects the live state.">D) <code>checkbox.getAttribute("checked")</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> When is the <code>blur</code> event useful for form validation?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The blur event fires when the user leaves a field, not on every keystroke. That's the 'input' event.">A) When you want to validate on every keystroke</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="blur fires when the user tabs out of or clicks away from a field. This is ideal for running validation after they've finished entering a value — checking too early (on every keystroke) can feel aggressive.">B) When you want to validate after the user finishes with a field and moves on</button>
+                            <button class="quiz-option" data-correct="false" data-hint="blur fires on individual fields, not on form submission. The 'submit' event handles that.">C) When the form is submitted</button>
+                            <button class="quiz-option" data-correct="false" data-hint="blur fires when the user LEAVES a field, not enters one. The 'focus' event fires when they enter it.">D) When the user first clicks into a field</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> Why is client-side validation not sufficient on its own?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Modern browsers handle client-side validation well, including mobile. The issue isn't browser support.">A) It doesn't work in most browsers</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Client-side validation is fast (no network round-trip). Speed is actually one of its strengths.">B) It's too slow for real-time feedback</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Anyone can open DevTools, disable JavaScript, or send requests directly to your server endpoint. Client-side validation improves UX but cannot be trusted for security or data integrity. Always validate on the server too.">C) Users can bypass it through DevTools, disabling JS, or direct API calls</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Regular expressions work perfectly in JavaScript. Client-side validation handles patterns just fine.">D) JavaScript can't handle regular expressions for patterns</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>Read input values with <strong><code>.value</code></strong> (text, email, password) or <strong><code>.checked</code></strong> (checkboxes, radios)</li>
+                        <li>Access inputs via <strong><code>form.elements.name</code></strong> for clean, name-based access</li>
+                        <li>Always call <strong><code>event.preventDefault()</code></strong> in your <code>submit</code> handler to stop page reloads</li>
+                        <li>Use <strong><code>FormData</code></strong> to collect all form values at once</li>
+                        <li>Validate fields for <strong>required</strong>, <strong>length</strong>, <strong>format</strong> (regex), and <strong>matching</strong></li>
+                        <li>Validate on <strong><code>blur</code></strong> (when user leaves), then re-validate on <strong><code>input</code></strong> (as they type) — but only after the field has been touched</li>
+                        <li>Show errors with <strong><code>role="alert"</code></strong> for accessibility; style with <strong>color + text</strong>, not color alone</li>
+                        <li>The <strong>Constraint Validation API</strong> lets you hook into the browser's built-in validation system</li>
+                        <li>Client-side validation is for <strong>UX</strong>; always validate on the <strong>server</strong> too</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Learn/Forms" target="_blank" rel="noopener">MDN — Web Forms Guide</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData" target="_blank" rel="noopener">MDN — FormData API</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Constraint_validation" target="_blank" rel="noopener">MDN — Constraint Validation</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input" target="_blank" rel="noopener">MDN — &lt;input&gt; Types</a></li>
+                    <li><a href="https://javascript.info/forms-controls" target="_blank" rel="noopener">javascript.info — Forms and Controls</a></li>
+                    <li><a href="https://www.w3.org/WAI/tutorials/forms/validation/" target="_blank" rel="noopener">W3C — Accessible Form Validation</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Now that you can capture and validate user input, it's time to add motion and timing to your pages. In the next lesson, you'll learn to use <strong>setTimeout</strong>, <strong>setInterval</strong>, and <strong>requestAnimationFrame</strong> to create timers, countdowns, and smooth animations driven by JavaScript.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_16.html" class="prev-lesson">← Previous: Creating &amp; Removing Elements</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_18.html" class="next-lesson">Next: Timers &amp; Animation →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

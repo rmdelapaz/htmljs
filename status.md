@@ -7,9 +7,12 @@
 ---
 
 ## What to Do Next
-1. **Build Lesson 17** — Forms & Validation (first lesson of Module 5)
-2. Continue working through lessons sequentially (Lessons 17–22)
-3. After all lessons: favicon creation, browser testing, verify prev/next nav links, deploy to Netlify
+1. **All lessons complete!** Remaining tasks:
+2. Create course-specific favicon
+3. Browser testing
+4. Verify prev/next navigation links
+5. Deploy to Netlify
+6. Link prerequisite course URL (htmlcss Netlify URL) in index.html
 
 ## Key Patterns
 - Nav logo: `Front-End JS Course`
@@ -49,20 +52,20 @@
 - [x] Lesson 16: Creating & Removing Elements — createElement, append, remove, innerHTML vs textContent
 
 ### Module 5: Building Interactive Pages (Lessons 17–20)
-- [ ] Lesson 17: Forms & Validation — reading input values, preventDefault, validation patterns
-- [ ] Lesson 18: Timers & Animation — setTimeout, setInterval, requestAnimationFrame, CSS transitions via JS
-- [ ] Lesson 19: Local Storage — getItem, setItem, JSON.parse/stringify, persisting state
-- [ ] Lesson 20: Working with APIs & Fetch — promises, async/await, fetching JSON, displaying data
+- [x] Lesson 17: Forms & Validation — reading input values, preventDefault, validation patterns, real-time validation, Constraint Validation API
+- [x] Lesson 18: Timers & Animation — setTimeout, setInterval, requestAnimationFrame, CSS transitions via JS, debounce/throttle, event loop
+- [x] Lesson 19: Local Storage — getItem, setItem, JSON.parse/stringify, persisting state, sessionStorage, storage event, security considerations
+- [x] Lesson 20: Working with APIs & Fetch — promises, async/await, fetching JSON, displaying data, error handling, POST requests, CORS
 
 ### Module 6: Capstone & Next Steps (Lessons 21–22)
-- [ ] Lesson 21: Building a Complete Project — interactive app pulling everything together
-- [ ] Lesson 22: Next Steps & Best Practices — debugging, code organization, where to go from here
+- [x] Lesson 21: Building a Complete Project — QuickNote app: CRUD, localStorage, fetch API, debounced search, form validation, CSS transitions, keyboard shortcuts
+- [x] Lesson 22: Next Steps & Best Practices — debugging, code organization, common pitfalls, modern JS features, ecosystem overview, learning path, portfolio tips
 
 ## Outstanding Items
 - [x] Create index.html (course homepage)
 - [x] Create course-config.json
 - [x] Copy template CSS and JS files
-- [ ] Create remaining 6 lesson HTML files (17–22)
+- [x] Create all lesson HTML files (1–22)
 - [x] Copy favicon.png and favicon.ico from course_template
 - [ ] Create course-specific favicon
 - [ ] Browser testing

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master debugging techniques, code organization patterns, and discover where to go next on your JavaScript journey — frameworks, tools, and career paths.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 22: Next Steps &amp; Best Practices - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 6</a></li>
+            <li aria-current="page">Lesson 22: Next Steps &amp; Best Practices</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🧭 Lesson 22: Next Steps &amp; Best Practices</h1>
+                <p class="lead">You've built a complete interactive web application with vanilla JavaScript. That's a real achievement. This final lesson equips you with the debugging skills, code organization habits, and roadmap you need to keep growing as a developer.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 What You'll Learn</h2>
+                    <p>This lesson covers the practical knowledge that separates beginners from confident developers:</p>
+                    <ul>
+                        <li>Debugging strategies and DevTools techniques that save hours</li>
+                        <li>Code organization patterns for maintainable projects</li>
+                        <li>Common pitfalls and how to avoid them</li>
+                        <li>An overview of what to learn next — frameworks, tools, and the broader ecosystem</li>
+                        <li>How to build a portfolio and continue learning effectively</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#debugging" class="toc-link">Debugging Like a Pro</a></li>
+                        <li><a href="#code-organization" class="toc-link">Code Organization</a></li>
+                        <li><a href="#common-pitfalls" class="toc-link">Common Pitfalls &amp; How to Avoid Them</a></li>
+                        <li><a href="#modern-javascript" class="toc-link">Modern JavaScript Features</a></li>
+                        <li><a href="#ecosystem" class="toc-link">The JavaScript Ecosystem</a></li>
+                        <li><a href="#learning-path" class="toc-link">Your Learning Path Forward</a></li>
+                        <li><a href="#summary" class="toc-link">Course Summary &amp; Final Thoughts</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="debugging" class="lesson-section">
+                <h2>Debugging Like a Pro</h2>
+
+                <p>Every developer spends significant time debugging. The difference between a junior and a senior developer isn't that seniors write bug-free code — it's that they find and fix bugs faster. Here are the techniques that make the difference.</p>
+
+                <h3>1. Read the Error Message</h3>
+                <p>This sounds obvious, but many beginners panic at red text in the console. Error messages are your best friend — they tell you <em>what</em> went wrong and <em>where</em>.</p>
+
+                <pre><code class="language-javascript">
+// The console says:
+// Uncaught TypeError: Cannot read properties of null (reading 'textContent')
+//     at renderUser (app.js:45:23)
+
+// Translation:
+// - WHAT: You tried to read .textContent on something that's null
+// - WHERE: Line 45 of app.js, inside the renderUser function
+// - WHY: querySelector probably returned null (element not found)
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Error</th>
+                                <th>Common Cause</th>
+                                <th>Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>Cannot read properties of null</code></td><td>querySelector returned null</td><td>Check selector, ensure element exists</td></tr>
+                            <tr><td><code>X is not a function</code></td><td>Calling a non-function value</td><td>Check spelling, import, variable type</td></tr>
+                            <tr><td><code>X is not defined</code></td><td>Variable doesn't exist in scope</td><td>Check spelling, scope, declaration order</td></tr>
+                            <tr><td><code>Unexpected token</code></td><td>Syntax error (missing bracket, comma)</td><td>Check the line BEFORE the error line</td></tr>
+                            <tr><td><code>Cannot set properties of undefined</code></td><td>Accessing nested property that doesn't exist</td><td>Use optional chaining (<code>?.</code>)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>2. console Methods Beyond console.log</h3>
+                <pre><code class="language-javascript">
+// Structured data — use console.table
+const users = [
+    { name: "Alice", role: "dev" },
+    { name: "Bob", role: "design" }
+];
+console.table(users);  // Beautiful table in the console!
+
+// Grouping related logs
+console.group("User Loading");
+console.log("Fetching users...");
+console.log("Found 5 users");
+console.groupEnd();
+
+// Warnings and errors (different visual styles)
+console.warn("Deprecated function used");
+console.error("Failed to save data");
+
+// Timing operations
+console.time("fetch");
+await fetch("/api/data");
+console.timeEnd("fetch");  // "fetch: 234ms"
+
+// Conditional logging
+console.assert(user !== null, "User should not be null!", user);
+                </code></pre>
+
+                <h3>3. The Debugger</h3>
+                <p>The <code>debugger</code> statement pauses execution and opens DevTools at that exact line. It's like freezing time — you can inspect every variable, step through code line by line, and see exactly what's happening.</p>
+
+                <pre><code class="language-javascript">
+function processOrder(order) {
+    const total = calculateTotal(order.items);
+    debugger;  // Execution pauses here — inspect 'total', 'order', etc.
+    applyDiscount(total, order.coupon);
+}
+                </code></pre>
+
+                <p>In DevTools, you can also set <strong>breakpoints</strong> by clicking a line number in the Sources panel — no code changes needed.</p>
+
+                <h3>4. The Debugging Mindset</h3>
+                <p>When something doesn't work, resist the urge to change random things and hope for the best. Instead, follow a systematic process.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Something broke"] --> B["Read the error message"]
+                    B --> C["Reproduce it consistently"]
+                    C --> D["Form a hypothesis<br/>'I think X causes Y'"]
+                    D --> E["Test the hypothesis<br/>(console.log, debugger)"]
+                    E --> F{"Hypothesis correct?"}
+                    F -->|Yes| G["Fix it"]
+                    F -->|No| D
+                    G --> H["Verify the fix<br/>doesn't break<br/>anything else"]
+                    style A fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style D fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style E fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                    style G fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style H fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Rubber Duck Debugging</h4>
+                    <p>Explain your code out loud — to a rubber duck, a pet, a houseplant, or an imaginary colleague. The act of articulating what each line does forces you to slow down and think clearly. Surprisingly often, you'll find the bug mid-sentence: "And then this line reads the value from… wait, that variable isn't set yet."</p>
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="code-organization" class="lesson-section">
+                <h2>Code Organization</h2>
+
+                <p>As projects grow, how you organize code matters as much as how you write it. Good organization makes code easier to read, maintain, debug, and extend.</p>
+
+                <h3>Separation of Concerns</h3>
+                <p>Group code by <em>what it does</em>, not by <em>when it runs</em>. The QuickNote app from Lesson 21 demonstrated this pattern.</p>
+
+                <pre><code class="language-javascript">
+// ❌ Everything mixed together
+const btn = document.querySelector("#add");
+btn.addEventListener("click", () => {
+    const text = document.querySelector("#input").value;
+    const items = JSON.parse(localStorage.getItem("items")) || [];
+    items.push({ id: Date.now(), text });
+    localStorage.setItem("items", JSON.stringify(items));
+    const li = document.createElement("li");
+    li.textContent = text;
+    document.querySelector("#list").append(li);
+});
+
+// ✅ Separated by concern
+// --- Data Layer ---
+function loadItems() { /* ... */ }
+function saveItems(items) { /* ... */ }
+function addItem(text) { /* ... */ }
+
+// --- Rendering ---
+function renderList() { /* ... */ }
+
+// --- Event Handlers ---
+addBtn.addEventListener("click", () => {
+    addItem(input.value);
+    renderList();
+});
+                </code></pre>
+
+                <h3>Naming Conventions</h3>
+                <p>Good names make comments unnecessary. Your future self will thank you.</p>
+
+                <pre><code class="language-javascript">
+// ❌ Cryptic names
+const x = document.querySelector("#t");
+const arr = JSON.parse(localStorage.getItem("d"));
+function proc(a) { /* ... */ }
+
+// ✅ Descriptive names
+const titleInput = document.querySelector("#note-title");
+const savedNotes = JSON.parse(localStorage.getItem("notes"));
+function deleteNoteById(noteId) { /* ... */ }
+
+// Naming conventions to follow:
+// Variables & functions: camelCase     → userName, fetchData()
+// Constants: UPPER_SNAKE_CASE         → MAX_RETRIES, API_URL
+// Boolean variables: is/has/should    → isLoading, hasError
+// Event handlers: handle/on prefix    → handleClick, onSubmit
+// DOM elements: suffix with El/Btn    → saveBtn, headerEl
+                </code></pre>
+
+                <h3>Functions: Small, Focused, Named</h3>
+                <pre><code class="language-javascript">
+// ❌ One giant function doing everything
+function processForm() {
+    // 50 lines of validation
+    // 30 lines of data processing
+    // 40 lines of DOM updates
+    // 20 lines of error handling
+}
+
+// ✅ Small functions, each doing one thing
+function validateForm() { /* ... */ }
+function createNoteFromForm() { /* ... */ }
+function renderNotes() { /* ... */ }
+function showError(message) { /* ... */ }
+
+function handleFormSubmit(event) {
+    event.preventDefault();
+    if (!validateForm()) return;
+    const note = createNoteFromForm();
+    saveNote(note);
+    renderNotes();
+}
+                </code></pre>
+
+                <h3>File Structure for Larger Projects</h3>
+                <p>When a project outgrows a single file, split it into modules. Modern JavaScript supports this with <code>&lt;script type="module"&gt;</code>.</p>
+
+                <pre><code class="language-javascript">
+// File structure:
+// project/
+// ├── index.html
+// ├── css/
+// │   └── styles.css
+// └── js/
+//     ├── app.js          ← Entry point, initialization
+//     ├── storage.js      ← localStorage helpers
+//     ├── render.js       ← DOM rendering functions
+//     ├── validation.js   ← Form validation
+//     └── utils.js        ← Shared utilities (debounce, formatDate)
+
+// storage.js — export functions
+export function loadNotes() { /* ... */ }
+export function saveNotes(notes) { /* ... */ }
+
+// app.js — import and use
+import { loadNotes, saveNotes } from "./storage.js";
+const notes = loadNotes();
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Code Organization Rules of Thumb</h4>
+                    <ul>
+                        <li>If a function is longer than 20–30 lines, it probably does too much — split it</li>
+                        <li>If you're copying and pasting code, extract it into a reusable function</li>
+                        <li>If a file is longer than 200–300 lines, consider splitting it into modules</li>
+                        <li>Name things for what they <em>do</em>, not how they <em>work</em></li>
+                        <li>Write code for the human who reads it next — that human is usually you in 3 months</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="common-pitfalls" class="lesson-section">
+                <h2>Common Pitfalls &amp; How to Avoid Them</h2>
+
+                <p>These are the mistakes that trip up nearly every JavaScript developer at some point. Knowing them in advance saves you hours of confusion.</p>
+
+                <h3>1. Forgetting That DOM Queries Can Return null</h3>
+                <pre><code class="language-javascript">
+// ❌ Crashes if element doesn't exist
+document.querySelector("#user-name").textContent = name;
+
+// ✅ Check first (or use optional chaining)
+const el = document.querySelector("#user-name");
+if (el) el.textContent = name;
+
+// ✅ Optional chaining (modern JS)
+document.querySelector("#user-name")?.textContent;  // undefined, no crash
+                </code></pre>
+
+                <h3>2. The async Trap: Expecting Immediate Results</h3>
+                <pre><code class="language-javascript">
+// ❌ data is undefined — fetch hasn't finished yet
+let data;
+fetch("/api/users").then(r => r.json()).then(d => { data = d; });
+console.log(data);  // undefined!
+
+// ✅ Use await, or put dependent code inside .then()
+async function loadUsers() {
+    const response = await fetch("/api/users");
+    const data = await response.json();
+    console.log(data);  // Now it's available
+}
+                </code></pre>
+
+                <h3>3. Comparing with == Instead of ===</h3>
+                <pre><code class="language-javascript">
+// == does type coercion — surprising results
+0 == ""       // true (!)
+null == undefined  // true (!)
+"0" == false  // true (!)
+
+// === checks value AND type — predictable
+0 === ""       // false
+null === undefined  // false
+"0" === false  // false
+
+// Rule: always use === unless you have a specific reason for ==
+                </code></pre>
+
+                <h3>4. Mutating Objects When You Meant to Copy</h3>
+                <pre><code class="language-javascript">
+// ❌ This doesn't create a copy — both point to the same object
+const original = { name: "Ray", scores: [90, 85] };
+const copy = original;
+copy.name = "Alice";
+console.log(original.name);  // "Alice" — original was changed!
+
+// ✅ Shallow copy with spread operator
+const copy = { ...original };
+copy.name = "Alice";
+console.log(original.name);  // "Ray" — original is safe
+
+// ⚠️ Spread is SHALLOW — nested objects are still shared
+copy.scores.push(100);
+console.log(original.scores);  // [90, 85, 100] — still linked!
+
+// ✅ Deep copy (for nested data)
+const deepCopy = JSON.parse(JSON.stringify(original));
+// Or: const deepCopy = structuredClone(original);
+                </code></pre>
+
+                <h3>5. Memory Leaks from Event Listeners</h3>
+                <pre><code class="language-javascript">
+// ❌ Adding listeners in a render loop without removing old ones
+function render() {
+    items.forEach(item => {
+        const btn = document.createElement("button");
+        // This listener is added every render — they pile up!
+        btn.addEventListener("click", () => deleteItem(item.id));
+        list.append(btn);
+    });
+}
+
+// ✅ Use event delegation instead (one listener, never re-added)
+list.addEventListener("click", (event) => {
+    const btn = event.target.closest(".delete-btn");
+    if (btn) deleteItem(Number(btn.dataset.id));
+});
+                </code></pre>
+
+                <h3>6. Not Handling Edge Cases</h3>
+                <pre><code class="language-javascript">
+// ❌ Only tests the "happy path"
+function divide(a, b) {
+    return a / b;
+}
+
+// ✅ Handle edge cases
+function divide(a, b) {
+    if (b === 0) throw new Error("Cannot divide by zero");
+    if (typeof a !== "number" || typeof b !== "number") {
+        throw new TypeError("Arguments must be numbers");
+    }
+    return a / b;
+}
+
+// Common edge cases to consider:
+// - Empty strings, empty arrays, null, undefined
+// - Zero, negative numbers, NaN
+// - Very long strings, very large arrays
+// - Network failures, missing data from APIs
+// - First-time users (no saved data)
+                </code></pre>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="modern-javascript" class="lesson-section">
+                <h2>Modern JavaScript Features</h2>
+
+                <p>JavaScript evolves every year. Here are some newer features you should know about as you continue learning.</p>
+
+                <h3>Optional Chaining (<code>?.</code>)</h3>
+                <pre><code class="language-javascript">
+// Safely access deeply nested properties
+const city = user?.address?.city;  // undefined if any part is null/undefined
+
+// Works with methods too
+const length = response?.data?.items?.length;
+
+// Works with function calls
+user?.getName?.();  // Only calls getName if it exists
+                </code></pre>
+
+                <h3>Nullish Coalescing (<code>??</code>)</h3>
+                <pre><code class="language-javascript">
+// ?? returns the right side only if the left is null or undefined
+const name = user.name ?? "Anonymous";     // "Anonymous" if null/undefined
+const count = settings.count ?? 10;        // 10 if null/undefined
+
+// Different from || which treats 0, "", and false as falsy
+const score = user.score || 10;   // 10 if score is 0 (probably wrong!)
+const score = user.score ?? 10;   // 0 is kept (correct!)
+                </code></pre>
+
+                <h3>Destructuring</h3>
+                <pre><code class="language-javascript">
+// Extract values from objects
+const { name, email, role = "user" } = userData;
+
+// Extract from arrays
+const [first, second, ...rest] = items;
+
+// In function parameters
+function renderUser({ name, avatar, bio = "No bio" }) {
+    // Use name, avatar, bio directly
+}
+
+// Renaming during destructuring
+const { name: userName, email: userEmail } = response.data;
+                </code></pre>
+
+                <h3>Spread and Rest</h3>
+                <pre><code class="language-javascript">
+// Spread: expand arrays and objects
+const merged = [...array1, ...array2];
+const updated = { ...note, updatedAt: new Date().toISOString() };
+
+// Rest: collect remaining items
+function log(first, ...remaining) {
+    console.log(first);       // First argument
+    console.log(remaining);   // Array of all other arguments
+}
+                </code></pre>
+
+                <h3>Array Methods You Should Know</h3>
+                <pre><code class="language-javascript">
+// .at() — access from the end
+const last = items.at(-1);     // Last item
+const secondLast = items.at(-2);
+
+// .flatMap() — map + flatten in one step
+const words = sentences.flatMap(s => s.split(" "));
+
+// Object.entries / Object.fromEntries — convert objects ↔ arrays
+const entries = Object.entries({ a: 1, b: 2 });  // [["a",1], ["b",2]]
+const obj = Object.fromEntries(entries);          // { a: 1, b: 2 }
+
+// structuredClone — deep copy without JSON round-trip
+const deepCopy = structuredClone(complexObject);
+                </code></pre>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="ecosystem" class="lesson-section">
+                <h2>The JavaScript Ecosystem</h2>
+
+                <p>You've learned vanilla JavaScript — the foundation everything else is built on. Here's a map of where to explore next.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Vanilla JavaScript<br/>(You are here! ✅)"] --> B["Frameworks"]
+                    A --> C["Build Tools"]
+                    A --> D["Back-End JS"]
+                    A --> E["Testing"]
+                    B --> B1["React"]
+                    B --> B2["Vue"]
+                    B --> B3["Svelte"]
+                    C --> C1["Vite"]
+                    C --> C2["npm / packages"]
+                    D --> D1["Node.js"]
+                    D --> D2["Express / APIs"]
+                    E --> E1["Jest / Vitest"]
+                    style A fill:#ecfdf5,stroke:#22c55e,stroke-width:3px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style D fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                    style E fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Frameworks: React, Vue, Svelte</h3>
+                <p>Frameworks solve the problems you've already felt — keeping the DOM in sync with data, managing complex state, and organizing large applications. Now that you understand the underlying concepts (DOM manipulation, events, state management), learning a framework will make much more sense.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Framework</th>
+                                <th>Philosophy</th>
+                                <th>Good For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>React</strong></td><td>Component-based UI with JSX, huge ecosystem</td><td>Job market, large apps, React Native (mobile)</td></tr>
+                            <tr><td><strong>Vue</strong></td><td>Progressive, gentle learning curve, great docs</td><td>Gradual adoption, small–medium apps</td></tr>
+                            <tr><td><strong>Svelte</strong></td><td>Compiler-based, minimal runtime, simple syntax</td><td>Performance-critical apps, simplicity</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Build Tools: Vite, npm</h3>
+                <p><strong>npm</strong> (Node Package Manager) lets you install thousands of open-source libraries with one command. <strong>Vite</strong> is a modern build tool that gives you fast development servers, hot module replacement, and production bundling. You'll use these on virtually every professional project.</p>
+
+                <h3>Back-End JavaScript: Node.js</h3>
+                <p><strong>Node.js</strong> lets you run JavaScript outside the browser — on servers, command-line tools, and APIs. With Node, you can build full-stack applications using one language for both front-end and back-end. <strong>Express</strong> is the most popular Node framework for building APIs.</p>
+
+                <h3>TypeScript</h3>
+                <p><strong>TypeScript</strong> adds static types to JavaScript — it catches bugs at development time instead of runtime. Most professional projects use TypeScript now. It's JavaScript with guardrails.</p>
+
+                <pre><code class="language-javascript">
+// TypeScript — JavaScript with type annotations
+function greet(name: string, age: number): string {
+    return `Hello ${name}, you are ${age}`;
+}
+
+greet("Ray", 30);     // ✅ Fine
+greet("Ray", "thirty"); // ❌ Error: Argument of type 'string'
+                        //    is not assignable to parameter of type 'number'
+                </code></pre>
+
+                <h3>Testing</h3>
+                <p>Testing ensures your code works correctly and keeps working as you make changes. <strong>Jest</strong> and <strong>Vitest</strong> are popular testing frameworks. Start with unit tests (testing individual functions) — your data layer functions from QuickNote would be a great first target.</p>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="learning-path" class="lesson-section">
+                <h2>Your Learning Path Forward</h2>
+
+                <h3>Suggested Learning Order</h3>
+                <p>You don't need to learn everything at once. Here's a practical order based on what builds on what.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["1. More Vanilla JS<br/>Projects"] --> B["2. Git &amp;<br/>GitHub"]
+                    B --> C["3. npm &amp;<br/>Vite"]
+                    C --> D["4. Pick a<br/>Framework"]
+                    D --> E["5. TypeScript"]
+                    E --> F["6. Testing"]
+                    style A fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style D fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                    style E fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                    style F fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Project Ideas to Build Next</h3>
+                <p>The best way to learn is to build things you actually want to use. Here are ideas organized by complexity.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Difficulty</th>
+                                <th>Project</th>
+                                <th>Skills Practiced</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>⭐</td><td>Pomodoro timer with sound</td><td>Timers, Audio API, localStorage</td></tr>
+                            <tr><td>⭐</td><td>Color palette generator</td><td>Random values, DOM, clipboard API</td></tr>
+                            <tr><td>⭐⭐</td><td>Weather app with a real API</td><td>Fetch, API keys, geolocation</td></tr>
+                            <tr><td>⭐⭐</td><td>Quiz app with scoring</td><td>Arrays, state management, timers</td></tr>
+                            <tr><td>⭐⭐</td><td>Expense tracker with charts</td><td>Forms, localStorage, canvas/SVG</td></tr>
+                            <tr><td>⭐⭐⭐</td><td>Kanban board with drag &amp; drop</td><td>Drag &amp; Drop API, complex state</td></tr>
+                            <tr><td>⭐⭐⭐</td><td>Chat app with WebSockets</td><td>Real-time data, Node.js back-end</td></tr>
+                            <tr><td>⭐⭐⭐</td><td>Markdown editor with live preview</td><td>Text processing, content rendering</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Building a Portfolio</h3>
+                <p>A portfolio is how you show potential employers (or clients) what you can do. Here's what matters.</p>
+
+                <div class="card card-success">
+                    <h4>✅ Portfolio Tips</h4>
+                    <ul>
+                        <li><strong>Quality over quantity.</strong> Three polished projects beat ten half-finished ones</li>
+                        <li><strong>Deploy everything.</strong> A live URL (Netlify, Vercel, GitHub Pages) is worth more than code in a repo</li>
+                        <li><strong>Write READMEs.</strong> Explain what the project does, what you learned, and what you'd do differently</li>
+                        <li><strong>Show progression.</strong> Your portfolio should show growth over time — start simple, build complexity</li>
+                        <li><strong>Solve real problems.</strong> Projects that solve a real need (even your own) are more impressive than tutorial clones</li>
+                        <li><strong>Use Git.</strong> Commit history shows your thought process. Make commits small and descriptive</li>
+                    </ul>
+                </div>
+
+                <h3>How to Keep Learning Effectively</h3>
+                <p>Learning to code is a marathon, not a sprint. Here's what works.</p>
+
+                <div class="card card-info">
+                    <h4>💡 The 80/20 Rule for Learning</h4>
+                    <ul>
+                        <li><strong>20% reading/watching</strong> — Tutorials, docs, courses. Enough to understand concepts.</li>
+                        <li><strong>80% building</strong> — Actually writing code, breaking things, fixing them. This is where real learning happens.</li>
+                        <li><strong>Don't tutorial-hop.</strong> Pick one resource, finish it, build something with it, then move on. Watching five React courses without building anything teaches you less than completing one and building a project.</li>
+                        <li><strong>Get stuck. It's part of the process.</strong> Every bug you solve makes you a better developer. The discomfort of not knowing is where growth happens.</li>
+                        <li><strong>Read other people's code.</strong> Browse open-source projects on GitHub. You'll see patterns, styles, and techniques you've never considered.</li>
+                    </ul>
+                </div>
+
+                <h3>Recommended Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener">MDN Web Docs</a> — The definitive JavaScript reference. Bookmark it.</li>
+                    <li><a href="https://javascript.info/" target="_blank" rel="noopener">javascript.info</a> — Excellent deep-dive tutorials on every JS topic</li>
+                    <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a> — Host your code, contribute to open source, build your profile</li>
+                    <li><a href="https://www.freecodecamp.org/" target="_blank" rel="noopener">freeCodeCamp</a> — Free, project-based curriculum with certifications</li>
+                    <li><a href="https://exercism.org/tracks/javascript" target="_blank" rel="noopener">Exercism</a> — Practice problems with mentorship</li>
+                    <li><a href="https://frontendmentor.io/" target="_blank" rel="noopener">Frontend Mentor</a> — Real-world design challenges to build</li>
+                </ul>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Course Summary &amp; Final Thoughts</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 What You've Accomplished</h3>
+                    <p>Look back at how far you've come across 22 lessons and 6 modules:</p>
+                    <ul>
+                        <li><strong>Module 1: Foundations</strong> — You went from "what is JavaScript?" to writing variables, expressions, and running code in the console</li>
+                        <li><strong>Module 2: Control Flow &amp; Functions</strong> — You learned to make decisions, repeat actions, and organize code into reusable functions</li>
+                        <li><strong>Module 3: Working with Data</strong> — You mastered arrays, objects, powerful array methods, and string manipulation</li>
+                        <li><strong>Module 4: The DOM</strong> — You connected JavaScript to the page — selecting, modifying, creating, and removing elements dynamically</li>
+                        <li><strong>Module 5: Interactive Pages</strong> — You built real features: validated forms, timers, persistent storage, and live API data</li>
+                        <li><strong>Module 6: Capstone</strong> — You combined everything into a complete application and learned professional practices</li>
+                    </ul>
+                    <p>That's not just theory — you built working software. You're a JavaScript developer now.</p>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🌟 A Note from Ray</h3>
+                    <p>Congratulations on finishing this course! Learning to code is one of the most empowering skills you can develop. You've proven you can take a complex subject, work through it step by step, and come out the other side with real, usable skills.</p>
+                    <p>Remember: every professional developer started exactly where you are now. The difference between where you are today and where you want to be is just more time and more projects. Keep building, keep learning, and don't be afraid to break things — that's how you grow.</p>
+                    <p>If you have questions, need help, or just want to share what you've built, reach out at <a href="https://rays-home.netlify.app/contact" target="_blank" rel="noopener">Ray's House of Fun</a>. I'd love to see what you create.</p>
+                    <p>Now go build something amazing. 🚀</p>
+                </div>
+
+                <h3>📚 Quick Reference</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference" target="_blank" rel="noopener">MDN — JavaScript Reference</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API" target="_blank" rel="noopener">MDN — Web APIs</a></li>
+                    <li><a href="https://devdocs.io/" target="_blank" rel="noopener">DevDocs.io — All Documentation in One Place</a></li>
+                    <li><a href="https://caniuse.com/" target="_blank" rel="noopener">Can I Use — Browser Compatibility Tables</a></li>
+                </ul>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_21.html" class="prev-lesson">← Previous: Building a Complete Project</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <span class="next-lesson" style="visibility: hidden;">End of Course</span>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

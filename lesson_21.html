@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Build a complete interactive note-taking app from scratch, combining DOM manipulation, events, forms, timers, Local Storage, and the Fetch API.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 21: Building a Complete Project - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 6</a></li>
+            <li aria-current="page">Lesson 21: Building a Complete Project</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🚀 Lesson 21: Building a Complete Project</h1>
+                <p class="lead">You've learned every major skill in front-end JavaScript — DOM manipulation, events, forms, timers, Local Storage, and the Fetch API. Now it's time to put them all together. In this lesson, you'll build <strong>QuickNote</strong>, a fully functional note-taking app from scratch.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 What You'll Build</h2>
+                    <p><strong>QuickNote</strong> is a single-page note-taking app with these features:</p>
+                    <ul>
+                        <li>Create, edit, and delete notes with a validated form</li>
+                        <li>Color-coded categories (Work, Personal, Ideas)</li>
+                        <li>Search and filter notes in real time (debounced)</li>
+                        <li>Persistent storage — notes survive page refreshes</li>
+                        <li>Fetch a random inspirational quote from an API</li>
+                        <li>Auto-save indicator with timer feedback</li>
+                        <li>Smooth CSS transitions for adding and removing notes</li>
+                        <li>Responsive layout and keyboard shortcuts</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 90 minutes</p>
+                    <p><strong>Skills Used:</strong> Every lesson from Modules 1–5</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 Build Steps</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#planning" class="toc-link">Planning &amp; Architecture</a></li>
+                        <li><a href="#html-structure" class="toc-link">Step 1: HTML Structure</a></li>
+                        <li><a href="#data-layer" class="toc-link">Step 2: Data Layer (State &amp; Storage)</a></li>
+                        <li><a href="#rendering" class="toc-link">Step 3: Rendering Notes</a></li>
+                        <li><a href="#form-handling" class="toc-link">Step 4: Form Handling &amp; Validation</a></li>
+                        <li><a href="#search-filter" class="toc-link">Step 5: Search &amp; Filter</a></li>
+                        <li><a href="#api-quote" class="toc-link">Step 6: Fetching an Inspirational Quote</a></li>
+                        <li><a href="#polish" class="toc-link">Step 7: Polish &amp; Enhancements</a></li>
+                        <li><a href="#complete-code" class="toc-link">Complete Source Code</a></li>
+                        <li><a href="#summary" class="toc-link">Summary &amp; Challenges</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Planning -->
+            <section id="planning" class="lesson-section">
+                <h2>Planning &amp; Architecture</h2>
+
+                <p>Before writing a single line of code, let's plan. Professional developers spend time designing before building — it saves hours of rework later.</p>
+
+                <h3>Feature Requirements</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Skills Used</th>
+                                <th>Lessons</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Add/edit/delete notes</td><td>DOM creation, events, forms</td><td>14–17</td></tr>
+                            <tr><td>Form validation</td><td>preventDefault, validation patterns</td><td>17</td></tr>
+                            <tr><td>Persistent storage</td><td>localStorage, JSON</td><td>19</td></tr>
+                            <tr><td>Search &amp; filter</td><td>Array methods, debounce, input events</td><td>11, 15, 18</td></tr>
+                            <tr><td>Random quote</td><td>Fetch API, async/await, error handling</td><td>20</td></tr>
+                            <tr><td>Auto-save indicator</td><td>setTimeout, CSS transitions</td><td>18</td></tr>
+                            <tr><td>Animations</td><td>classList, CSS transitions via JS</td><td>14, 18</td></tr>
+                            <tr><td>Keyboard shortcuts</td><td>Keyboard events, event object</td><td>15</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Data Model</h3>
+                <p>Each note is a simple object. We'll store an array of these in Local Storage.</p>
+
+                <pre><code class="language-javascript">
+// A single note
+{
+    id: 1713300000000,          // Date.now() as unique ID
+    title: "Learn JavaScript",
+    body: "Finish the front-end JS course...",
+    category: "personal",       // "work", "personal", or "ideas"
+    createdAt: "2026-04-16T10:00:00.000Z",
+    updatedAt: "2026-04-16T10:30:00.000Z"
+}
+                </code></pre>
+
+                <h3>Architecture Overview</h3>
+                <div class="mermaid">
+                    graph TD
+                    A["User Actions<br/>(click, type, submit)"] --> B["Event Handlers"]
+                    B --> C["Update State<br/>(notes array)"]
+                    C --> D["Save to<br/>localStorage"]
+                    C --> E["Re-render<br/>DOM"]
+                    F["Page Load"] --> G["Load from<br/>localStorage"]
+                    G --> C
+                    H["Fetch API"] --> I["Display Quote"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style E fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style F fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style G fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style H fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style I fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+
+                <p>The pattern is straightforward: <strong>user action → update state → save → re-render</strong>. This is a simplified version of the same pattern used in frameworks like React and Vue.</p>
+            </section>
+
+            <!-- Step 1 -->
+            <section id="html-structure" class="lesson-section">
+                <h2>Step 1: HTML Structure</h2>
+
+                <p>We'll build the entire app in a single HTML file. Start with the shell — the layout, the form, the note container, and the search bar.</p>
+
+                <pre><code class="language-html">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;QuickNote&lt;/title&gt;
+    &lt;!-- Styles go here (see complete code at the end) --&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="app"&gt;
+        &lt;!-- Header with title and quote --&gt;
+        &lt;header class="app-header"&gt;
+            &lt;h1&gt;📝 QuickNote&lt;/h1&gt;
+            &lt;p class="quote" id="quote"&gt;Loading inspiration...&lt;/p&gt;
+        &lt;/header&gt;
+
+        &lt;!-- Toolbar: search + filter + add button --&gt;
+        &lt;div class="toolbar"&gt;
+            &lt;input type="text" id="search-input"
+                   placeholder="Search notes..."&gt;
+            &lt;select id="filter-category"&gt;
+                &lt;option value="all"&gt;All Categories&lt;/option&gt;
+                &lt;option value="work"&gt;Work&lt;/option&gt;
+                &lt;option value="personal"&gt;Personal&lt;/option&gt;
+                &lt;option value="ideas"&gt;Ideas&lt;/option&gt;
+            &lt;/select&gt;
+            &lt;button id="new-note-btn"&gt;+ New Note&lt;/button&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Note form (hidden by default, toggled on) --&gt;
+        &lt;div class="note-form-container" id="note-form-container"&gt;
+            &lt;form id="note-form" novalidate&gt;
+                &lt;input type="hidden" id="note-id"&gt;
+                &lt;div class="form-row"&gt;
+                    &lt;input type="text" id="note-title" name="title"
+                           placeholder="Note title" required&gt;
+                    &lt;select id="note-category" name="category"&gt;
+                        &lt;option value="personal"&gt;Personal&lt;/option&gt;
+                        &lt;option value="work"&gt;Work&lt;/option&gt;
+                        &lt;option value="ideas"&gt;Ideas&lt;/option&gt;
+                    &lt;/select&gt;
+                &lt;/div&gt;
+                &lt;textarea id="note-body" name="body" rows="4"
+                          placeholder="Write your note..."
+                          required&gt;&lt;/textarea&gt;
+                &lt;div class="form-actions"&gt;
+                    &lt;button type="submit" id="save-btn"&gt;Save Note&lt;/button&gt;
+                    &lt;button type="button" id="cancel-btn"&gt;Cancel&lt;/button&gt;
+                    &lt;span class="save-status" id="save-status"&gt;&lt;/span&gt;
+                &lt;/div&gt;
+            &lt;/form&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Notes grid --&gt;
+        &lt;div class="notes-grid" id="notes-grid"&gt;
+            &lt;!-- Notes are rendered here by JavaScript --&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Footer with count and shortcuts hint --&gt;
+        &lt;footer class="app-footer"&gt;
+            &lt;span id="note-count"&gt;0 notes&lt;/span&gt;
+            &lt;span class="shortcut-hint"&gt;
+                &lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;N&lt;/kbd&gt; New note
+            &lt;/span&gt;
+        &lt;/footer&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+    // JavaScript goes here — we'll build it step by step
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Why a Hidden Form?</h4>
+                    <p>The note form starts hidden and slides open when the user clicks "New Note." This keeps the interface clean and focused. The same form handles both creating and editing — when editing, we pre-fill the fields and change the button text. This is a common pattern in single-page apps.</p>
+                </div>
+            </section>
+
+            <!-- Step 2 -->
+            <section id="data-layer" class="lesson-section">
+                <h2>Step 2: Data Layer (State &amp; Storage)</h2>
+
+                <p>The data layer manages our notes array, loads from Local Storage, and saves whenever something changes. Every other part of the app reads from and writes to this layer.</p>
+
+                <pre><code class="language-javascript">
+// ============================================================
+// DATA LAYER — state management + localStorage
+// ============================================================
+
+const STORAGE_KEY = "quicknote_notes";
+
+// Load notes from storage (or return empty array)
+function loadNotes() {
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+        console.warn("Error loading notes:", error);
+        return [];
+    }
+}
+
+// Save notes to storage
+function saveNotes(notes) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    } catch (error) {
+        console.error("Error saving notes:", error);
+    }
+}
+
+// App state — the single source of truth
+let notes = loadNotes();
+
+// CRUD operations
+function createNote(title, body, category) {
+    const now = new Date().toISOString();
+    const note = {
+        id: Date.now(),
+        title: title.trim(),
+        body: body.trim(),
+        category,
+        createdAt: now,
+        updatedAt: now
+    };
+    notes.unshift(note);  // Add to the beginning (newest first)
+    saveNotes(notes);
+    return note;
+}
+
+function updateNote(id, title, body, category) {
+    const note = notes.find(n => n.id === id);
+    if (!note) return null;
+
+    note.title = title.trim();
+    note.body = body.trim();
+    note.category = category;
+    note.updatedAt = new Date().toISOString();
+
+    saveNotes(notes);
+    return note;
+}
+
+function deleteNote(id) {
+    notes = notes.filter(n => n.id !== id);
+    saveNotes(notes);
+}
+
+function getNotes(searchTerm = "", category = "all") {
+    return notes.filter(note => {
+        const matchesCategory =
+            category === "all" || note.category === category;
+        const matchesSearch =
+            !searchTerm ||
+            note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            note.body.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
+}
+                </code></pre>
+
+                <p>Notice how clean this is. The CRUD functions don't know anything about the DOM — they just manage data. This <strong>separation of concerns</strong> makes the code easier to understand, test, and modify.</p>
+            </section>
+
+            <!-- Step 3 -->
+            <section id="rendering" class="lesson-section">
+                <h2>Step 3: Rendering Notes</h2>
+
+                <p>The render function reads the current state and builds the DOM. It's called whenever the data changes — after adding, editing, deleting, or filtering notes.</p>
+
+                <pre><code class="language-javascript">
+// ============================================================
+// RENDERING — building the DOM from state
+// ============================================================
+
+const notesGrid = document.querySelector("#notes-grid");
+const noteCount = document.querySelector("#note-count");
+
+const categoryColors = {
+    work: "#3b82f6",
+    personal: "#22c55e",
+    ideas: "#f59e0b"
+};
+
+const categoryEmojis = {
+    work: "💼",
+    personal: "🏠",
+    ideas: "💡"
+};
+
+function renderNotes(searchTerm = "", category = "all") {
+    const filtered = getNotes(searchTerm, category);
+
+    // Clear the grid
+    notesGrid.innerHTML = "";
+
+    // Empty state
+    if (filtered.length === 0) {
+        notesGrid.innerHTML = `
+            &lt;div class="empty-state"&gt;
+                &lt;p&gt;${notes.length === 0
+                    ? "No notes yet. Click <strong>+ New Note</strong> to get started!"
+                    : "No notes match your search."
+                }&lt;/p&gt;
+            &lt;/div&gt;
+        `;
+        updateCount(filtered.length);
+        return;
+    }
+
+    // Build note cards using a DocumentFragment
+    const fragment = document.createDocumentFragment();
+
+    filtered.forEach(note => {
+        const card = document.createElement("article");
+        card.classList.add("note-card");
+        card.dataset.id = note.id;
+        card.style.borderLeftColor = categoryColors[note.category];
+
+        // Category badge
+        const badge = document.createElement("span");
+        badge.classList.add("note-badge");
+        badge.textContent =
+            `${categoryEmojis[note.category]} ${note.category}`;
+
+        // Title
+        const title = document.createElement("h3");
+        title.classList.add("note-title");
+        title.textContent = note.title;
+
+        // Body preview (first 120 chars)
+        const body = document.createElement("p");
+        body.classList.add("note-body");
+        body.textContent = note.body.length > 120
+            ? note.body.substring(0, 120) + "..."
+            : note.body;
+
+        // Timestamp
+        const time = document.createElement("time");
+        time.classList.add("note-time");
+        time.textContent = formatDate(note.updatedAt);
+
+        // Action buttons
+        const actions = document.createElement("div");
+        actions.classList.add("note-actions");
+        actions.innerHTML = `
+            &lt;button class="edit-btn" title="Edit note"&gt;✏️&lt;/button&gt;
+            &lt;button class="delete-btn" title="Delete note"&gt;🗑️&lt;/button&gt;
+        `;
+
+        card.append(badge, title, body, time, actions);
+        fragment.append(card);
+    });
+
+    notesGrid.append(fragment);
+    updateCount(filtered.length);
+}
+
+function updateCount(count) {
+    noteCount.textContent =
+        `${count} note${count !== 1 ? "s" : ""}`;
+}
+
+function formatDate(isoString) {
+    const date = new Date(isoString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins &lt; 1) return "Just now";
+    if (diffMins &lt; 60) return `${diffMins}m ago`;
+    if (diffHours &lt; 24) return `${diffHours}h ago`;
+    if (diffDays &lt; 7) return `${diffDays}d ago`;
+
+    return date.toLocaleDateString("en-US", {
+        month: "short", day: "numeric"
+    });
+}
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 The Render Pattern</h4>
+                    <p>This "clear and re-render" approach is simple and reliable. For a note-taking app with dozens (not thousands) of notes, it's perfectly efficient. Frameworks like React optimize this with a virtual DOM, but for vanilla JS apps of this scale, rebuilding the DOM works great — especially when using a <code>DocumentFragment</code> to batch the insertions.</p>
+                </div>
+            </section>
+
+            <!-- Step 4 -->
+            <section id="form-handling" class="lesson-section">
+                <h2>Step 4: Form Handling &amp; Validation</h2>
+
+                <p>The form handles both creating and editing notes. When editing, we pre-fill the fields and store the note's ID in a hidden input.</p>
+
+                <pre><code class="language-javascript">
+// ============================================================
+// FORM HANDLING — create & edit notes
+// ============================================================
+
+const noteForm = document.querySelector("#note-form");
+const formContainer = document.querySelector("#note-form-container");
+const noteIdInput = document.querySelector("#note-id");
+const titleInput = document.querySelector("#note-title");
+const bodyInput = document.querySelector("#note-body");
+const categorySelect = document.querySelector("#note-category");
+const saveBtn = document.querySelector("#save-btn");
+const cancelBtn = document.querySelector("#cancel-btn");
+const newNoteBtn = document.querySelector("#new-note-btn");
+const saveStatus = document.querySelector("#save-status");
+
+// Show/hide the form
+function showForm(editNote = null) {
+    formContainer.classList.add("visible");
+
+    if (editNote) {
+        // Editing an existing note
+        noteIdInput.value = editNote.id;
+        titleInput.value = editNote.title;
+        bodyInput.value = editNote.body;
+        categorySelect.value = editNote.category;
+        saveBtn.textContent = "Update Note";
+    } else {
+        // Creating a new note
+        noteForm.reset();
+        noteIdInput.value = "";
+        saveBtn.textContent = "Save Note";
+    }
+
+    titleInput.focus();
+}
+
+function hideForm() {
+    formContainer.classList.remove("visible");
+    noteForm.reset();
+    noteIdInput.value = "";
+    clearFormErrors();
+}
+
+// Validation
+function validateForm() {
+    let isValid = true;
+    clearFormErrors();
+
+    if (!titleInput.value.trim()) {
+        showFieldError(titleInput, "Title is required");
+        isValid = false;
+    } else if (titleInput.value.trim().length > 100) {
+        showFieldError(titleInput, "Title must be under 100 characters");
+        isValid = false;
+    }
+
+    if (!bodyInput.value.trim()) {
+        showFieldError(bodyInput, "Note content is required");
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function showFieldError(input, message) {
+    input.classList.add("input-error");
+    let error = input.parentElement.querySelector(".field-error");
+    if (!error) {
+        error = document.createElement("span");
+        error.classList.add("field-error");
+        error.setAttribute("role", "alert");
+        input.after(error);
+    }
+    error.textContent = message;
+}
+
+function clearFormErrors() {
+    noteForm.querySelectorAll(".field-error").forEach(el => el.remove());
+    noteForm.querySelectorAll(".input-error")
+        .forEach(el => el.classList.remove("input-error"));
+}
+
+// Handle form submission
+noteForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    if (!validateForm()) {
+        const firstError = noteForm.querySelector(".input-error");
+        if (firstError) firstError.focus();
+        return;
+    }
+
+    const title = titleInput.value;
+    const body = bodyInput.value;
+    const category = categorySelect.value;
+    const editId = noteIdInput.value;
+
+    if (editId) {
+        updateNote(Number(editId), title, body, category);
+        showSaveStatus("Note updated!");
+    } else {
+        createNote(title, body, category);
+        showSaveStatus("Note saved!");
+    }
+
+    hideForm();
+    renderNotes(searchInput.value, filterCategory.value);
+});
+
+// Save status flash
+function showSaveStatus(message) {
+    saveStatus.textContent = message;
+    saveStatus.classList.add("visible");
+    setTimeout(() => {
+        saveStatus.classList.remove("visible");
+    }, 2000);
+}
+
+// Buttons
+newNoteBtn.addEventListener("click", () => showForm());
+cancelBtn.addEventListener("click", hideForm);
+                </code></pre>
+
+                <p>The key insight here: <strong>one form, two modes</strong>. The hidden <code>note-id</code> input tells us whether we're creating (empty) or editing (has an ID). This avoids duplicating form HTML.</p>
+            </section>
+
+            <!-- Step 5 -->
+            <section id="search-filter" class="lesson-section">
+                <h2>Step 5: Search &amp; Filter</h2>
+
+                <p>Search uses debounce from Lesson 18 — we wait until the user pauses before filtering. The category dropdown filters immediately on change.</p>
+
+                <pre><code class="language-javascript">
+// ============================================================
+// SEARCH & FILTER — debounced search + category filter
+// ============================================================
+
+const searchInput = document.querySelector("#search-input");
+const filterCategory = document.querySelector("#filter-category");
+
+// Debounce helper
+function debounce(fn, delay) {
+    let timerId;
+    return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+    };
+}
+
+// Re-render whenever search or filter changes
+function applyFilters() {
+    renderNotes(searchInput.value, filterCategory.value);
+}
+
+// Debounced search (300ms after user stops typing)
+searchInput.addEventListener("input", debounce(applyFilters, 300));
+
+// Immediate filter on category change
+filterCategory.addEventListener("change", applyFilters);
+                </code></pre>
+
+                <p>That's it — eight lines of logic (plus the debounce helper). Because our <code>renderNotes</code> function already accepts search and filter parameters, wiring up the UI is trivial. This is the payoff of clean architecture.</p>
+            </section>
+
+            <!-- Step 6 -->
+            <section id="api-quote" class="lesson-section">
+                <h2>Step 6: Fetching an Inspirational Quote</h2>
+
+                <p>We'll fetch a random quote from a free API to display in the header. This adds a nice touch and practices our Fetch skills.</p>
+
+                <pre><code class="language-javascript">
+// ============================================================
+// API — fetch a random quote
+// ============================================================
+
+const quoteEl = document.querySelector("#quote");
+
+async function fetchQuote() {
+    try {
+        const response = await fetch(
+            "https://dummyjson.com/quotes/random"
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        quoteEl.textContent = `"${data.quote}" — ${data.author}`;
+
+    } catch (error) {
+        // Graceful fallback — the app works fine without a quote
+        quoteEl.textContent =
+            "\"The best way to predict the future is to create it.\"";
+        console.warn("Could not fetch quote:", error.message);
+    }
+}
+
+fetchQuote();
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Graceful Degradation</h4>
+                    <p>The quote is a nice-to-have, not essential. If the API is down or the user is offline, we show a hardcoded fallback quote and log a warning — the app continues to work perfectly. This is <strong>graceful degradation</strong>: design for the ideal case but handle failures without breaking.</p>
+                </div>
+            </section>
+
+            <!-- Step 7 -->
+            <section id="polish" class="lesson-section">
+                <h2>Step 7: Polish &amp; Enhancements</h2>
+
+                <p>The core app works. Now let's add the finishing touches that make it feel professional.</p>
+
+                <h3>Event Delegation for Note Actions</h3>
+                <pre><code class="language-javascript">
+// ============================================================
+// NOTE ACTIONS — edit & delete via event delegation
+// ============================================================
+
+notesGrid.addEventListener("click", (event) => {
+    const card = event.target.closest(".note-card");
+    if (!card) return;
+
+    const noteId = Number(card.dataset.id);
+
+    // Edit button
+    if (event.target.closest(".edit-btn")) {
+        const note = notes.find(n => n.id === noteId);
+        if (note) showForm(note);
+        return;
+    }
+
+    // Delete button with confirmation
+    if (event.target.closest(".delete-btn")) {
+        if (confirm("Delete this note?")) {
+            card.classList.add("removing");
+            // Wait for CSS animation before removing from data
+            setTimeout(() => {
+                deleteNote(noteId);
+                renderNotes(searchInput.value, filterCategory.value);
+            }, 300);
+        }
+    }
+});
+                </code></pre>
+
+                <h3>Keyboard Shortcuts</h3>
+                <pre><code class="language-javascript">
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+
+document.addEventListener("keydown", (event) => {
+    // Ctrl+N or Cmd+N — new note
+    if ((event.ctrlKey || event.metaKey) && event.key === "n") {
+        event.preventDefault();
+        showForm();
+    }
+
+    // Escape — close form
+    if (event.key === "Escape") {
+        hideForm();
+    }
+
+    // Ctrl+/ or Cmd+/ — focus search
+    if ((event.ctrlKey || event.metaKey) && event.key === "/") {
+        event.preventDefault();
+        searchInput.focus();
+    }
+});
+                </code></pre>
+
+                <h3>CSS Transitions for Polish</h3>
+                <pre><code class="language-html">
+&lt;style&gt;
+    /* Form slide-down */
+    .note-form-container {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    .note-form-container.visible {
+        max-height: 500px;
+        padding: 1.5rem;
+    }
+
+    /* Note card entrance */
+    .note-card {
+        animation: fadeSlideIn 0.3s ease;
+    }
+    @keyframes fadeSlideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Note card removal */
+    .note-card.removing {
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+
+    /* Save status flash */
+    .save-status {
+        opacity: 0;
+        transition: opacity 0.3s;
+        color: #22c55e;
+        font-size: 0.9rem;
+    }
+    .save-status.visible { opacity: 1; }
+&lt;/style&gt;
+                </code></pre>
+
+                <h3>Initialization</h3>
+                <pre><code class="language-javascript">
+// ============================================================
+// INITIALIZATION — start the app
+// ============================================================
+
+renderNotes();
+fetchQuote();
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Page Loads"] --> B["loadNotes()<br/>from localStorage"]
+                    A --> C["fetchQuote()<br/>from API"]
+                    B --> D["renderNotes()<br/>build DOM"]
+                    C --> E["Display quote<br/>or fallback"]
+                    D --> F["App Ready!"]
+                    E --> F
+                    F --> G["Wait for<br/>user actions"]
+                    G -->|"Add/Edit"| H["showForm()"]
+                    G -->|"Delete"| I["deleteNote()"]
+                    G -->|"Search"| J["debounce → render"]
+                    G -->|"Filter"| K["applyFilters()"]
+                    H -->|"Submit"| L["create/updateNote()<br/>→ save → render"]
+                    I --> M["save → render"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style F fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style G fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Complete Code -->
+            <section id="complete-code" class="lesson-section">
+                <h2>Complete Source Code</h2>
+
+                <p>Here's the entire app in one file. Save it as <code>quicknote.html</code> and open in a browser to try it out.</p>
+
+                <details>
+                    <summary><strong>📄 Click to expand the full source code</strong></summary>
+                    <pre><code class="language-html">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;QuickNote&lt;/title&gt;
+    &lt;style&gt;
+        * { box-sizing: border-box; margin: 0; }
+        body { font-family: system-ui, sans-serif; background: #f1f5f9; color: #1e293b; min-height: 100vh; }
+
+        .app { max-width: 800px; margin: 0 auto; padding: 1rem; }
+
+        /* Header */
+        .app-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .app-header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .quote { font-style: italic; color: #64748b; font-size: 0.9rem; max-width: 500px; margin: 0 auto; line-height: 1.5; }
+
+        /* Toolbar */
+        .toolbar { display: flex; gap: 0.5rem; padding: 1rem 0; flex-wrap: wrap; }
+        .toolbar input, .toolbar select {
+            padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1;
+            border-radius: 6px; font-size: 0.9rem; background: white;
+        }
+        .toolbar input { flex: 1; min-width: 150px; }
+        .toolbar input:focus, .toolbar select:focus { outline: none; border-color: #6366f1; }
+        #new-note-btn {
+            padding: 0.5rem 1.2rem; background: #6366f1; color: white;
+            border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; white-space: nowrap;
+        }
+        #new-note-btn:hover { background: #4f46e5; }
+
+        /* Form */
+        .note-form-container { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .note-form-container.visible { max-height: 500px; padding: 1.5rem; }
+        .form-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+        .form-row input { flex: 1; }
+        #note-form input, #note-form select, #note-form textarea {
+            width: 100%; padding: 0.5rem 0.75rem; border: 2px solid #e2e8f0;
+            border-radius: 6px; font-size: 0.95rem; font-family: inherit;
+        }
+        #note-form textarea { resize: vertical; margin-bottom: 0.75rem; min-height: 80px; }
+        #note-form input:focus, #note-form select:focus, #note-form textarea:focus { outline: none; border-color: #6366f1; }
+        .input-error { border-color: #ef4444 !important; background: #fef2f2; }
+        .field-error { color: #ef4444; font-size: 0.8rem; display: block; margin-top: 0.2rem; }
+        .form-actions { display: flex; gap: 0.5rem; align-items: center; }
+        .form-actions button { padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 0.9rem; cursor: pointer; }
+        #save-btn { background: #6366f1; color: white; border: none; }
+        #save-btn:hover { background: #4f46e5; }
+        #cancel-btn { background: white; color: #64748b; border: 1px solid #cbd5e1; }
+        #cancel-btn:hover { border-color: #94a3b8; }
+        .save-status { opacity: 0; transition: opacity 0.3s; color: #22c55e; font-size: 0.9rem; margin-left: auto; }
+        .save-status.visible { opacity: 1; }
+
+        /* Notes Grid */
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; padding: 0.5rem 0 2rem; }
+        .note-card {
+            background: white; border-radius: 10px; padding: 1.25rem;
+            border-left: 4px solid #6366f1;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            display: flex; flex-direction: column; gap: 0.5rem;
+            animation: fadeSlideIn 0.3s ease; position: relative;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
+        }
+        .note-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+        .note-card.removing { opacity: 0; transform: scale(0.95); }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .note-badge { font-size: 0.75rem; text-transform: capitalize; color: #64748b; }
+        .note-title { font-size: 1.05rem; color: #1e293b; }
+        .note-body { font-size: 0.85rem; color: #64748b; line-height: 1.5; flex: 1; }
+        .note-time { font-size: 0.75rem; color: #94a3b8; }
+        .note-actions { display: flex; gap: 0.25rem; }
+        .note-actions button { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 0.2rem 0.4rem; border-radius: 4px; opacity: 0.5; transition: opacity 0.2s; }
+        .note-actions button:hover { opacity: 1; background: #f1f5f9; }
+
+        /* Empty State */
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: #94a3b8; }
+
+        /* Footer */
+        .app-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+        .shortcut-hint { display: flex; gap: 0.25rem; align-items: center; }
+        kbd { background: #e2e8f0; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.75rem; font-family: inherit; }
+
+        @media (max-width: 500px) {
+            .toolbar { flex-direction: column; }
+            .form-row { flex-direction: column; }
+            .notes-grid { grid-template-columns: 1fr; }
+            .shortcut-hint { display: none; }
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="app"&gt;
+        &lt;header class="app-header"&gt;
+            &lt;h1&gt;📝 QuickNote&lt;/h1&gt;
+            &lt;p class="quote" id="quote"&gt;Loading inspiration...&lt;/p&gt;
+        &lt;/header&gt;
+
+        &lt;div class="toolbar"&gt;
+            &lt;input type="text" id="search-input" placeholder="Search notes..."&gt;
+            &lt;select id="filter-category"&gt;
+                &lt;option value="all"&gt;All Categories&lt;/option&gt;
+                &lt;option value="work"&gt;Work&lt;/option&gt;
+                &lt;option value="personal"&gt;Personal&lt;/option&gt;
+                &lt;option value="ideas"&gt;Ideas&lt;/option&gt;
+            &lt;/select&gt;
+            &lt;button id="new-note-btn"&gt;+ New Note&lt;/button&gt;
+        &lt;/div&gt;
+
+        &lt;div class="note-form-container" id="note-form-container"&gt;
+            &lt;form id="note-form" novalidate&gt;
+                &lt;input type="hidden" id="note-id"&gt;
+                &lt;div class="form-row"&gt;
+                    &lt;input type="text" id="note-title" name="title" placeholder="Note title"&gt;
+                    &lt;select id="note-category" name="category"&gt;
+                        &lt;option value="personal"&gt;Personal&lt;/option&gt;
+                        &lt;option value="work"&gt;Work&lt;/option&gt;
+                        &lt;option value="ideas"&gt;Ideas&lt;/option&gt;
+                    &lt;/select&gt;
+                &lt;/div&gt;
+                &lt;textarea id="note-body" name="body" rows="4" placeholder="Write your note..."&gt;&lt;/textarea&gt;
+                &lt;div class="form-actions"&gt;
+                    &lt;button type="submit" id="save-btn"&gt;Save Note&lt;/button&gt;
+                    &lt;button type="button" id="cancel-btn"&gt;Cancel&lt;/button&gt;
+                    &lt;span class="save-status" id="save-status"&gt;&lt;/span&gt;
+                &lt;/div&gt;
+            &lt;/form&gt;
+        &lt;/div&gt;
+
+        &lt;div class="notes-grid" id="notes-grid"&gt;&lt;/div&gt;
+
+        &lt;footer class="app-footer"&gt;
+            &lt;span id="note-count"&gt;0 notes&lt;/span&gt;
+            &lt;span class="shortcut-hint"&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;N&lt;/kbd&gt; New note&lt;/span&gt;
+        &lt;/footer&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+    // === DATA LAYER ===
+    const STORAGE_KEY = "quicknote_notes";
+
+    function loadNotes() {
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) { return []; }
+    }
+
+    function saveNotes(data) {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+        catch (e) { console.error("Save failed:", e); }
+    }
+
+    let notes = loadNotes();
+
+    function createNote(title, body, category) {
+        const now = new Date().toISOString();
+        notes.unshift({ id: Date.now(), title: title.trim(), body: body.trim(), category, createdAt: now, updatedAt: now });
+        saveNotes(notes);
+    }
+
+    function updateNote(id, title, body, category) {
+        const note = notes.find(n => n.id === id);
+        if (!note) return;
+        Object.assign(note, { title: title.trim(), body: body.trim(), category, updatedAt: new Date().toISOString() });
+        saveNotes(notes);
+    }
+
+    function deleteNote(id) {
+        notes = notes.filter(n => n.id !== id);
+        saveNotes(notes);
+    }
+
+    function getNotes(search = "", category = "all") {
+        return notes.filter(n => {
+            const catOk = category === "all" || n.category === category;
+            const searchOk = !search || n.title.toLowerCase().includes(search.toLowerCase()) || n.body.toLowerCase().includes(search.toLowerCase());
+            return catOk && searchOk;
+        });
+    }
+
+    // === DOM REFERENCES ===
+    const notesGrid = document.querySelector("#notes-grid");
+    const noteCount = document.querySelector("#note-count");
+    const quoteEl = document.querySelector("#quote");
+    const noteForm = document.querySelector("#note-form");
+    const formContainer = document.querySelector("#note-form-container");
+    const noteIdInput = document.querySelector("#note-id");
+    const titleInput = document.querySelector("#note-title");
+    const bodyInput = document.querySelector("#note-body");
+    const categorySelect = document.querySelector("#note-category");
+    const saveBtn = document.querySelector("#save-btn");
+    const cancelBtn = document.querySelector("#cancel-btn");
+    const newNoteBtn = document.querySelector("#new-note-btn");
+    const saveStatus = document.querySelector("#save-status");
+    const searchInput = document.querySelector("#search-input");
+    const filterCategory = document.querySelector("#filter-category");
+
+    const categoryColors = { work: "#3b82f6", personal: "#22c55e", ideas: "#f59e0b" };
+    const categoryEmojis = { work: "💼", personal: "🏠", ideas: "💡" };
+
+    // === RENDERING ===
+    function formatDate(iso) {
+        const diff = Date.now() - new Date(iso).getTime();
+        const mins = Math.floor(diff / 60000);
+        if (mins &lt; 1) return "Just now";
+        if (mins &lt; 60) return mins + "m ago";
+        const hrs = Math.floor(diff / 3600000);
+        if (hrs &lt; 24) return hrs + "h ago";
+        const days = Math.floor(diff / 86400000);
+        if (days &lt; 7) return days + "d ago";
+        return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    }
+
+    function renderNotes(search = "", category = "all") {
+        const filtered = getNotes(search, category);
+        notesGrid.innerHTML = "";
+        if (filtered.length === 0) {
+            notesGrid.innerHTML = '&lt;div class="empty-state"&gt;&lt;p&gt;' +
+                (notes.length === 0 ? 'No notes yet. Click &lt;strong&gt;+ New Note&lt;/strong&gt; to get started!' : 'No notes match your search.') +
+                '&lt;/p&gt;&lt;/div&gt;';
+            noteCount.textContent = "0 notes";
+            return;
+        }
+        const frag = document.createDocumentFragment();
+        filtered.forEach(note => {
+            const card = document.createElement("article");
+            card.classList.add("note-card");
+            card.dataset.id = note.id;
+            card.style.borderLeftColor = categoryColors[note.category] || "#6366f1";
+
+            const badge = document.createElement("span");
+            badge.classList.add("note-badge");
+            badge.textContent = (categoryEmojis[note.category] || "") + " " + note.category;
+
+            const title = document.createElement("h3");
+            title.classList.add("note-title");
+            title.textContent = note.title;
+
+            const body = document.createElement("p");
+            body.classList.add("note-body");
+            body.textContent = note.body.length > 120 ? note.body.substring(0, 120) + "..." : note.body;
+
+            const time = document.createElement("time");
+            time.classList.add("note-time");
+            time.textContent = formatDate(note.updatedAt);
+
+            const actions = document.createElement("div");
+            actions.classList.add("note-actions");
+            const editBtn = document.createElement("button");
+            editBtn.classList.add("edit-btn");
+            editBtn.title = "Edit note";
+            editBtn.textContent = "✏️";
+            const delBtn = document.createElement("button");
+            delBtn.classList.add("delete-btn");
+            delBtn.title = "Delete note";
+            delBtn.textContent = "🗑️";
+            actions.append(editBtn, delBtn);
+
+            card.append(badge, title, body, time, actions);
+            frag.append(card);
+        });
+        notesGrid.append(frag);
+        noteCount.textContent = filtered.length + " note" + (filtered.length !== 1 ? "s" : "");
+    }
+
+    // === FORM ===
+    function showForm(editNote = null) {
+        formContainer.classList.add("visible");
+        if (editNote) {
+            noteIdInput.value = editNote.id;
+            titleInput.value = editNote.title;
+            bodyInput.value = editNote.body;
+            categorySelect.value = editNote.category;
+            saveBtn.textContent = "Update Note";
+        } else {
+            noteForm.reset();
+            noteIdInput.value = "";
+            saveBtn.textContent = "Save Note";
+        }
+        titleInput.focus();
+    }
+
+    function hideForm() {
+        formContainer.classList.remove("visible");
+        noteForm.reset();
+        noteIdInput.value = "";
+        clearFormErrors();
+    }
+
+    function showFieldError(input, msg) {
+        input.classList.add("input-error");
+        let el = input.parentElement.querySelector(".field-error");
+        if (!el) { el = document.createElement("span"); el.classList.add("field-error"); el.setAttribute("role", "alert"); input.after(el); }
+        el.textContent = msg;
+    }
+
+    function clearFormErrors() {
+        noteForm.querySelectorAll(".field-error").forEach(e => e.remove());
+        noteForm.querySelectorAll(".input-error").forEach(e => e.classList.remove("input-error"));
+    }
+
+    function validateForm() {
+        let ok = true;
+        clearFormErrors();
+        if (!titleInput.value.trim()) { showFieldError(titleInput, "Title is required"); ok = false; }
+        else if (titleInput.value.trim().length > 100) { showFieldError(titleInput, "Title must be under 100 characters"); ok = false; }
+        if (!bodyInput.value.trim()) { showFieldError(bodyInput, "Note content is required"); ok = false; }
+        return ok;
+    }
+
+    function showSaveStatus(msg) {
+        saveStatus.textContent = msg;
+        saveStatus.classList.add("visible");
+        setTimeout(() => saveStatus.classList.remove("visible"), 2000);
+    }
+
+    noteForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!validateForm()) { const f = noteForm.querySelector(".input-error"); if (f) f.focus(); return; }
+        const editId = noteIdInput.value;
+        if (editId) { updateNote(Number(editId), titleInput.value, bodyInput.value, categorySelect.value); showSaveStatus("Note updated!"); }
+        else { createNote(titleInput.value, bodyInput.value, categorySelect.value); showSaveStatus("Note saved!"); }
+        hideForm();
+        renderNotes(searchInput.value, filterCategory.value);
+    });
+
+    newNoteBtn.addEventListener("click", () => showForm());
+    cancelBtn.addEventListener("click", hideForm);
+
+    // === SEARCH & FILTER ===
+    function debounce(fn, delay) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), delay); }; }
+    function applyFilters() { renderNotes(searchInput.value, filterCategory.value); }
+    searchInput.addEventListener("input", debounce(applyFilters, 300));
+    filterCategory.addEventListener("change", applyFilters);
+
+    // === NOTE ACTIONS (delegation) ===
+    notesGrid.addEventListener("click", (e) => {
+        const card = e.target.closest(".note-card");
+        if (!card) return;
+        const id = Number(card.dataset.id);
+        if (e.target.closest(".edit-btn")) { const n = notes.find(x => x.id === id); if (n) showForm(n); }
+        else if (e.target.closest(".delete-btn")) {
+            if (confirm("Delete this note?")) {
+                card.classList.add("removing");
+                setTimeout(() => { deleteNote(id); renderNotes(searchInput.value, filterCategory.value); }, 300);
+            }
+        }
+    });
+
+    // === KEYBOARD SHORTCUTS ===
+    document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "n") { e.preventDefault(); showForm(); }
+        if (e.key === "Escape") hideForm();
+        if ((e.ctrlKey || e.metaKey) && e.key === "/") { e.preventDefault(); searchInput.focus(); }
+    });
+
+    // === API QUOTE ===
+    async function fetchQuote() {
+        try {
+            const res = await fetch("https://dummyjson.com/quotes/random");
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            const data = await res.json();
+            quoteEl.textContent = '"' + data.quote + '" — ' + data.author;
+        } catch (err) {
+            quoteEl.textContent = '"The best way to predict the future is to create it."';
+        }
+    }
+
+    // === INIT ===
+    renderNotes();
+    fetchQuote();
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+                </details>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary &amp; Challenges</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Skills You Used</h3>
+                    <p>Look at everything that went into this one project:</p>
+                    <ul>
+                        <li><strong>Variables &amp; Data Types</strong> (L3) — note objects, state management</li>
+                        <li><strong>Functions</strong> (L7) — modular CRUD operations, helpers, render function</li>
+                        <li><strong>Arrays &amp; Array Methods</strong> (L9, L11) — <code>filter</code>, <code>find</code>, <code>forEach</code>, <code>unshift</code></li>
+                        <li><strong>Objects</strong> (L10) — note data structure, Object.assign</li>
+                        <li><strong>Strings &amp; Template Literals</strong> (L12) — string methods, <code>includes()</code>, <code>toLowerCase()</code></li>
+                        <li><strong>DOM Manipulation</strong> (L13–L16) — <code>createElement</code>, <code>querySelector</code>, <code>classList</code>, <code>DocumentFragment</code></li>
+                        <li><strong>Events &amp; Delegation</strong> (L15) — click, submit, keydown, event delegation on the notes grid</li>
+                        <li><strong>Forms &amp; Validation</strong> (L17) — <code>preventDefault</code>, validation, error messages, <code>role="alert"</code></li>
+                        <li><strong>Timers</strong> (L18) — debounce for search, <code>setTimeout</code> for save status and delete animation</li>
+                        <li><strong>CSS Transitions via JS</strong> (L18) — form slide, card entrance, removal animation</li>
+                        <li><strong>Local Storage</strong> (L19) — <code>JSON.stringify</code>/<code>parse</code>, persistent notes, safe loading</li>
+                        <li><strong>Fetch API &amp; async/await</strong> (L20) — quote API, error handling, graceful fallback</li>
+                    </ul>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏋️ Stretch Challenges</h3>
+                    <p>The base app is complete, but there's always room to grow. Try these challenges to push your skills further:</p>
+                    <ul>
+                        <li><strong>Dark Mode:</strong> Add a theme toggle that persists to localStorage. Change the CSS custom properties for colors.</li>
+                        <li><strong>Export/Import:</strong> Add buttons to download notes as a JSON file and import from a file using the File API (<code>FileReader</code>).</li>
+                        <li><strong>Drag &amp; Drop:</strong> Let users reorder notes by dragging them. Look into the HTML Drag and Drop API.</li>
+                        <li><strong>Markdown Preview:</strong> Parse note bodies as Markdown and render HTML. Try a library like <code>marked</code>.</li>
+                        <li><strong>Multiple Tabs:</strong> Use the <code>storage</code> event to sync notes across browser tabs in real time.</li>
+                        <li><strong>Word Count:</strong> Show a live word/character count in the form using the <code>input</code> event.</li>
+                        <li><strong>Confirmation Modal:</strong> Replace the browser's <code>confirm()</code> dialog with a custom modal for delete confirmations.</li>
+                        <li><strong>Pin Notes:</strong> Add a "pin" feature that keeps certain notes at the top of the grid.</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript" target="_blank" rel="noopener">MDN — JavaScript Learning Path</a></li>
+                    <li><a href="https://javascript.info/" target="_blank" rel="noopener">javascript.info — The Modern JavaScript Tutorial</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API" target="_blank" rel="noopener">MDN — Web APIs Reference</a></li>
+                    <li><a href="https://dummyjson.com/" target="_blank" rel="noopener">DummyJSON — Free API for Testing</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>You've built a complete, functional web application with vanilla JavaScript. In the final lesson, we'll step back and look at the bigger picture — <strong>debugging strategies, code organization patterns, and where to go next</strong> as you continue your journey as a developer.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_20.html" class="prev-lesson">← Previous: Working with APIs &amp; Fetch</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_22.html" class="next-lesson">Next: Next Steps &amp; Best Practices →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

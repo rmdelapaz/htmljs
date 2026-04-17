@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to use setTimeout, setInterval, and requestAnimationFrame to build countdowns, timers, and smooth JavaScript-driven animations with CSS transitions.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 18: Timers &amp; Animation - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5</a></li>
+            <li aria-current="page">Lesson 18: Timers &amp; Animation</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>⏱️ Lesson 18: Timers &amp; Animation</h1>
+                <p class="lead">JavaScript doesn't just respond to clicks — it can schedule code to run later, repeat at intervals, and sync with the browser's rendering engine. In this lesson you'll learn the timing APIs that power countdowns, auto-saves, live clocks, and smooth animations.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Delay code execution with <code>setTimeout</code> and cancel it with <code>clearTimeout</code></li>
+                        <li>Run code at regular intervals with <code>setInterval</code> and stop it with <code>clearInterval</code></li>
+                        <li>Build practical features like countdowns, debounce, and auto-save</li>
+                        <li>Create smooth animations with <code>requestAnimationFrame</code></li>
+                        <li>Trigger CSS transitions from JavaScript by toggling classes</li>
+                        <li>Understand the event loop and how timers actually work under the hood</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 50 minutes</p>
+                    <p><strong>Project:</strong> Build a Pomodoro timer with animated progress</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#settimeout" class="toc-link">setTimeout — Run Once, Later</a></li>
+                        <li><a href="#setinterval" class="toc-link">setInterval — Run Repeatedly</a></li>
+                        <li><a href="#practical-timer-patterns" class="toc-link">Practical Timer Patterns</a></li>
+                        <li><a href="#event-loop" class="toc-link">How Timers Really Work: The Event Loop</a></li>
+                        <li><a href="#requestanimationframe" class="toc-link">requestAnimationFrame — Smooth Animation</a></li>
+                        <li><a href="#css-transitions-js" class="toc-link">CSS Transitions via JavaScript</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="settimeout" class="lesson-section">
+                <h2>setTimeout — Run Once, Later</h2>
+
+                <p><code>setTimeout</code> schedules a function to run <strong>once</strong> after a specified delay (in milliseconds). It returns an ID you can use to cancel the timer before it fires.</p>
+
+                <pre><code class="language-javascript">
+// Run a function after 2 seconds (2000ms)
+setTimeout(() => {
+    console.log("This runs after 2 seconds");
+}, 2000);
+
+// With a named function
+function showWelcome() {
+    console.log("Welcome to the app!");
+}
+setTimeout(showWelcome, 3000);  // 3 seconds
+                </code></pre>
+
+                <h3>Canceling a Timeout</h3>
+                <p><code>setTimeout</code> returns a numeric ID. Pass it to <code>clearTimeout</code> to cancel the scheduled function before it runs.</p>
+
+                <pre><code class="language-javascript">
+// Schedule a timeout
+const timerId = setTimeout(() => {
+    alert("Time's up!");
+}, 5000);
+
+// Cancel it before it fires
+const cancelBtn = document.querySelector("#cancel");
+cancelBtn.addEventListener("click", () => {
+    clearTimeout(timerId);
+    console.log("Timer canceled!");
+});
+                </code></pre>
+
+                <h3>Passing Arguments</h3>
+                <pre><code class="language-javascript">
+// Extra arguments are passed to the callback
+setTimeout((name, role) => {
+    console.log(`Hello ${name}, you are a ${role}`);
+}, 1000, "Ray", "developer");
+
+// Equivalent to:
+setTimeout(() => {
+    greet("Ray", "developer");
+}, 1000);
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Common Mistake: Calling Instead of Passing</h4>
+                    <pre><code class="language-javascript">
+// ❌ WRONG — this calls the function immediately!
+setTimeout(showWelcome(), 2000);
+
+// ✅ RIGHT — pass the function reference
+setTimeout(showWelcome, 2000);
+
+// ✅ Also right — wrap in an arrow function
+setTimeout(() => showWelcome(), 2000);
+                    </code></pre>
+                    <p>Don't add parentheses <code>()</code> when passing a function to <code>setTimeout</code>. Parentheses <em>call</em> the function right away; you want to pass a <em>reference</em> for <code>setTimeout</code> to call later.</p>
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="setinterval" class="lesson-section">
+                <h2>setInterval — Run Repeatedly</h2>
+
+                <p><code>setInterval</code> runs a function <strong>repeatedly</strong> at a fixed interval. Like <code>setTimeout</code>, it returns an ID you use with <code>clearInterval</code> to stop it.</p>
+
+                <pre><code class="language-javascript">
+// Update a clock every second
+const clockDisplay = document.querySelector("#clock");
+
+const intervalId = setInterval(() => {
+    const now = new Date();
+    clockDisplay.textContent = now.toLocaleTimeString();
+}, 1000);
+
+// Stop the clock
+document.querySelector("#stop-clock").addEventListener("click", () => {
+    clearInterval(intervalId);
+});
+                </code></pre>
+
+                <h3>Building a Countdown</h3>
+                <pre><code class="language-javascript">
+function startCountdown(seconds, display) {
+    let remaining = seconds;
+    display.textContent = remaining;
+
+    const intervalId = setInterval(() => {
+        remaining--;
+        display.textContent = remaining;
+
+        if (remaining <= 0) {
+            clearInterval(intervalId);
+            display.textContent = "Done!";
+        }
+    }, 1000);
+
+    return intervalId;  // Return so caller can cancel if needed
+}
+
+const display = document.querySelector("#countdown");
+const timerId = startCountdown(10, display);
+                </code></pre>
+
+                <h3>setTimeout vs. setInterval</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>setTimeout</th>
+                                <th>setInterval</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>How often</td><td>Once</td><td>Repeatedly</td></tr>
+                            <tr><td>Cancel with</td><td><code>clearTimeout(id)</code></td><td><code>clearInterval(id)</code></td></tr>
+                            <tr><td>Use for</td><td>Delays, debounce, one-shot</td><td>Clocks, polling, animations</td></tr>
+                            <tr><td>Drift risk</td><td>N/A</td><td>Yes — intervals can drift over time</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Recursive setTimeout — A Better Interval</h3>
+                <p><code>setInterval</code> fires every N milliseconds regardless of how long the callback takes. If the callback is slow (e.g., a network request), calls can stack up. A recursive <code>setTimeout</code> waits for each execution to finish before scheduling the next.</p>
+
+                <pre><code class="language-javascript">
+// setInterval — fires every 2s even if the callback is slow
+setInterval(async () => {
+    await fetchData();  // Takes 1.5s
+    updateUI();         // Next call fires 0.5s after this finishes
+}, 2000);
+
+// Recursive setTimeout — waits for completion, then schedules
+async function poll() {
+    await fetchData();  // Takes 1.5s
+    updateUI();
+    setTimeout(poll, 2000);  // 2s AFTER this finishes
+}
+poll();  // Start the cycle
+                </code></pre>
+
+                <div class="mermaid">
+                    graph LR
+                    subgraph setInterval
+                        direction LR
+                        A1["Call"] -->|2s| A2["Call"]
+                        A2 -->|2s| A3["Call"]
+                        A3 -->|2s| A4["Call"]
+                    end
+                    subgraph "Recursive setTimeout"
+                        direction LR
+                        B1["Call"] -->|"done + 2s"| B2["Call"]
+                        B2 -->|"done + 2s"| B3["Call"]
+                    end
+                    style A1 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style A2 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style A3 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style A4 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B1 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style B2 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style B3 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="practical-timer-patterns" class="lesson-section">
+                <h2>Practical Timer Patterns</h2>
+
+                <p>Timers aren't just for countdowns. Here are three real-world patterns you'll use constantly.</p>
+
+                <h3>Debounce — Wait Until the User Stops</h3>
+                <p>Debouncing delays a function until the user <strong>stops</strong> doing something (like typing). Each new event resets the timer. This is perfect for search-as-you-type, where you don't want to fire a request on every single keystroke.</p>
+
+                <pre><code class="language-javascript">
+function debounce(fn, delay) {
+    let timerId;
+    return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+    };
+}
+
+// Usage: search only after user stops typing for 300ms
+const searchInput = document.querySelector("#search");
+const handleSearch = debounce((event) => {
+    console.log("Searching for:", event.target.value);
+    // fetch(`/api/search?q=${event.target.value}`)...
+}, 300);
+
+searchInput.addEventListener("input", handleSearch);
+                </code></pre>
+
+                <h3>Throttle — Limit How Often It Runs</h3>
+                <p>Throttling ensures a function runs <strong>at most once</strong> per time window, no matter how often the event fires. Great for scroll and resize handlers.</p>
+
+                <pre><code class="language-javascript">
+function throttle(fn, limit) {
+    let waiting = false;
+    return (...args) => {
+        if (!waiting) {
+            fn(...args);
+            waiting = true;
+            setTimeout(() => { waiting = false; }, limit);
+        }
+    };
+}
+
+// Usage: handle scroll at most every 200ms
+window.addEventListener("scroll", throttle(() => {
+    console.log("Scroll position:", window.scrollY);
+}, 200));
+                </code></pre>
+
+                <h3>Auto-Save with Debounce</h3>
+                <pre><code class="language-javascript">
+const editor = document.querySelector("#editor");
+const statusEl = document.querySelector("#save-status");
+
+const autoSave = debounce((content) => {
+    // Save to localStorage (or send to server)
+    localStorage.setItem("draft", content);
+    statusEl.textContent = "Saved!";
+    setTimeout(() => { statusEl.textContent = ""; }, 2000);
+}, 1000);
+
+editor.addEventListener("input", (event) => {
+    statusEl.textContent = "Saving...";
+    autoSave(event.target.value);
+});
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    subgraph Debounce
+                        D1["Keystroke"] --> D2["Reset timer"]
+                        D2 --> D3["Keystroke"] --> D4["Reset timer"]
+                        D4 --> D5["...silence..."]
+                        D5 --> D6["Timer fires!<br/>Execute function"]
+                    end
+                    subgraph Throttle
+                        T1["Event fires"] --> T2["Execute function"]
+                        T2 --> T3["Lock for N ms"]
+                        T3 --> T4["Events ignored"]
+                        T4 --> T5["Unlock"]
+                        T5 --> T6["Next event executes"]
+                    end
+                    style D1 fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D3 fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style D6 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style T1 fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style T2 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style T4 fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style T6 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D2 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style D4 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style D5 fill:#f8fafc,stroke:#94a3b8,stroke-width:2px,color:#1e293b
+                    style T3 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style T5 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 When to Debounce vs. Throttle</h4>
+                    <ul>
+                        <li><strong>Debounce</strong> when you only care about the <em>final</em> value: search input, form auto-save, window resize calculations</li>
+                        <li><strong>Throttle</strong> when you need <em>periodic</em> updates during continuous activity: scroll position tracking, mouse move effects, rate-limited API calls</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="event-loop" class="lesson-section">
+                <h2>How Timers Really Work: The Event Loop</h2>
+
+                <p>JavaScript is <strong>single-threaded</strong> — it can only do one thing at a time. So how do timers work without freezing the page? The answer is the <strong>event loop</strong>.</p>
+
+                <pre><code class="language-javascript">
+console.log("1: Start");
+
+setTimeout(() => {
+    console.log("2: Timeout callback");
+}, 0);  // 0ms delay!
+
+console.log("3: End");
+
+// Output:
+// 1: Start
+// 3: End
+// 2: Timeout callback  ← runs AFTER current code finishes
+                </code></pre>
+
+                <p>Even with a delay of <code>0</code>, the timeout callback doesn't run immediately. It's placed in a <strong>task queue</strong> and only executes after the current code (the "call stack") finishes. This is the event loop in action.</p>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Call Stack<br/>(current code)"] --> B{"Stack empty?"}
+                    B -->|No| A
+                    B -->|Yes| C["Event Loop<br/>checks queues"]
+                    C --> D["Task Queue<br/>(setTimeout, setInterval,<br/>click handlers)"]
+                    D --> E["Move next task<br/>to Call Stack"]
+                    E --> A
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style E fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Timer Delays Are Minimums, Not Guarantees</h4>
+                    <p><code>setTimeout(fn, 500)</code> means "run this <em>no sooner than</em> 500ms from now." If the call stack is busy (heavy computation, long-running loop), the callback will wait. The browser also enforces a minimum delay of about 4ms for nested timers. For precise timing (animations, games), use <code>requestAnimationFrame</code> instead.</p>
+                </div>
+
+                <h3>Why This Matters</h3>
+                <pre><code class="language-javascript">
+// ❌ This will freeze the page — blocking the call stack
+for (let i = 0; i &lt; 1000000000; i++) {
+    // Heavy computation — nothing else can run
+}
+
+// ✅ Break heavy work into chunks with setTimeout
+function processChunk(data, index, chunkSize) {
+    const end = Math.min(index + chunkSize, data.length);
+    for (let i = index; i &lt; end; i++) {
+        // Process item
+    }
+    if (end &lt; data.length) {
+        // Schedule next chunk — lets other events run between chunks
+        setTimeout(() => processChunk(data, end, chunkSize), 0);
+    }
+}
+                </code></pre>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="requestanimationframe" class="lesson-section">
+                <h2>requestAnimationFrame — Smooth Animation</h2>
+
+                <p><code>requestAnimationFrame</code> (rAF) tells the browser: "Call this function right before the next screen repaint." It runs at the display's refresh rate — usually 60 times per second (60 fps), giving you ~16.7ms per frame. This is the right tool for visual animations.</p>
+
+                <h3>Basic Animation Loop</h3>
+                <pre><code class="language-javascript">
+const box = document.querySelector(".animated-box");
+let position = 0;
+
+function animate() {
+    position += 2;  // Move 2px per frame
+    box.style.transform = `translateX(${position}px)`;
+
+    if (position &lt; 400) {
+        requestAnimationFrame(animate);  // Schedule next frame
+    }
+}
+
+requestAnimationFrame(animate);  // Start the animation
+                </code></pre>
+
+                <h3>Using the Timestamp</h3>
+                <p>rAF passes a high-resolution timestamp to your callback. Use it for frame-rate-independent animation — so the motion looks the same whether the browser runs at 30 fps or 144 fps.</p>
+
+                <pre><code class="language-javascript">
+const box = document.querySelector(".animated-box");
+const duration = 2000;  // 2 seconds
+let startTime = null;
+
+function animate(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const elapsed = timestamp - startTime;
+
+    // Progress from 0 to 1 over the duration
+    const progress = Math.min(elapsed / duration, 1);
+
+    // Move from 0 to 400px
+    box.style.transform = `translateX(${progress * 400}px)`;
+
+    if (progress &lt; 1) {
+        requestAnimationFrame(animate);
+    }
+}
+
+requestAnimationFrame(animate);
+                </code></pre>
+
+                <h3>Canceling an Animation</h3>
+                <pre><code class="language-javascript">
+let animationId;
+
+function animate() {
+    // ... animation logic ...
+    animationId = requestAnimationFrame(animate);
+}
+
+// Start
+animationId = requestAnimationFrame(animate);
+
+// Stop
+cancelAnimationFrame(animationId);
+                </code></pre>
+
+                <h3>Why Not setInterval for Animations?</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Factor</th>
+                                <th>setInterval</th>
+                                <th>requestAnimationFrame</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Syncs with display</td><td>No — can cause jank</td><td>Yes — smooth frames</td></tr>
+                            <tr><td>Background tabs</td><td>Keeps running (wastes resources)</td><td>Pauses automatically</td></tr>
+                            <tr><td>Frame rate</td><td>Fixed (you pick ms)</td><td>Matches monitor (60/120/144 fps)</td></tr>
+                            <tr><td>Battery impact</td><td>Higher</td><td>Lower (pauses when hidden)</td></tr>
+                            <tr><td>Best for</td><td>Non-visual timers, polling</td><td>Visual animations</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 Easing Functions</h4>
+                    <p>Linear motion (constant speed) looks robotic. Easing functions make animations feel natural by varying the speed over time.</p>
+                    <pre><code class="language-javascript">
+// Linear: constant speed
+const linear = t => t;
+
+// Ease out: fast start, slow finish
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+
+// Ease in-out: slow start and end, fast middle
+const easeInOut = t => t &lt; 0.5
+    ? 4 * t * t * t
+    : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+// Usage with rAF
+const progress = elapsed / duration;
+const eased = easeOut(progress);
+box.style.transform = `translateX(${eased * 400}px)`;
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="css-transitions-js" class="lesson-section">
+                <h2>CSS Transitions via JavaScript</h2>
+
+                <p>For many animations, you don't need <code>requestAnimationFrame</code> at all. CSS transitions handle the animation automatically — JavaScript just triggers them by changing a property or toggling a class.</p>
+
+                <h3>The Pattern: CSS Defines the Animation, JS Triggers It</h3>
+                <pre><code class="language-html">
+&lt;style&gt;
+    .box {
+        width: 100px;
+        height: 100px;
+        background: #3b82f6;
+        transform: translateX(0);
+        opacity: 1;
+        /* CSS transition — the browser animates these properties */
+        transition: transform 0.5s ease, opacity 0.3s ease;
+    }
+
+    .box.slide-right {
+        transform: translateX(300px);
+    }
+
+    .box.fade-out {
+        opacity: 0;
+    }
+&lt;/style&gt;
+                </code></pre>
+
+                <pre><code class="language-javascript">
+const box = document.querySelector(".box");
+const slideBtn = document.querySelector("#slide");
+const fadeBtn = document.querySelector("#fade");
+
+// Toggle the class — CSS handles the animation
+slideBtn.addEventListener("click", () => {
+    box.classList.toggle("slide-right");
+});
+
+fadeBtn.addEventListener("click", () => {
+    box.classList.toggle("fade-out");
+});
+                </code></pre>
+
+                <h3>Listening for Transition End</h3>
+                <p>The <code>transitionend</code> event fires when a CSS transition finishes. Use it to chain actions or clean up.</p>
+
+                <pre><code class="language-javascript">
+const notification = document.querySelector(".notification");
+
+// Fade out, then remove from DOM
+function dismissNotification(el) {
+    el.classList.add("fade-out");
+
+    el.addEventListener("transitionend", () => {
+        el.remove();
+    }, { once: true });  // Auto-remove the listener
+}
+
+dismissNotification(notification);
+                </code></pre>
+
+                <h3>Triggering Transitions on Dynamic Elements</h3>
+                <p>New elements start with their final styles — there's no "before" state for the browser to transition from. You need to force a layout calculation (a "reflow") between setting the initial state and the final state.</p>
+
+                <pre><code class="language-javascript">
+const toast = document.createElement("div");
+toast.classList.add("toast");  // Has transition: opacity 0.3s
+toast.style.opacity = "0";    // Start invisible
+toast.textContent = "Saved!";
+document.body.append(toast);
+
+// Force reflow — the browser now "knows" opacity is 0
+toast.offsetHeight;  // Reading any layout property triggers reflow
+
+// NOW set the final state — the transition runs
+toast.style.opacity = "1";
+
+// Auto-dismiss after 3 seconds
+setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.addEventListener("transitionend", () => toast.remove(), { once: true });
+}, 3000);
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ CSS vs. JavaScript Animation — Rules of Thumb</h4>
+                    <ul>
+                        <li>Use <strong>CSS transitions</strong> for simple state changes: hover effects, show/hide, slide in/out, color changes</li>
+                        <li>Use <strong>CSS @keyframes</strong> for looping or complex multi-step animations that don't depend on user input</li>
+                        <li>Use <strong>requestAnimationFrame</strong> for animations that depend on dynamic values (mouse position, game physics, canvas drawing)</li>
+                        <li><strong>Prefer CSS</strong> when possible — the browser can optimize CSS animations on the GPU, and they don't block the main thread</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Pomodoro Timer with Animated Progress</h3>
+                    <p><strong>Objective:</strong> Build a Pomodoro-style countdown timer with start, pause, and reset controls, a circular progress indicator, and a notification when time is up.</p>
+
+                    <pre><code class="language-html">
+&lt;!-- Save this as pomodoro.html and open in a browser --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Pomodoro Timer&lt;/title&gt;
+    &lt;style&gt;
+        * { box-sizing: border-box; margin: 0; }
+        body {
+            font-family: system-ui, sans-serif; background: #0f172a;
+            color: #e2e8f0; display: flex; justify-content: center;
+            align-items: center; min-height: 100vh;
+        }
+        .timer-container { text-align: center; }
+        h1 { margin-bottom: 2rem; font-size: 1.5rem; color: #94a3b8; }
+
+        .timer-ring {
+            width: 280px; height: 280px; margin: 0 auto 2rem;
+            position: relative;
+        }
+        .timer-ring svg { transform: rotate(-90deg); }
+        .timer-ring circle {
+            fill: none; stroke-width: 8;
+        }
+        .bg-ring { stroke: #1e293b; }
+        .progress-ring {
+            stroke: #6366f1;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        .timer-display {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.5rem; font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .timer-label {
+            position: absolute; bottom: 55px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem; color: #94a3b8;
+        }
+
+        .controls { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.5rem; }
+        .controls button {
+            padding: 0.6rem 1.5rem; border: 2px solid #334155;
+            border-radius: 8px; background: #1e293b; color: #e2e8f0;
+            font-size: 1rem; cursor: pointer; transition: all 0.2s;
+        }
+        .controls button:hover { border-color: #6366f1; background: #334155; }
+        .controls button.active { background: #6366f1; border-color: #6366f1; }
+
+        .presets { display: flex; gap: 0.5rem; justify-content: center; }
+        .presets button {
+            padding: 0.4rem 1rem; border: 1px solid #334155; border-radius: 6px;
+            background: transparent; color: #94a3b8; cursor: pointer;
+            font-size: 0.85rem; transition: all 0.2s;
+        }
+        .presets button:hover { color: #e2e8f0; border-color: #6366f1; }
+        .presets button.selected { background: #334155; color: #e2e8f0; border-color: #6366f1; }
+
+        .done-message {
+            font-size: 1.2rem; color: #22c55e; font-weight: 600;
+            opacity: 0; transition: opacity 0.5s;
+        }
+        .done-message.visible { opacity: 1; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="timer-container"&gt;
+        &lt;h1&gt;🍅 Pomodoro Timer&lt;/h1&gt;
+
+        &lt;div class="timer-ring"&gt;
+            &lt;svg width="280" height="280"&gt;
+                &lt;circle class="bg-ring" cx="140" cy="140" r="130"&gt;&lt;/circle&gt;
+                &lt;circle class="progress-ring" id="progress-ring"
+                        cx="140" cy="140" r="130"
+                        stroke-dasharray="816.81"
+                        stroke-dashoffset="0"&gt;&lt;/circle&gt;
+            &lt;/svg&gt;
+            &lt;div class="timer-display" id="timer-display"&gt;25:00&lt;/div&gt;
+            &lt;div class="timer-label" id="timer-label"&gt;Focus Time&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class="controls"&gt;
+            &lt;button id="start-btn"&gt;▶ Start&lt;/button&gt;
+            &lt;button id="pause-btn"&gt;⏸ Pause&lt;/button&gt;
+            &lt;button id="reset-btn"&gt;↺ Reset&lt;/button&gt;
+        &lt;/div&gt;
+
+        &lt;div class="presets"&gt;
+            &lt;button class="preset-btn selected" data-minutes="25"&gt;25 min&lt;/button&gt;
+            &lt;button class="preset-btn" data-minutes="15"&gt;15 min&lt;/button&gt;
+            &lt;button class="preset-btn" data-minutes="5"&gt;5 min&lt;/button&gt;
+            &lt;button class="preset-btn" data-minutes="1"&gt;1 min&lt;/button&gt;
+        &lt;/div&gt;
+
+        &lt;p class="done-message" id="done-message"&gt;🎉 Time's up! Great work!&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+    // TODO: Complete each task
+
+    // The circumference of the circle (2 * π * r where r = 130)
+    const CIRCUMFERENCE = 2 * Math.PI * 130;  // ~816.81
+
+    // 1. Get DOM references:
+    //    - #progress-ring, #timer-display, #timer-label, #done-message
+    //    - #start-btn, #pause-btn, #reset-btn
+    //    - All .preset-btn buttons
+
+    // 2. Set up state variables:
+    //    - totalSeconds (default 25 * 60)
+    //    - remainingSeconds (starts equal to totalSeconds)
+    //    - intervalId (null when not running)
+    //    - isRunning (boolean)
+
+    // 3. Write updateDisplay(seconds):
+    //    - Convert seconds to MM:SS format
+    //    - Update #timer-display text
+    //    - Calculate progress (0 to 1) and update
+    //      stroke-dashoffset on #progress-ring
+    //      Formula: CIRCUMFERENCE * (1 - remaining / total)
+
+    // 4. Write start():
+    //    - If already running, return
+    //    - Set isRunning = true, hide done message
+    //    - Use setInterval (1000ms) to decrement remainingSeconds
+    //    - Call updateDisplay each tick
+    //    - When remainingSeconds hits 0, clearInterval,
+    //      show done message, mark not running
+
+    // 5. Write pause() and reset():
+    //    - pause: clearInterval, set isRunning = false
+    //    - reset: pause, set remainingSeconds = totalSeconds,
+    //      updateDisplay, hide done message
+
+    // 6. Hook up buttons:
+    //    - Start → start()
+    //    - Pause → pause()
+    //    - Reset → reset()
+
+    // 7. Hook up preset buttons:
+    //    - On click: set totalSeconds and remainingSeconds
+    //    - Reset display, highlight selected preset
+    //    - Pause if running
+
+    // 8. Bonus: Change the ring color to red when < 30 seconds remain
+    //    and to green when timer completes
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>3:</strong> To format time: <code>String(minutes).padStart(2, "0")</code> ensures "05" instead of "5". For the ring, <code>stroke-dashoffset</code> controls how much of the circle is hidden — 0 = full, CIRCUMFERENCE = empty.</p>
+                        <p><strong>4:</strong> Remember to store the interval ID so you can clear it later. Decrement first, then check if it's 0, then update display.</p>
+                        <p><strong>7:</strong> Use event delegation on the presets container. Read <code>data-minutes</code> from the clicked button. Remove <code>selected</code> from all presets, add it to the clicked one.</p>
+                        <p><strong>8:</strong> Inside <code>updateDisplay</code>, check <code>remainingSeconds &lt; 30</code> and change <code>progressRing.style.stroke</code>.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+const CIRCUMFERENCE = 2 * Math.PI * 130;
+
+// 1. DOM references
+const progressRing = document.querySelector("#progress-ring");
+const timerDisplay = document.querySelector("#timer-display");
+const timerLabel = document.querySelector("#timer-label");
+const doneMessage = document.querySelector("#done-message");
+const startBtn = document.querySelector("#start-btn");
+const pauseBtn = document.querySelector("#pause-btn");
+const resetBtn = document.querySelector("#reset-btn");
+const presetBtns = document.querySelectorAll(".preset-btn");
+
+// 2. State
+let totalSeconds = 25 * 60;
+let remainingSeconds = totalSeconds;
+let intervalId = null;
+let isRunning = false;
+
+// 3. Update the display
+function updateDisplay(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    timerDisplay.textContent =
+        `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+    // Update ring progress
+    const progress = 1 - (seconds / totalSeconds);
+    const offset = CIRCUMFERENCE * progress;
+    progressRing.style.strokeDashoffset = offset;
+
+    // 8. Bonus: color changes
+    if (seconds === 0) {
+        progressRing.style.stroke = "#22c55e";
+    } else if (seconds &lt; 30) {
+        progressRing.style.stroke = "#ef4444";
+    } else {
+        progressRing.style.stroke = "#6366f1";
+    }
+}
+
+// 4. Start the timer
+function start() {
+    if (isRunning) return;
+    if (remainingSeconds &lt;= 0) return;
+
+    isRunning = true;
+    doneMessage.classList.remove("visible");
+
+    intervalId = setInterval(() => {
+        remainingSeconds--;
+        updateDisplay(remainingSeconds);
+
+        if (remainingSeconds &lt;= 0) {
+            clearInterval(intervalId);
+            intervalId = null;
+            isRunning = false;
+            doneMessage.classList.add("visible");
+        }
+    }, 1000);
+}
+
+// 5. Pause and reset
+function pause() {
+    clearInterval(intervalId);
+    intervalId = null;
+    isRunning = false;
+}
+
+function reset() {
+    pause();
+    remainingSeconds = totalSeconds;
+    updateDisplay(remainingSeconds);
+    doneMessage.classList.remove("visible");
+}
+
+// 6. Button handlers
+startBtn.addEventListener("click", start);
+pauseBtn.addEventListener("click", pause);
+resetBtn.addEventListener("click", reset);
+
+// 7. Preset buttons
+presetBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+        presetBtns.forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+
+        totalSeconds = Number(btn.dataset.minutes) * 60;
+        remainingSeconds = totalSeconds;
+        pause();
+        updateDisplay(remainingSeconds);
+        doneMessage.classList.remove("visible");
+    });
+});
+
+// Initial display
+updateDisplay(remainingSeconds);
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>setTimeout</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="setTimeout doesn't return a Promise. It uses a callback-based API, not async/await.">A) A Promise that resolves after the delay</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="setTimeout returns a numeric ID that uniquely identifies the timer. You can pass this ID to clearTimeout() to cancel the timer before it fires.">B) A numeric timer ID you can pass to clearTimeout()</button>
+                            <button class="quiz-option" data-correct="false" data-hint="setTimeout doesn't return the result of the callback. The callback hasn't even run yet when setTimeout returns.">C) The return value of the callback function</button>
+                            <button class="quiz-option" data-correct="false" data-hint="setTimeout always returns a value — the timer ID. It never returns undefined.">D) undefined</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What will this code output?</p>
+                        <pre><code class="language-javascript">
+console.log("A");
+setTimeout(() => console.log("B"), 0);
+console.log("C");
+                        </code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Even with a 0ms delay, setTimeout callbacks go to the task queue and wait for the call stack to clear.">A) A, B, C</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="'A' logs first, then 'C' logs because it's on the call stack. The setTimeout callback goes to the task queue and only runs after the stack is empty, so 'B' logs last — even with a 0ms delay.">B) A, C, B</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'A' always runs first since it's the first line. setTimeout doesn't jump the queue.">C) B, A, C</button>
+                            <button class="quiz-option" data-correct="false" data-hint="'C' runs before 'B' because synchronous code always finishes before task queue callbacks.">D) A, B, C (but B might be delayed)</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What's the difference between <code>setInterval</code> and recursive <code>setTimeout</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Both can run code repeatedly. They differ in timing behavior, not in what they can do.">A) setInterval can repeat; setTimeout cannot</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="setInterval fires every N ms regardless of how long the callback takes, which can cause overlapping executions. Recursive setTimeout waits for the callback to finish, then schedules the next one, ensuring a gap between executions.">B) setInterval fires every N ms regardless of callback duration; recursive setTimeout waits for completion first</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Both can be canceled. setInterval uses clearInterval, and recursive setTimeout can be stopped by not calling setTimeout again.">C) setTimeout can be canceled; setInterval cannot</button>
+                            <button class="quiz-option" data-correct="false" data-hint="There is a meaningful timing difference, especially when callbacks take a long time to execute.">D) There's no practical difference</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> Why use <code>requestAnimationFrame</code> instead of <code>setInterval</code> for visual animations?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="requestAnimationFrame doesn't run faster — it syncs with the display's refresh rate, which is usually 60fps (~16.7ms intervals).">A) It runs faster than setInterval</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="requestAnimationFrame syncs with the browser's repaint cycle, producing smoother animation. It also automatically pauses when the tab is in the background, saving CPU and battery. setInterval has no awareness of the display's refresh rate.">B) It syncs with the display's refresh rate for smooth frames and pauses in background tabs</button>
+                            <button class="quiz-option" data-correct="false" data-hint="requestAnimationFrame is specifically designed for visual animations. It works great for DOM and canvas updates.">C) It works with canvas but not the DOM</button>
+                            <button class="quiz-option" data-correct="false" data-hint="requestAnimationFrame has excellent browser support and has been standard for years.">D) It's a newer API that not all browsers support yet</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> What is debouncing?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That describes throttling, not debouncing. Throttling limits execution to once per time window.">A) Running a function at most once per time interval</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Debouncing delays execution until a pause in events. Each new event resets the timer. The function only fires once the events stop for the specified delay — perfect for search input where you want to wait until the user finishes typing.">B) Delaying a function until events stop firing, resetting the timer on each new event</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Canceling all timers is just clearTimeout/clearInterval. Debouncing is a specific pattern for handling rapid repeated events.">C) Canceling all pending timers at once</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Running a function immediately on each event is the default behavior — no debouncing needed.">D) Running a function immediately without delay on each event</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong><code>setTimeout(fn, ms)</code></strong> runs a function once after a delay; cancel with <strong><code>clearTimeout(id)</code></strong></li>
+                        <li><strong><code>setInterval(fn, ms)</code></strong> runs a function repeatedly; cancel with <strong><code>clearInterval(id)</code></strong></li>
+                        <li><strong>Recursive <code>setTimeout</code></strong> is safer than <code>setInterval</code> for async work — it waits for completion before scheduling</li>
+                        <li><strong>Debounce</strong> waits for events to stop; <strong>Throttle</strong> limits frequency — both use <code>setTimeout</code> internally</li>
+                        <li>Timer delays are <strong>minimums, not guarantees</strong> — the event loop processes callbacks only when the call stack is empty</li>
+                        <li>Even <code>setTimeout(fn, 0)</code> waits for current code to finish (the call stack must be empty)</li>
+                        <li><strong><code>requestAnimationFrame</code></strong> syncs with the display for smooth animations and pauses in background tabs</li>
+                        <li>Use the <strong>timestamp parameter</strong> from rAF for frame-rate-independent animation</li>
+                        <li><strong>CSS transitions</strong> are the best choice for simple state-change animations — JS just toggles a class</li>
+                        <li>Use <strong><code>transitionend</code></strong> to run code after a CSS transition completes</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/setTimeout" target="_blank" rel="noopener">MDN — setTimeout()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/setInterval" target="_blank" rel="noopener">MDN — setInterval()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame" target="_blank" rel="noopener">MDN — requestAnimationFrame()</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions" target="_blank" rel="noopener">MDN — Using CSS Transitions</a></li>
+                    <li><a href="https://javascript.info/settimeout-setinterval" target="_blank" rel="noopener">javascript.info — setTimeout &amp; setInterval</a></li>
+                    <li><a href="https://javascript.info/event-loop" target="_blank" rel="noopener">javascript.info — Event Loop</a></li>
+                    <li><a href="https://easings.net/" target="_blank" rel="noopener">easings.net — Easing Function Cheat Sheet</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Your pages can now respond to input and move on screen. But what happens when the user leaves? All that data disappears. In the next lesson, you'll learn to <strong>persist state with Local Storage</strong> — saving user preferences, form drafts, and app data so it survives page refreshes and browser restarts.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_17.html" class="prev-lesson">← Previous: Forms &amp; Validation</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_19.html" class="next-lesson">Next: Local Storage →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

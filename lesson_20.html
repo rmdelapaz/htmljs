@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to fetch data from APIs using Promises, async/await, and the Fetch API — then display live data on your web pages.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 20: Working with APIs &amp; Fetch - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5</a></li>
+            <li aria-current="page">Lesson 20: Working with APIs &amp; Fetch</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🌐 Lesson 20: Working with APIs &amp; Fetch</h1>
+                <p class="lead">So far, everything your apps know comes from code you wrote or data the user entered. APIs change that — they let your pages talk to servers, pull in live data, and connect to the wider internet. In this lesson you'll learn Promises, async/await, and the Fetch API.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Explain what an API is and how REST APIs work</li>
+                        <li>Understand Promises and their three states (pending, fulfilled, rejected)</li>
+                        <li>Use <code>fetch()</code> to make HTTP requests and process JSON responses</li>
+                        <li>Write cleaner asynchronous code with <code>async</code>/<code>await</code></li>
+                        <li>Handle errors gracefully with try/catch and user-friendly messages</li>
+                        <li>Display fetched data in the DOM with loading and error states</li>
+                        <li>Work with query parameters, headers, and POST requests</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 60 minutes</p>
+                    <p><strong>Project:</strong> Build a GitHub user search app</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-is-an-api" class="toc-link">What Is an API?</a></li>
+                        <li><a href="#promises" class="toc-link">Promises — Handling Async Operations</a></li>
+                        <li><a href="#fetch-api" class="toc-link">The Fetch API</a></li>
+                        <li><a href="#async-await" class="toc-link">async/await — Cleaner Async Code</a></li>
+                        <li><a href="#error-handling" class="toc-link">Error Handling</a></li>
+                        <li><a href="#displaying-data" class="toc-link">Displaying Fetched Data</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="what-is-an-api" class="lesson-section">
+                <h2>What Is an API?</h2>
+
+                <p>An <strong>API</strong> (Application Programming Interface) is a set of rules that lets one piece of software talk to another. When we say "API" in front-end development, we usually mean a <strong>web API</strong> — a server that sends and receives data over HTTP, typically in JSON format.</p>
+
+                <h3>How It Works</h3>
+                <p>Your JavaScript sends an <strong>HTTP request</strong> to a URL (called an <strong>endpoint</strong>). The server processes it and sends back an <strong>HTTP response</strong> containing the data you asked for.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Your JavaScript<br/>(Client)"] -->|"HTTP Request<br/>GET /api/users"| B["Server<br/>(API)"]
+                    B -->|"HTTP Response<br/>JSON data"| A
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>REST APIs &amp; HTTP Methods</h3>
+                <p>Most web APIs follow the <strong>REST</strong> pattern, which maps standard HTTP methods to data operations.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>HTTP Method</th>
+                                <th>Purpose</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>GET</code></td><td>Read / retrieve data</td><td>Get a list of users</td></tr>
+                            <tr><td><code>POST</code></td><td>Create new data</td><td>Create a new user</td></tr>
+                            <tr><td><code>PUT</code> / <code>PATCH</code></td><td>Update existing data</td><td>Update a user's email</td></tr>
+                            <tr><td><code>DELETE</code></td><td>Remove data</td><td>Delete a user</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>JSON — The Language of APIs</h3>
+                <p>APIs almost always send data as <strong>JSON</strong> (JavaScript Object Notation). It looks like JavaScript objects and arrays — because that's exactly what it's based on.</p>
+
+                <pre><code class="language-javascript">
+// JSON from an API response
+{
+    "id": 1,
+    "username": "ray",
+    "email": "ray@example.com",
+    "projects": ["course-builder", "pomodoro-app"],
+    "active": true
+}
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Free APIs to Practice With</h4>
+                    <p>You don't need to build your own server to start learning. Here are some free, public APIs:</p>
+                    <ul>
+                        <li><a href="https://jsonplaceholder.typicode.com/" target="_blank" rel="noopener">JSONPlaceholder</a> — Fake REST API for testing (users, posts, comments)</li>
+                        <li><a href="https://api.github.com" target="_blank" rel="noopener">GitHub API</a> — Public user and repo data (no auth needed for basic queries)</li>
+                        <li><a href="https://pokeapi.co/" target="_blank" rel="noopener">PokéAPI</a> — Pokémon data</li>
+                        <li><a href="https://dog.ceo/dog-api/" target="_blank" rel="noopener">Dog CEO</a> — Random dog images</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="promises" class="lesson-section">
+                <h2>Promises — Handling Async Operations</h2>
+
+                <p>Network requests take time — you can't just pause JavaScript while waiting for a server to respond (that would freeze the entire page). Instead, JavaScript uses <strong>Promises</strong> to handle operations that complete in the future.</p>
+
+                <h3>What Is a Promise?</h3>
+                <p>A Promise is an object that represents a value you don't have <em>yet</em> but expect to get later. It's like a receipt from a restaurant — "your order is being prepared, we'll call your number when it's ready."</p>
+
+                <pre><code class="language-javascript">
+// A Promise has three states:
+// 1. Pending   — still working, no result yet
+// 2. Fulfilled — completed successfully, has a value
+// 3. Rejected  — something went wrong, has an error
+                </code></pre>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Promise Created<br/>(Pending)"] --> B{"Async operation<br/>completes"}
+                    B -->|Success| C["Fulfilled<br/>(.then runs)"]
+                    B -->|Failure| D["Rejected<br/>(.catch runs)"]
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Using .then() and .catch()</h3>
+                <pre><code class="language-javascript">
+// fetch() returns a Promise
+const promise = fetch("https://jsonplaceholder.typicode.com/users/1");
+
+// .then() runs when the Promise is fulfilled
+promise
+    .then(response => {
+        console.log("Got a response!", response);
+        return response.json();  // This also returns a Promise!
+    })
+    .then(data => {
+        console.log("User data:", data);
+        console.log("Name:", data.name);
+    })
+    .catch(error => {
+        // .catch() runs if anything in the chain fails
+        console.error("Something went wrong:", error);
+    })
+    .finally(() => {
+        // .finally() runs no matter what — success or failure
+        console.log("Request complete");
+    });
+                </code></pre>
+
+                <h3>Promise Chaining</h3>
+                <p>Each <code>.then()</code> returns a new Promise, so you can chain them. The return value of one <code>.then()</code> becomes the input of the next.</p>
+
+                <pre><code class="language-javascript">
+fetch("https://jsonplaceholder.typicode.com/users/1")
+    .then(response => response.json())          // Parse JSON
+    .then(user => {
+        console.log(user.name);                 // Use the data
+        return fetch(`https://jsonplaceholder.typicode.com/posts?userId=${user.id}`);
+    })
+    .then(response => response.json())          // Parse second response
+    .then(posts => {
+        console.log(`${posts.length} posts`);   // Use second data
+    })
+    .catch(error => {
+        console.error("Error:", error);         // Catches ANY error in the chain
+    });
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Common Mistake: Forgetting to Return</h4>
+                    <p>Inside a <code>.then()</code>, you must <strong>return</strong> a value (or Promise) for the next <code>.then()</code> in the chain to receive it. Forgetting <code>return</code> means the next <code>.then()</code> gets <code>undefined</code>.</p>
+                    <pre><code class="language-javascript">
+// ❌ Missing return — next .then() gets undefined
+.then(response => {
+    response.json();  // No return!
+})
+.then(data => {
+    console.log(data);  // undefined!
+});
+
+// ✅ Return the value
+.then(response => {
+    return response.json();
+})
+// Or use arrow function shorthand (implicit return)
+.then(response => response.json())
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="fetch-api" class="lesson-section">
+                <h2>The Fetch API</h2>
+
+                <p><code>fetch()</code> is the modern, built-in way to make HTTP requests in JavaScript. It's available in all modern browsers — no libraries needed.</p>
+
+                <h3>Basic GET Request</h3>
+                <pre><code class="language-javascript">
+// Fetch returns a Promise that resolves to a Response object
+fetch("https://jsonplaceholder.typicode.com/users")
+    .then(response => response.json())
+    .then(users => {
+        console.log(users);  // Array of user objects
+    });
+                </code></pre>
+
+                <h3>The Response Object</h3>
+                <p><code>fetch()</code> resolves to a <code>Response</code> object — not the data itself. You need to call a method to extract the body.</p>
+
+                <pre><code class="language-javascript">
+fetch("https://jsonplaceholder.typicode.com/users/1")
+    .then(response => {
+        console.log(response.status);     // 200
+        console.log(response.ok);         // true (status 200–299)
+        console.log(response.statusText); // "OK"
+        console.log(response.headers);    // Headers object
+        console.log(response.url);        // The final URL
+
+        return response.json();  // Parse the body as JSON
+    })
+    .then(data => {
+        console.log(data);  // Now you have the actual data
+    });
+                </code></pre>
+
+                <h3>Response Body Methods</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Returns</th>
+                                <th>Use For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>response.json()</code></td><td>Promise → parsed JSON</td><td>API data (most common)</td></tr>
+                            <tr><td><code>response.text()</code></td><td>Promise → string</td><td>Plain text, HTML</td></tr>
+                            <tr><td><code>response.blob()</code></td><td>Promise → Blob</td><td>Images, files</td></tr>
+                            <tr><td><code>response.arrayBuffer()</code></td><td>Promise → ArrayBuffer</td><td>Binary data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ fetch() Doesn't Throw on HTTP Errors</h4>
+                    <p>This surprises everyone. <code>fetch()</code> only rejects the Promise for <strong>network failures</strong> (no internet, DNS error, server unreachable). A <code>404 Not Found</code> or <code>500 Server Error</code> is still a successful HTTP response — <code>fetch()</code> resolves normally. You have to check <code>response.ok</code> yourself.</p>
+                    <pre><code class="language-javascript">
+fetch("https://jsonplaceholder.typicode.com/users/9999")
+    .then(response => {
+        // This runs even for 404!
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+                    </code></pre>
+                </div>
+
+                <h3>Query Parameters</h3>
+                <pre><code class="language-javascript">
+// Build URLs with query parameters
+const baseUrl = "https://jsonplaceholder.typicode.com/posts";
+
+// Option 1: String concatenation (simple but fragile)
+fetch(`${baseUrl}?userId=1&_limit=5`);
+
+// Option 2: URLSearchParams (safer, handles encoding)
+const params = new URLSearchParams({
+    userId: 1,
+    _limit: 5,
+    q: "hello world"  // Automatically encoded as "hello+world"
+});
+fetch(`${baseUrl}?${params}`);
+                </code></pre>
+
+                <h3>POST Requests — Sending Data</h3>
+                <pre><code class="language-javascript">
+fetch("https://jsonplaceholder.typicode.com/posts", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        title: "My New Post",
+        body: "This is the content of my post.",
+        userId: 1
+    })
+})
+    .then(response => response.json())
+    .then(data => {
+        console.log("Created:", data);  // Server returns the new resource
+    });
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["fetch(url, options)"] --> B["Returns Promise"]
+                    B --> C["Resolves to<br/>Response object"]
+                    C --> D{"response.ok?"}
+                    D -->|Yes| E["response.json()"]
+                    D -->|No| F["throw Error"]
+                    E --> G["Returns Promise"]
+                    G --> H["Resolves to<br/>parsed data"]
+                    F --> I[".catch() handles it"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style D fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                    style E fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style F fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                    style G fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style H fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style I fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="async-await" class="lesson-section">
+                <h2>async/await — Cleaner Async Code</h2>
+
+                <p><code>async</code>/<code>await</code> is syntactic sugar on top of Promises. It lets you write asynchronous code that <em>reads</em> like synchronous code — no chains of <code>.then()</code> callbacks.</p>
+
+                <h3>The Basics</h3>
+                <pre><code class="language-javascript">
+// 1. Mark the function as "async"
+async function getUser(id) {
+    // 2. "await" pauses until the Promise resolves
+    const response = await fetch(
+        `https://jsonplaceholder.typicode.com/users/${id}`
+    );
+
+    // 3. Check for errors (fetch doesn't throw on HTTP errors)
+    if (!response.ok) {
+        throw new Error(`User not found: ${response.status}`);
+    }
+
+    // 4. Await the JSON parsing too
+    const user = await response.json();
+
+    return user;  // Async functions always return a Promise
+}
+
+// Calling an async function
+getUser(1).then(user => console.log(user.name));
+                </code></pre>
+
+                <h3>Comparing .then() vs. async/await</h3>
+                <pre><code class="language-javascript">
+// With .then() chains
+function getUserPostsThen(userId) {
+    return fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+        .then(response => response.json())
+        .then(user => {
+            console.log(`Posts by ${user.name}:`);
+            return fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`);
+        })
+        .then(response => response.json())
+        .then(posts => {
+            posts.forEach(post => console.log(`- ${post.title}`));
+            return posts;
+        });
+}
+
+// With async/await — same logic, much easier to read
+async function getUserPostsAsync(userId) {
+    const userResponse = await fetch(
+        `https://jsonplaceholder.typicode.com/users/${userId}`
+    );
+    const user = await userResponse.json();
+    console.log(`Posts by ${user.name}:`);
+
+    const postsResponse = await fetch(
+        `https://jsonplaceholder.typicode.com/posts?userId=${userId}`
+    );
+    const posts = await postsResponse.json();
+    posts.forEach(post => console.log(`- ${post.title}`));
+
+    return posts;
+}
+                </code></pre>
+
+                <h3>Parallel Requests with Promise.all</h3>
+                <p>When requests don't depend on each other, run them in <strong>parallel</strong> instead of one after another. <code>Promise.all</code> waits for all Promises to resolve.</p>
+
+                <pre><code class="language-javascript">
+async function getDashboardData() {
+    // ❌ Sequential — slow (waits for each to finish)
+    const users = await fetch("/api/users").then(r => r.json());
+    const posts = await fetch("/api/posts").then(r => r.json());
+    const comments = await fetch("/api/comments").then(r => r.json());
+    // Total time: user + posts + comments
+
+    // ✅ Parallel — fast (all three run at the same time)
+    const [usersData, postsData, commentsData] = await Promise.all([
+        fetch("/api/users").then(r => r.json()),
+        fetch("/api/posts").then(r => r.json()),
+        fetch("/api/comments").then(r => r.json())
+    ]);
+    // Total time: whichever is slowest
+}
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 await Only Works Inside async Functions</h4>
+                    <p>You can only use <code>await</code> inside a function marked with <code>async</code>. If you try to use it at the top level of a regular script, you'll get a syntax error. However, modules (<code>&lt;script type="module"&gt;</code>) support top-level <code>await</code>.</p>
+                    <pre><code class="language-javascript">
+// ❌ Error in a regular script
+const data = await fetch("/api/users");  // SyntaxError!
+
+// ✅ Wrap in an async function
+async function init() {
+    const data = await fetch("/api/users");
+}
+init();
+
+// ✅ Or use an async IIFE (Immediately Invoked Function Expression)
+(async () => {
+    const data = await fetch("/api/users");
+})();
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="error-handling" class="lesson-section">
+                <h2>Error Handling</h2>
+
+                <p>Network requests fail — the user might be offline, the server could be down, or the API might return an error. Robust error handling isn't optional; it's what separates a good app from a broken one.</p>
+
+                <h3>try/catch with async/await</h3>
+                <pre><code class="language-javascript">
+async function fetchUser(id) {
+    try {
+        const response = await fetch(
+            `https://jsonplaceholder.typicode.com/users/${id}`
+        );
+
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+
+        const user = await response.json();
+        return user;
+
+    } catch (error) {
+        // Handles BOTH network errors and our thrown errors
+        console.error("Failed to fetch user:", error.message);
+        return null;  // Return a fallback value
+    }
+}
+                </code></pre>
+
+                <h3>Error Types You'll Encounter</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Error Type</th>
+                                <th>Cause</th>
+                                <th>fetch() Behavior</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Network error</td><td>No internet, DNS failure, CORS block</td><td>Promise <strong>rejects</strong> (catch runs)</td></tr>
+                            <tr><td>HTTP 4xx</td><td>Bad request, not found, unauthorized</td><td>Promise <strong>resolves</strong> (ok = false)</td></tr>
+                            <tr><td>HTTP 5xx</td><td>Server error, timeout</td><td>Promise <strong>resolves</strong> (ok = false)</td></tr>
+                            <tr><td>JSON parse error</td><td>Response isn't valid JSON</td><td>.json() <strong>rejects</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>A Reusable Fetch Wrapper</h3>
+                <pre><code class="language-javascript">
+async function apiFetch(url, options = {}) {
+    try {
+        const response = await fetch(url, options);
+
+        if (!response.ok) {
+            // Try to get error details from the response body
+            const errorBody = await response.text();
+            throw new Error(
+                `HTTP ${response.status}: ${errorBody || response.statusText}`
+            );
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        // Re-throw with a cleaner message
+        if (error.name === "TypeError") {
+            throw new Error("Network error — check your connection");
+        }
+        throw error;
+    }
+}
+
+// Usage — clean and consistent
+try {
+    const users = await apiFetch("https://jsonplaceholder.typicode.com/users");
+    console.log(users);
+} catch (error) {
+    console.error(error.message);
+}
+                </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 What Is CORS?</h4>
+                    <p><strong>CORS</strong> (Cross-Origin Resource Sharing) is a security feature that prevents your JavaScript from making requests to a different domain unless that domain explicitly allows it. If you see a CORS error in the console, it means the API server hasn't allowed requests from your origin. You can't fix CORS from the client — it's a server-side configuration. Public APIs like JSONPlaceholder and the GitHub API have CORS enabled for everyone.</p>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="displaying-data" class="lesson-section">
+                <h2>Displaying Fetched Data</h2>
+
+                <p>Fetching data is only half the job. You also need to show it to the user — with proper loading states, error messages, and dynamic DOM updates.</p>
+
+                <h3>The Three States of a Data Request</h3>
+                <p>Every fetch operation has three possible UI states. Good apps handle all three.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["Loading<br/>⏳ Spinner"] -->|Success| B["Data<br/>📋 Content"]
+                    A -->|Failure| C["Error<br/>❌ Message"]
+                    C -->|Retry| A
+                    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style B fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style C fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
+                </div>
+
+                <h3>Complete Example: Fetching &amp; Displaying Users</h3>
+                <pre><code class="language-javascript">
+const container = document.querySelector("#user-list");
+
+async function loadUsers() {
+    // 1. Show loading state
+    container.innerHTML = '&lt;p class="loading"&gt;Loading users...&lt;/p&gt;';
+
+    try {
+        // 2. Fetch data
+        const response = await fetch(
+            "https://jsonplaceholder.typicode.com/users"
+        );
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const users = await response.json();
+
+        // 3. Render data
+        container.innerHTML = "";
+        users.forEach(user => {
+            const card = document.createElement("div");
+            card.classList.add("user-card");
+            card.innerHTML = `
+                &lt;h3&gt;${escapeHTML(user.name)}&lt;/h3&gt;
+                &lt;p&gt;${escapeHTML(user.email)}&lt;/p&gt;
+                &lt;p&gt;${escapeHTML(user.company.name)}&lt;/p&gt;
+            `;
+            container.append(card);
+        });
+
+    } catch (error) {
+        // 4. Show error state
+        container.innerHTML = `
+            &lt;div class="error-state"&gt;
+                &lt;p&gt;Failed to load users: ${escapeHTML(error.message)}&lt;/p&gt;
+                &lt;button id="retry-btn"&gt;Try Again&lt;/button&gt;
+            &lt;/div&gt;
+        `;
+        document.querySelector("#retry-btn")
+            .addEventListener("click", loadUsers);
+    }
+}
+
+loadUsers();
+                </code></pre>
+
+                <h3>Escaping HTML — Preventing XSS</h3>
+                <p>When inserting API data into <code>innerHTML</code>, always escape it. If an API returns malicious HTML, it could execute as code on your page.</p>
+
+                <pre><code class="language-javascript">
+function escapeHTML(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// Or use textContent instead of innerHTML (safer by default)
+const el = document.createElement("p");
+el.textContent = apiData.name;  // Can't inject HTML
+                </code></pre>
+
+                <h3>Rendering Lists from API Data</h3>
+                <pre><code class="language-javascript">
+async function renderPosts() {
+    const posts = await apiFetch(
+        "https://jsonplaceholder.typicode.com/posts?_limit=10"
+    );
+
+    const list = document.querySelector("#post-list");
+    list.innerHTML = "";
+
+    // Use DocumentFragment for performance
+    const fragment = document.createDocumentFragment();
+
+    posts.forEach(post => {
+        const article = document.createElement("article");
+        article.classList.add("post");
+
+        const title = document.createElement("h3");
+        title.textContent = post.title;
+
+        const body = document.createElement("p");
+        body.textContent = post.body;
+
+        article.append(title, body);
+        fragment.append(article);
+    });
+
+    list.append(fragment);
+}
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Best Practices for Displaying API Data</h4>
+                    <ul>
+                        <li>Always show <strong>loading</strong>, <strong>data</strong>, and <strong>error</strong> states — never leave the user guessing</li>
+                        <li>Use <code>textContent</code> (not <code>innerHTML</code>) for user-generated or API data to prevent XSS</li>
+                        <li>Provide a <strong>retry button</strong> on error so users can recover without refreshing</li>
+                        <li>Use <strong>DocumentFragment</strong> when rendering many items from API data</li>
+                        <li>Show <strong>empty states</strong> when the API returns an empty array — "No results found"</li>
+                        <li>Consider <strong>debouncing</strong> if the fetch is triggered by user input (search-as-you-type)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: GitHub User Search</h3>
+                    <p><strong>Objective:</strong> Build a search app that fetches GitHub user profiles and displays their avatar, name, bio, and repo count. Uses the GitHub API (no auth needed), debounced search input, and loading/error/empty states.</p>
+
+                    <pre><code class="language-html">
+&lt;!-- Save this as github-search.html and open in a browser --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;GitHub User Search&lt;/title&gt;
+    &lt;style&gt;
+        * { box-sizing: border-box; margin: 0; }
+        body { font-family: system-ui, sans-serif; background: #0d1117; color: #c9d1d9; padding: 2rem; }
+        .app { max-width: 600px; margin: 0 auto; }
+        h1 { color: #f0f6fc; margin-bottom: 1.5rem; }
+        .search-bar {
+            display: flex; gap: 0.5rem; margin-bottom: 2rem;
+        }
+        .search-bar input {
+            flex: 1; padding: 0.7rem 1rem; border: 1px solid #30363d;
+            border-radius: 6px; background: #161b22; color: #c9d1d9;
+            font-size: 1rem;
+        }
+        .search-bar input:focus { outline: none; border-color: #58a6ff; }
+        .search-bar button {
+            padding: 0.7rem 1.2rem; background: #238636; color: white;
+            border: none; border-radius: 6px; font-size: 1rem; cursor: pointer;
+        }
+        .search-bar button:hover { background: #2ea043; }
+
+        .user-card {
+            display: flex; gap: 1.5rem; padding: 1.5rem;
+            background: #161b22; border: 1px solid #30363d;
+            border-radius: 10px; align-items: center;
+        }
+        .user-card img {
+            width: 100px; height: 100px; border-radius: 50%;
+            border: 2px solid #30363d;
+        }
+        .user-info h2 { color: #f0f6fc; margin-bottom: 0.25rem; font-size: 1.3rem; }
+        .user-info .username { color: #58a6ff; margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .user-info .bio { color: #8b949e; margin-bottom: 0.75rem; font-size: 0.9rem; }
+        .user-stats { display: flex; gap: 1.5rem; font-size: 0.85rem; color: #8b949e; }
+        .user-stats span strong { color: #c9d1d9; }
+
+        .status-message {
+            text-align: center; padding: 2rem; color: #8b949e;
+        }
+        .status-message.error { color: #f85149; }
+        .loading-spinner {
+            display: inline-block; width: 20px; height: 20px;
+            border: 2px solid #30363d; border-top-color: #58a6ff;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="app"&gt;
+        &lt;h1&gt;🔍 GitHub User Search&lt;/h1&gt;
+        &lt;div class="search-bar"&gt;
+            &lt;input type="text" id="search-input" placeholder="Enter a GitHub username..."&gt;
+            &lt;button id="search-btn"&gt;Search&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div id="result"&gt;
+            &lt;p class="status-message"&gt;Search for a GitHub user to see their profile.&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+    // TODO: Complete each task
+
+    // 1. Get DOM references:
+    //    - #search-input, #search-btn, #result
+
+    // 2. Write showLoading():
+    //    - Set result innerHTML to a loading spinner + "Searching..."
+
+    // 3. Write showError(message):
+    //    - Set result innerHTML to the error message with "error" class
+
+    // 4. Write showUser(user):
+    //    - Build a .user-card with:
+    //      - Avatar image (user.avatar_url)
+    //      - Name (user.name or "No name")
+    //      - Username with @ prefix (user.login)
+    //      - Bio (user.bio or "No bio available")
+    //      - Stats: repos (user.public_repos), followers, following
+    //    - Use textContent or escaping for all data!
+
+    // 5. Write async searchUser(username):
+    //    - Show loading
+    //    - fetch https://api.github.com/users/{username}
+    //    - If response.ok: parse JSON, call showUser
+    //    - If response.status === 404: showError "User not found"
+    //    - If other error: showError with the status
+    //    - Catch network errors: showError "Network error"
+
+    // 6. Hook up events:
+    //    - Search button click → searchUser
+    //    - Enter key in input → searchUser
+    //    - Bonus: debounce the input event for auto-search
+
+    // 7. Bonus: Add a link to the user's GitHub profile
+    //    (user.html_url) in the card
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>3:</strong> The GitHub API URL is <code>https://api.github.com/users/USERNAME</code>. It returns JSON with fields like <code>login</code>, <code>name</code>, <code>avatar_url</code>, <code>bio</code>, <code>public_repos</code>, <code>followers</code>, <code>following</code>, <code>html_url</code>.</p>
+                        <p><strong>4:</strong> For the avatar, create an <code>&lt;img&gt;</code> element and set its <code>src</code> to <code>user.avatar_url</code>. Use <code>textContent</code> for all text to prevent XSS.</p>
+                        <p><strong>5:</strong> Check <code>response.status === 404</code> separately to show "User not found" instead of a generic error. Wrap the whole thing in try/catch for network errors.</p>
+                        <p><strong>6:</strong> For auto-search, use the debounce function from Lesson 18 with a 500ms delay on the input event.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+// 1. DOM references
+const searchInput = document.querySelector("#search-input");
+const searchBtn = document.querySelector("#search-btn");
+const result = document.querySelector("#result");
+
+// 2. Loading state
+function showLoading() {
+    result.innerHTML = `
+        &lt;p class="status-message"&gt;
+            &lt;span class="loading-spinner"&gt;&lt;/span&gt; Searching...
+        &lt;/p&gt;
+    `;
+}
+
+// 3. Error state
+function showError(message) {
+    result.innerHTML = `
+        &lt;p class="status-message error"&gt;${escapeHTML(message)}&lt;/p&gt;
+    `;
+}
+
+// Helper: escape HTML
+function escapeHTML(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// 4. Display user
+function showUser(user) {
+    const card = document.createElement("div");
+    card.classList.add("user-card");
+
+    const img = document.createElement("img");
+    img.src = user.avatar_url;
+    img.alt = `${user.login}'s avatar`;
+
+    const info = document.createElement("div");
+    info.classList.add("user-info");
+
+    const name = document.createElement("h2");
+    name.textContent = user.name || "No name";
+
+    const username = document.createElement("p");
+    username.classList.add("username");
+    const link = document.createElement("a");
+    link.href = user.html_url;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = `@${user.login}`;
+    link.style.color = "#58a6ff";
+    link.style.textDecoration = "none";
+    username.append(link);
+
+    const bio = document.createElement("p");
+    bio.classList.add("bio");
+    bio.textContent = user.bio || "No bio available";
+
+    const stats = document.createElement("div");
+    stats.classList.add("user-stats");
+    stats.innerHTML = `
+        &lt;span&gt;&lt;strong&gt;${user.public_repos}&lt;/strong&gt; repos&lt;/span&gt;
+        &lt;span&gt;&lt;strong&gt;${user.followers}&lt;/strong&gt; followers&lt;/span&gt;
+        &lt;span&gt;&lt;strong&gt;${user.following}&lt;/strong&gt; following&lt;/span&gt;
+    `;
+
+    info.append(name, username, bio, stats);
+    card.append(img, info);
+
+    result.innerHTML = "";
+    result.append(card);
+}
+
+// 5. Search function
+async function searchUser(username) {
+    const trimmed = username.trim();
+    if (!trimmed) return;
+
+    showLoading();
+
+    try {
+        const response = await fetch(
+            `https://api.github.com/users/${encodeURIComponent(trimmed)}`
+        );
+
+        if (response.status === 404) {
+            showError(`User "${trimmed}" not found`);
+            return;
+        }
+
+        if (!response.ok) {
+            showError(`Server error: ${response.status}`);
+            return;
+        }
+
+        const user = await response.json();
+        showUser(user);
+
+    } catch (error) {
+        showError("Network error — check your connection");
+    }
+}
+
+// 6. Event listeners
+searchBtn.addEventListener("click", () => {
+    searchUser(searchInput.value);
+});
+
+searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        searchUser(searchInput.value);
+    }
+});
+
+// Bonus: debounced auto-search
+function debounce(fn, delay) {
+    let timerId;
+    return (...args) => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => fn(...args), delay);
+    };
+}
+
+const autoSearch = debounce((value) => {
+    if (value.trim().length >= 2) {
+        searchUser(value);
+    }
+}, 500);
+
+searchInput.addEventListener("input", (event) => {
+    autoSearch(event.target.value);
+});
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>fetch()</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="fetch is asynchronous — it doesn't return the data directly. It returns a Promise that eventually resolves to a Response.">A) The JSON data from the server</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="fetch() returns a Promise that resolves to a Response object. You then call response.json() to get another Promise that resolves to the actual data.">B) A Promise that resolves to a Response object</button>
+                            <button class="quiz-option" data-correct="false" data-hint="XMLHttpRequest is the older API. fetch() is the modern replacement and returns a Promise instead.">C) An XMLHttpRequest object</button>
+                            <button class="quiz-option" data-correct="false" data-hint="fetch() returns immediately with a Promise. The actual response comes later when the Promise resolves.">D) A string containing the response body</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What happens when <code>fetch()</code> gets a 404 response?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="fetch() only rejects for network failures (no internet, DNS errors). HTTP errors like 404 or 500 are valid responses — the Promise resolves normally with response.ok set to false. You must check response.ok yourself.">A) The Promise resolves normally with <code>response.ok</code> set to <code>false</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="fetch only rejects for network-level failures, not HTTP status errors. A 404 is a successful HTTP response from fetch's perspective.">B) The Promise rejects and .catch() runs</button>
+                            <button class="quiz-option" data-correct="false" data-hint="fetch doesn't throw exceptions for HTTP errors. You need to check response.ok and throw your own error if needed.">C) It throws an exception automatically</button>
+                            <button class="quiz-option" data-correct="false" data-hint="fetch always returns something (or rejects). It doesn't return null for error statuses.">D) It returns <code>null</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What does the <code>async</code> keyword do to a function?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="async functions run on the same thread as all JavaScript. They don't create separate threads.">A) Makes it run in a separate thread</button>
+                            <button class="quiz-option" data-correct="false" data-hint="async functions don't run faster. They make it easier to write code that waits for asynchronous operations.">B) Makes the function execute faster</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="An async function always returns a Promise. It also allows you to use the await keyword inside it, which pauses execution until a Promise resolves. This makes asynchronous code read like synchronous code.">C) Makes the function always return a Promise and enables the use of <code>await</code> inside it</button>
+                            <button class="quiz-option" data-correct="false" data-hint="async doesn't add caching. It changes how the function handles Promises, making the syntax cleaner.">D) Caches the function's return value for future calls</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> Why use <code>Promise.all()</code> instead of multiple sequential <code>await</code> calls?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Both approaches handle errors — Promise.all rejects if ANY Promise rejects, and sequential await throws on the first failure.">A) Promise.all handles errors better</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Sequential awaits wait for each request to finish before starting the next. Promise.all starts all requests at the same time and waits for all to finish — the total time equals the slowest request, not the sum of all requests.">B) It runs requests in parallel, so the total time equals the slowest request rather than the sum of all</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Both use the same Fetch API and the same amount of memory. The difference is in timing (parallel vs sequential).">C) It uses less memory than sequential requests</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Promise.all is widely supported. The reason to use it is performance, not compatibility.">D) It's required for browser compatibility</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> What are the three UI states every fetch operation should handle?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Start and finish aren't UI states — they're moments in time. The three states describe what the user SEES.">A) Start, finish, and retry</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Every network request should show a loading indicator while waiting, display the data on success, and show a meaningful error message (with a retry option) on failure. These three states cover every possible outcome.">B) Loading, data (success), and error</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Pending, resolved, and rejected are Promise states, not UI states. You need to map these to visible states the user can see.">C) Pending, resolved, and rejected</button>
+                            <button class="quiz-option" data-correct="false" data-hint="GET, POST, and DELETE are HTTP methods, not UI states.">D) GET, POST, and DELETE</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li>An <strong>API</strong> is a server that sends/receives data over HTTP, usually in JSON format</li>
+                        <li><strong>Promises</strong> represent values that arrive in the future — they can be pending, fulfilled, or rejected</li>
+                        <li><strong><code>fetch(url)</code></strong> returns a Promise that resolves to a <strong>Response</strong> object</li>
+                        <li>Call <strong><code>response.json()</code></strong> to parse the body (this also returns a Promise)</li>
+                        <li><code>fetch()</code> does <strong>not</strong> reject on HTTP errors — always check <strong><code>response.ok</code></strong></li>
+                        <li><strong><code>async</code>/<code>await</code></strong> makes Promise-based code read like synchronous code</li>
+                        <li>Use <strong><code>try/catch</code></strong> with async/await for clean error handling</li>
+                        <li>Use <strong><code>Promise.all()</code></strong> for parallel requests that don't depend on each other</li>
+                        <li>Always handle <strong>three UI states</strong>: loading, data, and error</li>
+                        <li>Use <strong><code>textContent</code></strong> (not innerHTML) when displaying API data to prevent XSS</li>
+                        <li>Use <strong><code>URLSearchParams</code></strong> to build query strings safely</li>
+                    </ul>
+                </div>
+
+                <div class="card card-info">
+                    <h3>🏆 Module 5 Complete!</h3>
+                    <p>You've finished the entire interactive features module! You now know how to:</p>
+                    <ul>
+                        <li><strong>Lesson 17:</strong> Capture form input and validate it with real-time feedback</li>
+                        <li><strong>Lesson 18:</strong> Schedule code with timers and create smooth animations</li>
+                        <li><strong>Lesson 19:</strong> Persist data in the browser with Local Storage</li>
+                        <li><strong>Lesson 20:</strong> Fetch live data from APIs and display it dynamically</li>
+                    </ul>
+                    <p>These are the skills that turn a static web page into a real web application. In the final module, you'll combine everything into a complete project.</p>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" target="_blank" rel="noopener">MDN — Fetch API</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" rel="noopener">MDN — Promise</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous" target="_blank" rel="noopener">MDN — Asynchronous JavaScript</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams" target="_blank" rel="noopener">MDN — URLSearchParams</a></li>
+                    <li><a href="https://javascript.info/fetch" target="_blank" rel="noopener">javascript.info — Fetch</a></li>
+                    <li><a href="https://javascript.info/async-await" target="_blank" rel="noopener">javascript.info — Async/Await</a></li>
+                    <li><a href="https://jsonplaceholder.typicode.com/" target="_blank" rel="noopener">JSONPlaceholder — Free REST API for Testing</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>It's time to put <em>everything</em> together. In the next lesson, you'll build a <strong>complete interactive project</strong> from scratch — combining DOM manipulation, events, forms, timers, Local Storage, and API calls into one polished application.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_19.html" class="prev-lesson">← Previous: Local Storage</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_21.html" class="next-lesson">Next: Building a Complete Project →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>

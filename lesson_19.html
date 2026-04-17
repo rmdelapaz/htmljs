@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn to persist data in the browser with localStorage and sessionStorage — saving user preferences, form drafts, and app state across page refreshes.">
+    <meta name="author" content="Ray De La Paz">
+    <title>Lesson 19: Local Storage - Front-End JavaScript</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+
+    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
+        <div class="progress-bar"></div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Front-End JS Course</a>
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="nav-links">☰</button>
+            <div class="nav-links" id="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#modules">All Modules</a>
+                <span class="nav-divider"></span>
+                <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+                <a href="https://rays-home.netlify.app/contact">Contact</a>
+                <button id="theme-toggle" aria-label="Toggle dark/light mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#modules">Module 5</a></li>
+            <li aria-current="page">Lesson 19: Local Storage</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>💾 Lesson 19: Local Storage</h1>
+                <p class="lead">Everything you've built so far disappears the moment the user refreshes the page. Local Storage changes that — it lets you save data in the browser that persists across page loads, tab closes, and even browser restarts.</p>
+
+                <div class="card card-info">
+                    <h2>🎯 Learning Objectives</h2>
+                    <p>By the end of this lesson, you will be able to:</p>
+                    <ul>
+                        <li>Store and retrieve data with <code>localStorage.setItem</code> and <code>getItem</code></li>
+                        <li>Remove individual items and clear all stored data</li>
+                        <li>Use <code>JSON.stringify</code> and <code>JSON.parse</code> to store complex data (arrays, objects)</li>
+                        <li>Understand the differences between <code>localStorage</code> and <code>sessionStorage</code></li>
+                        <li>Build common patterns: persisted settings, saved form drafts, and stateful apps</li>
+                        <li>Handle storage errors and respect storage limits</li>
+                        <li>Know when Local Storage is the right tool — and when it isn't</li>
+                    </ul>
+                    <p><strong>Estimated Time:</strong> 45 minutes</p>
+                    <p><strong>Project:</strong> Build a persistent to-do list</p>
+                </div>
+            </header>
+
+            <details class="card toc-card" open>
+                <summary>
+                    <h2 style="display: inline; margin: 0;">📑 In This Lesson</h2>
+                </summary>
+                <nav aria-label="Table of Contents">
+                    <ol>
+                        <li><a href="#what-is-localstorage" class="toc-link">What Is Local Storage?</a></li>
+                        <li><a href="#basic-operations" class="toc-link">Basic Operations</a></li>
+                        <li><a href="#storing-complex-data" class="toc-link">Storing Complex Data with JSON</a></li>
+                        <li><a href="#sessionstorage" class="toc-link">sessionStorage — The Short-Lived Sibling</a></li>
+                        <li><a href="#practical-patterns" class="toc-link">Practical Patterns</a></li>
+                        <li><a href="#limits-and-gotchas" class="toc-link">Limits, Errors &amp; When Not to Use It</a></li>
+                        <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#summary" class="toc-link">Summary</a></li>
+                    </ol>
+                </nav>
+            </details>
+
+            <!-- Section 1 -->
+            <section id="what-is-localstorage" class="lesson-section">
+                <h2>What Is Local Storage?</h2>
+
+                <p>Local Storage is a simple <strong>key-value store</strong> built into every modern browser. It lets you save strings of data that persist even after the user closes the browser and comes back later. Think of it as a tiny database that lives inside the browser.</p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Local Storage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Storage limit</td><td>~5–10 MB per origin (domain)</td></tr>
+                            <tr><td>Data format</td><td>Strings only (use JSON for objects)</td></tr>
+                            <tr><td>Persistence</td><td>Until explicitly deleted</td></tr>
+                            <tr><td>Scope</td><td>Per origin (protocol + domain + port)</td></tr>
+                            <tr><td>Accessible from</td><td>JavaScript only (not sent to server)</td></tr>
+                            <tr><td>Synchronous?</td><td>Yes — blocks the main thread</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>You can see what's stored in Local Storage right now using DevTools. Open the <strong>Application</strong> tab (Chrome) or <strong>Storage</strong> tab (Firefox), then look under <strong>Local Storage</strong> in the sidebar. You'll see key-value pairs for the current site.</p>
+
+                <div class="mermaid">
+                    graph LR
+                    A["JavaScript<br/>(your code)"] -->|setItem| B["Local Storage<br/>(browser)"]
+                    B -->|getItem| A
+                    B --> C["Persists across<br/>page loads"]
+                    B --> D["Persists across<br/>browser restarts"]
+                    B --> E["Scoped to<br/>this origin"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style E fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="basic-operations" class="lesson-section">
+                <h2>Basic Operations</h2>
+
+                <p>The Local Storage API is refreshingly simple — four methods cover everything you need.</p>
+
+                <h3>setItem — Save Data</h3>
+                <pre><code class="language-javascript">
+// Store a value (both key and value must be strings)
+localStorage.setItem("username", "ray");
+localStorage.setItem("theme", "dark");
+localStorage.setItem("fontSize", "16");
+                </code></pre>
+
+                <h3>getItem — Read Data</h3>
+                <pre><code class="language-javascript">
+// Retrieve a value (returns a string, or null if key doesn't exist)
+const username = localStorage.getItem("username");
+console.log(username);  // "ray"
+
+const missing = localStorage.getItem("nonexistent");
+console.log(missing);   // null
+                </code></pre>
+
+                <h3>removeItem — Delete One Entry</h3>
+                <pre><code class="language-javascript">
+localStorage.removeItem("fontSize");
+// The "fontSize" key is gone
+
+// Removing a key that doesn't exist does nothing (no error)
+localStorage.removeItem("something-that-was-never-set");
+                </code></pre>
+
+                <h3>clear — Delete Everything</h3>
+                <pre><code class="language-javascript">
+// Remove ALL data for this origin — use with caution!
+localStorage.clear();
+                </code></pre>
+
+                <h3>Other Useful Properties</h3>
+                <pre><code class="language-javascript">
+// How many items are stored?
+console.log(localStorage.length);  // e.g., 3
+
+// Get the key name at a specific index
+console.log(localStorage.key(0));  // e.g., "username"
+
+// Loop through all stored items
+for (let i = 0; i &lt; localStorage.length; i++) {
+    const key = localStorage.key(i);
+    const value = localStorage.getItem(key);
+    console.log(`${key}: ${value}`);
+}
+                </code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Everything Is a String</h4>
+                    <p>Local Storage only stores strings. Numbers, booleans, and objects are automatically converted to strings — often not the way you'd expect.</p>
+                    <pre><code class="language-javascript">
+// Numbers are stored as strings
+localStorage.setItem("score", 42);
+console.log(localStorage.getItem("score"));      // "42" (string!)
+console.log(typeof localStorage.getItem("score")); // "string"
+
+// Booleans become strings too
+localStorage.setItem("loggedIn", true);
+console.log(localStorage.getItem("loggedIn"));   // "true" (string!)
+
+// Objects become "[object Object]" — NOT what you want!
+localStorage.setItem("user", { name: "Ray" });
+console.log(localStorage.getItem("user"));        // "[object Object]" ❌
+                    </code></pre>
+                    <p>For anything other than simple strings, you need JSON — covered in the next section.</p>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="storing-complex-data" class="lesson-section">
+                <h2>Storing Complex Data with JSON</h2>
+
+                <p>Since Local Storage only handles strings, you need a way to convert arrays and objects to strings and back. That's exactly what <code>JSON.stringify</code> and <code>JSON.parse</code> do.</p>
+
+                <h3>JSON.stringify — Object → String</h3>
+                <pre><code class="language-javascript">
+const user = { name: "Ray", role: "developer", level: 42 };
+
+// Convert to a JSON string
+const jsonString = JSON.stringify(user);
+console.log(jsonString);
+// '{"name":"Ray","role":"developer","level":42}'
+
+// Store it
+localStorage.setItem("user", jsonString);
+                </code></pre>
+
+                <h3>JSON.parse — String → Object</h3>
+                <pre><code class="language-javascript">
+// Read the string back
+const stored = localStorage.getItem("user");
+console.log(stored);  // '{"name":"Ray","role":"developer","level":42}'
+
+// Convert back to an object
+const user = JSON.parse(stored);
+console.log(user.name);  // "Ray"
+console.log(user.level); // 42 (a real number, not a string!)
+                </code></pre>
+
+                <h3>Storing Arrays</h3>
+                <pre><code class="language-javascript">
+const todos = [
+    { id: 1, text: "Learn JavaScript", done: true },
+    { id: 2, text: "Build a project", done: false },
+    { id: 3, text: "Deploy to Netlify", done: false }
+];
+
+// Save
+localStorage.setItem("todos", JSON.stringify(todos));
+
+// Load
+const savedTodos = JSON.parse(localStorage.getItem("todos"));
+console.log(savedTodos.length);  // 3
+console.log(savedTodos[0].text); // "Learn JavaScript"
+                </code></pre>
+
+                <h3>Safe Loading with a Fallback</h3>
+                <p>What if the key doesn't exist yet (first visit)? Or the stored JSON is corrupted? Always handle these cases.</p>
+
+                <pre><code class="language-javascript">
+// Pattern: load with a default fallback
+function loadData(key, defaultValue) {
+    try {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : defaultValue;
+    } catch (error) {
+        console.warn(`Error loading "${key}" from storage:`, error);
+        return defaultValue;
+    }
+}
+
+// Usage
+const todos = loadData("todos", []);           // Default: empty array
+const settings = loadData("settings", { theme: "light", fontSize: 16 });
+                </code></pre>
+
+                <div class="mermaid">
+                    graph LR
+                    A["JavaScript Object<br/>{name: 'Ray'}"] -->|JSON.stringify| B["JSON String<br/>'{\"name\":\"Ray\"}'"]
+                    B -->|setItem| C["Local Storage"]
+                    C -->|getItem| D["JSON String<br/>'{\"name\":\"Ray\"}'"]
+                    D -->|JSON.parse| E["JavaScript Object<br/>{name: 'Ray'}"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style E fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 The JSON Round-Trip Gotcha</h4>
+                    <p>Not everything survives the JSON round-trip. <code>JSON.stringify</code> drops <code>undefined</code> values, functions, Symbols, and converts <code>Date</code> objects to strings. If you store a Date, you'll get a string back — not a Date object.</p>
+                    <pre><code class="language-javascript">
+// Dates become strings
+const event = { name: "Launch", date: new Date() };
+localStorage.setItem("event", JSON.stringify(event));
+
+const loaded = JSON.parse(localStorage.getItem("event"));
+console.log(loaded.date);         // "2026-04-16T..." (a string!)
+console.log(new Date(loaded.date)); // Convert back to Date manually
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="sessionstorage" class="lesson-section">
+                <h2>sessionStorage — The Short-Lived Sibling</h2>
+
+                <p><code>sessionStorage</code> works exactly like <code>localStorage</code> — same API, same methods — but the data only lasts for the <strong>current browser tab session</strong>. Close the tab, and it's gone.</p>
+
+                <pre><code class="language-javascript">
+// Exact same API as localStorage
+sessionStorage.setItem("step", "3");
+const step = sessionStorage.getItem("step");
+sessionStorage.removeItem("step");
+sessionStorage.clear();
+                </code></pre>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>localStorage</th>
+                                <th>sessionStorage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Persists after closing tab</td><td>✅ Yes</td><td>❌ No</td></tr>
+                            <tr><td>Persists after closing browser</td><td>✅ Yes</td><td>❌ No</td></tr>
+                            <tr><td>Shared across tabs</td><td>✅ Yes (same origin)</td><td>❌ No (per tab)</td></tr>
+                            <tr><td>Survives page refresh</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+                            <tr><td>Storage limit</td><td>~5–10 MB</td><td>~5–10 MB</td></tr>
+                            <tr><td>API</td><td>Identical</td><td>Identical</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>When to Use Each</h3>
+                <pre><code class="language-javascript">
+// localStorage — data that should persist
+localStorage.setItem("theme", "dark");           // User preference
+localStorage.setItem("todos", JSON.stringify([])); // App state
+
+// sessionStorage — data for this visit only
+sessionStorage.setItem("wizardStep", "2");       // Multi-step form progress
+sessionStorage.setItem("scrollPos", "450");      // Restore scroll on back-nav
+sessionStorage.setItem("authToken", token);      // Session-only auth
+                </code></pre>
+
+                <div class="card card-success">
+                    <h4>✅ Quick Rule</h4>
+                    <p>If the user would expect the data to still be there after reopening the browser tomorrow, use <code>localStorage</code>. If the data is only relevant to this particular browsing session, use <code>sessionStorage</code>.</p>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="practical-patterns" class="lesson-section">
+                <h2>Practical Patterns</h2>
+
+                <p>Here are the most common ways you'll use Local Storage in real applications.</p>
+
+                <h3>Pattern 1: Persisting User Preferences</h3>
+                <pre><code class="language-javascript">
+// Save theme preference
+function setTheme(theme) {
+    document.body.dataset.theme = theme;
+    localStorage.setItem("theme", theme);
+}
+
+// Load on page load
+function loadTheme() {
+    const saved = localStorage.getItem("theme") || "light";
+    document.body.dataset.theme = saved;
+    return saved;
+}
+
+// Toggle
+const themeToggle = document.querySelector("#theme-toggle");
+themeToggle.addEventListener("click", () => {
+    const current = document.body.dataset.theme;
+    setTheme(current === "dark" ? "light" : "dark");
+});
+
+// Apply saved theme immediately
+loadTheme();
+                </code></pre>
+
+                <h3>Pattern 2: Form Draft Auto-Save</h3>
+                <pre><code class="language-javascript">
+const form = document.querySelector("#feedback-form");
+
+// Auto-save on input (debounced)
+let saveTimer;
+form.addEventListener("input", () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+        const data = Object.fromEntries(new FormData(form));
+        localStorage.setItem("feedbackDraft", JSON.stringify(data));
+        console.log("Draft saved");
+    }, 500);
+});
+
+// Restore draft on page load
+function restoreDraft() {
+    const draft = loadData("feedbackDraft", null);
+    if (!draft) return;
+
+    for (const [name, value] of Object.entries(draft)) {
+        const field = form.elements[name];
+        if (field) field.value = value;
+    }
+    console.log("Draft restored");
+}
+restoreDraft();
+
+// Clear draft after successful submit
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    // ... submit logic ...
+    localStorage.removeItem("feedbackDraft");
+});
+                </code></pre>
+
+                <h3>Pattern 3: Syncing State to Storage</h3>
+                <p>For stateful apps (to-do lists, note apps), the pattern is: load state from storage on start, update storage whenever state changes.</p>
+
+                <pre><code class="language-javascript">
+// App state
+let todos = loadData("todos", []);
+
+// Render from state
+function render() {
+    const list = document.querySelector("#todo-list");
+    list.innerHTML = "";
+
+    todos.forEach(todo => {
+        const li = document.createElement("li");
+        li.textContent = todo.text;
+        if (todo.done) li.classList.add("done");
+        list.append(li);
+    });
+}
+
+// Update state AND save
+function addTodo(text) {
+    todos.push({ id: Date.now(), text, done: false });
+    save();
+    render();
+}
+
+function toggleTodo(id) {
+    const todo = todos.find(t => t.id === id);
+    if (todo) todo.done = !todo.done;
+    save();
+    render();
+}
+
+function save() {
+    localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+// Initial render
+render();
+                </code></pre>
+
+                <h3>Pattern 4: The storage Event — Cross-Tab Sync</h3>
+                <p>When one tab changes Local Storage, other tabs for the same origin receive a <code>storage</code> event. This lets you sync data between tabs without any server.</p>
+
+                <pre><code class="language-javascript">
+// This fires in OTHER tabs (not the one that made the change)
+window.addEventListener("storage", (event) => {
+    console.log("Storage changed!");
+    console.log("Key:", event.key);         // Which key changed
+    console.log("Old:", event.oldValue);    // Previous value
+    console.log("New:", event.newValue);    // New value
+    console.log("URL:", event.url);         // Which tab made the change
+
+    // Example: sync theme across tabs
+    if (event.key === "theme") {
+        document.body.dataset.theme = event.newValue;
+    }
+
+    // Example: sync todos across tabs
+    if (event.key === "todos") {
+        todos = JSON.parse(event.newValue) || [];
+        render();
+    }
+});
+                </code></pre>
+
+                <div class="mermaid">
+                    graph TD
+                    A["Tab A<br/>setItem('theme', 'dark')"] --> B["Local Storage<br/>Updated"]
+                    B --> C["'storage' event fires<br/>in Tab B"]
+                    B --> D["'storage' event fires<br/>in Tab C"]
+                    C --> E["Tab B updates<br/>its UI"]
+                    D --> F["Tab C updates<br/>its UI"]
+                    style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
+                    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
+                    style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style D fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
+                    style E fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                    style F fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#1e293b
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="limits-and-gotchas" class="lesson-section">
+                <h2>Limits, Errors &amp; When Not to Use It</h2>
+
+                <h3>Storage Limits</h3>
+                <p>Most browsers allow <strong>5–10 MB</strong> per origin. If you exceed it, <code>setItem</code> throws a <code>QuotaExceededError</code>.</p>
+
+                <pre><code class="language-javascript">
+// Always wrap setItem in try/catch for production apps
+function safeSave(key, value) {
+    try {
+        localStorage.setItem(key, value);
+        return true;
+    } catch (error) {
+        if (error.name === "QuotaExceededError") {
+            console.error("Storage is full! Cannot save.", error);
+            // Maybe clear old data or warn the user
+        }
+        return false;
+    }
+}
+                </code></pre>
+
+                <h3>Storage Might Be Unavailable</h3>
+                <p>Local Storage can be disabled (private browsing in some browsers, corporate policies, user settings). Always check before using it.</p>
+
+                <pre><code class="language-javascript">
+function isStorageAvailable() {
+    try {
+        const test = "__storage_test__";
+        localStorage.setItem(test, "1");
+        localStorage.removeItem(test);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+if (isStorageAvailable()) {
+    // Safe to use localStorage
+} else {
+    console.warn("Local Storage is not available");
+    // Fall back to in-memory storage
+}
+                </code></pre>
+
+                <h3>When NOT to Use Local Storage</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Don't Store</th>
+                                <th>Why</th>
+                                <th>Use Instead</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Passwords or tokens</td><td>Accessible to any JS on the page (XSS risk)</td><td>HttpOnly cookies</td></tr>
+                            <tr><td>Sensitive personal data</td><td>Not encrypted, easily readable</td><td>Server-side storage</td></tr>
+                            <tr><td>Large datasets (&gt;5 MB)</td><td>Exceeds quota, blocks main thread</td><td>IndexedDB</td></tr>
+                            <tr><td>Data that must sync across devices</td><td>Local to this browser only</td><td>Server database</td></tr>
+                            <tr><td>Frequently updated small data</td><td>Synchronous writes block UI</td><td>In-memory + periodic save</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Security: Local Storage Is Not Secure Storage</h4>
+                    <p>Any JavaScript running on your page can read Local Storage — including scripts injected via XSS attacks. <strong>Never</strong> store authentication tokens, passwords, credit card numbers, or other sensitive data in Local Storage. For auth tokens, use <code>HttpOnly</code> cookies that JavaScript can't access.</p>
+                </div>
+
+                <div class="card card-info">
+                    <h4>💡 What About IndexedDB?</h4>
+                    <p>For larger or more complex data (images, files, structured databases), browsers offer <strong>IndexedDB</strong> — an asynchronous, transactional database that can store megabytes of data without blocking the UI. It's more complex to use but far more powerful. Local Storage is the right choice for small, simple key-value data like preferences, settings, and modest app state.</p>
+                </div>
+            </section>
+
+            <!-- Exercise -->
+            <section id="exercise" class="lesson-section">
+                <h2>Hands-on Exercise</h2>
+
+                <div class="card card-info">
+                    <h3>🏋️ Exercise: Persistent To-Do List</h3>
+                    <p><strong>Objective:</strong> Build a to-do list that saves to Local Storage. Tasks persist across page refreshes. Users can add tasks, toggle completion, delete individual tasks, and clear all completed tasks.</p>
+
+                    <pre><code class="language-html">
+&lt;!-- Save this as todo.html and open in a browser --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Persistent To-Do List&lt;/title&gt;
+    &lt;style&gt;
+        * { box-sizing: border-box; margin: 0; }
+        body { font-family: system-ui, sans-serif; background: #f1f5f9; padding: 2rem; }
+        .app {
+            max-width: 500px; margin: 0 auto; background: white;
+            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .app-header {
+            background: #6366f1; color: white; padding: 1.5rem;
+        }
+        .app-header h1 { font-size: 1.3rem; margin-bottom: 1rem; }
+        .input-row { display: flex; gap: 0.5rem; }
+        .input-row input {
+            flex: 1; padding: 0.6rem 0.75rem; border: none;
+            border-radius: 6px; font-size: 1rem;
+        }
+        .input-row button {
+            padding: 0.6rem 1.2rem; background: #4f46e5; color: white;
+            border: none; border-radius: 6px; font-size: 1rem; cursor: pointer;
+        }
+        .input-row button:hover { background: #4338ca; }
+
+        .todo-list { list-style: none; padding: 0; }
+        .todo-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem 1.5rem; border-bottom: 1px solid #e2e8f0;
+            transition: background 0.2s;
+        }
+        .todo-item:hover { background: #f8fafc; }
+        .todo-item input[type="checkbox"] {
+            width: 1.2rem; height: 1.2rem; cursor: pointer;
+            accent-color: #6366f1;
+        }
+        .todo-item .todo-text {
+            flex: 1; font-size: 1rem; color: #1e293b;
+        }
+        .todo-item.done .todo-text {
+            text-decoration: line-through; color: #94a3b8;
+        }
+        .todo-item .delete-btn {
+            background: none; border: none; color: #94a3b8;
+            font-size: 1.2rem; cursor: pointer; padding: 0.25rem;
+        }
+        .todo-item .delete-btn:hover { color: #ef4444; }
+
+        .app-footer {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 0.75rem 1.5rem;
+            background: #f8fafc; border-top: 1px solid #e2e8f0;
+            font-size: 0.85rem; color: #64748b;
+        }
+        .clear-btn {
+            background: none; border: 1px solid #cbd5e1;
+            border-radius: 6px; padding: 0.35rem 0.75rem;
+            color: #64748b; cursor: pointer; font-size: 0.85rem;
+        }
+        .clear-btn:hover { border-color: #ef4444; color: #ef4444; }
+
+        .empty-state {
+            text-align: center; padding: 2rem; color: #94a3b8;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="app"&gt;
+        &lt;div class="app-header"&gt;
+            &lt;h1&gt;✅ To-Do List&lt;/h1&gt;
+            &lt;div class="input-row"&gt;
+                &lt;input type="text" id="todo-input" placeholder="What needs to be done?"&gt;
+                &lt;button id="add-btn"&gt;Add&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;ul class="todo-list" id="todo-list"&gt;&lt;/ul&gt;
+
+        &lt;div class="app-footer"&gt;
+            &lt;span id="count-display"&gt;0 items left&lt;/span&gt;
+            &lt;button class="clear-btn" id="clear-done-btn"&gt;Clear completed&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+    // TODO: Complete each task
+
+    // 1. Write loadTodos() and saveTodos(todos):
+    //    - loadTodos: get "todos" from localStorage, JSON.parse,
+    //      return [] if nothing stored. Use try/catch!
+    //    - saveTodos: JSON.stringify the array and setItem
+
+    // 2. Write render(todos):
+    //    - Clear the #todo-list
+    //    - If no todos, show an empty state message
+    //    - For each todo, create an &lt;li class="todo-item"&gt; with:
+    //      a checkbox, a span.todo-text, and a button.delete-btn ("×")
+    //    - Add "done" class to the &lt;li&gt; if todo.done is true
+    //    - Set checkbox.checked to todo.done
+
+    // 3. Write addTodo(text):
+    //    - Push a new object { id: Date.now(), text, done: false }
+    //    - saveTodos, then render
+
+    // 4. Write toggleTodo(id) and deleteTodo(id):
+    //    - toggle: flip the done property of the matching todo
+    //    - delete: filter out the matching todo
+    //    - Both: saveTodos, then render
+
+    // 5. Write updateCount(todos):
+    //    - Count todos where done === false
+    //    - Update #count-display text: "X items left"
+
+    // 6. Hook up event listeners:
+    //    - #add-btn click and Enter key: addTodo
+    //    - Event delegation on #todo-list for checkbox change
+    //      and delete button click
+    //    - #clear-done-btn: filter out done todos, save, render
+
+    // 7. Load and render on page start
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+
+                    <details>
+                        <summary>💡 Hint</summary>
+                        <p><strong>1:</strong> Wrap <code>JSON.parse</code> in a try/catch. If the stored string is corrupted, <code>JSON.parse</code> will throw — return <code>[]</code> in that case.</p>
+                        <p><strong>2:</strong> Use <code>document.createElement</code> for each list item. Set <code>checkbox.checked = todo.done</code> and add event listeners or use delegation.</p>
+                        <p><strong>4:</strong> For toggle: <code>todos.map(t => t.id === id ? { ...t, done: !t.done } : t)</code>. For delete: <code>todos.filter(t => t.id !== id)</code>.</p>
+                        <p><strong>6:</strong> For the add button, remember to trim the input and ignore empty strings. Clear the input after adding.</p>
+                    </details>
+
+                    <details>
+                        <summary>✅ Solution</summary>
+                        <pre><code class="language-javascript">
+const todoInput = document.querySelector("#todo-input");
+const addBtn = document.querySelector("#add-btn");
+const todoList = document.querySelector("#todo-list");
+const countDisplay = document.querySelector("#count-display");
+const clearDoneBtn = document.querySelector("#clear-done-btn");
+
+// 1. Load and save
+function loadTodos() {
+    try {
+        const stored = localStorage.getItem("todos");
+        return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+        console.warn("Error loading todos:", error);
+        return [];
+    }
+}
+
+function saveTodos(todos) {
+    try {
+        localStorage.setItem("todos", JSON.stringify(todos));
+    } catch (error) {
+        console.error("Error saving todos:", error);
+    }
+}
+
+// State
+let todos = loadTodos();
+
+// 2. Render
+function render() {
+    todoList.innerHTML = "";
+
+    if (todos.length === 0) {
+        const empty = document.createElement("li");
+        empty.classList.add("empty-state");
+        empty.textContent = "Nothing to do! Add a task above.";
+        todoList.append(empty);
+    } else {
+        todos.forEach(todo => {
+            const li = document.createElement("li");
+            li.classList.add("todo-item");
+            if (todo.done) li.classList.add("done");
+            li.dataset.id = todo.id;
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = todo.done;
+
+            const text = document.createElement("span");
+            text.classList.add("todo-text");
+            text.textContent = todo.text;
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.classList.add("delete-btn");
+            deleteBtn.textContent = "×";
+
+            li.append(checkbox, text, deleteBtn);
+            todoList.append(li);
+        });
+    }
+
+    updateCount();
+}
+
+// 3. Add
+function addTodo(text) {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    todos.push({ id: Date.now(), text: trimmed, done: false });
+    saveTodos(todos);
+    render();
+}
+
+// 4. Toggle and delete
+function toggleTodo(id) {
+    todos = todos.map(t =>
+        t.id === id ? { ...t, done: !t.done } : t
+    );
+    saveTodos(todos);
+    render();
+}
+
+function deleteTodo(id) {
+    todos = todos.filter(t => t.id !== id);
+    saveTodos(todos);
+    render();
+}
+
+// 5. Update count
+function updateCount() {
+    const remaining = todos.filter(t => !t.done).length;
+    countDisplay.textContent = `${remaining} item${remaining !== 1 ? "s" : ""} left`;
+}
+
+// 6. Event listeners
+addBtn.addEventListener("click", () => {
+    addTodo(todoInput.value);
+    todoInput.value = "";
+    todoInput.focus();
+});
+
+todoInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        addTodo(todoInput.value);
+        todoInput.value = "";
+    }
+});
+
+// Event delegation for checkboxes and delete buttons
+todoList.addEventListener("click", (event) => {
+    const li = event.target.closest(".todo-item");
+    if (!li) return;
+    const id = Number(li.dataset.id);
+
+    if (event.target.type === "checkbox") {
+        toggleTodo(id);
+    } else if (event.target.matches(".delete-btn")) {
+        deleteTodo(id);
+    }
+});
+
+clearDoneBtn.addEventListener("click", () => {
+    todos = todos.filter(t => !t.done);
+    saveTodos(todos);
+    render();
+});
+
+// 7. Initial render
+render();
+                        </code></pre>
+                    </details>
+                </div>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> What does <code>localStorage.getItem("key")</code> return if the key doesn't exist?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="undefined is what you get when accessing a missing property on an object. getItem returns null instead.">A) <code>undefined</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="When a key doesn't exist in localStorage, getItem returns null — not undefined, not an empty string. Always check for null when reading from storage.">B) <code>null</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="An empty string is a valid stored value. getItem returns null (not an empty string) when the key is missing.">C) An empty string <code>""</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="getItem never throws an error for missing keys. It simply returns null.">D) It throws an error</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> What happens when you store a JavaScript object directly with <code>setItem</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="setItem doesn't automatically use JSON.stringify. It calls the value's .toString() method, which for objects returns '[object Object]'.">A) It's automatically serialized as JSON</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="localStorage only stores strings. When you pass an object to setItem, JavaScript calls .toString() on it, which returns '[object Object]' — losing all your data. Use JSON.stringify() before storing objects.">B) It's stored as the string <code>"[object Object]"</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="setItem doesn't throw for non-string values. It silently converts them to strings, which for objects gives useless results.">C) It throws a TypeError</button>
+                            <button class="quiz-option" data-correct="false" data-hint="setItem doesn't silently fail — it does store something. Unfortunately, it stores the useless string '[object Object]'.">D) It silently fails and stores nothing</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What is the correct way to store an array in Local Storage?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Passing an array directly to setItem converts it to a comma-separated string (e.g., '1,2,3'), losing structure and types.">A) <code>localStorage.setItem("data", myArray)</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="JSON.stringify converts the array (including nested objects, numbers, booleans) into a string that preserves its structure. JSON.parse converts it back when you read it.">B) <code>localStorage.setItem("data", JSON.stringify(myArray))</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="toString() on an array gives '1,2,3' — a flat string with no type information or structure. Use JSON.stringify instead.">C) <code>localStorage.setItem("data", myArray.toString())</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no storeArray method on localStorage. The API only has setItem, getItem, removeItem, clear, key, and length.">D) <code>localStorage.storeArray("data", myArray)</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> How does <code>sessionStorage</code> differ from <code>localStorage</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Both use the same API (setItem, getItem, etc.) and the same ~5-10MB limit. The difference is how long data persists.">A) sessionStorage has different methods and a smaller size limit</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="sessionStorage data is cleared when the browser tab is closed. It's also not shared between tabs. localStorage persists until explicitly deleted, even across browser restarts, and is shared across tabs of the same origin.">B) sessionStorage data is cleared when the tab is closed; localStorage persists until deleted</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Neither localStorage nor sessionStorage sends data to the server automatically. Cookies do that, not Web Storage.">C) sessionStorage sends data to the server; localStorage doesn't</button>
+                            <button class="quiz-option" data-correct="false" data-hint="sessionStorage is actually per-tab, not shared between tabs. localStorage is the one that's shared across tabs.">D) sessionStorage is shared across all browser windows; localStorage isn't</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> Why should you never store passwords or auth tokens in Local Storage?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Local Storage has enough space for tokens. The problem isn't size — it's security.">A) Local Storage doesn't have enough space</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Local Storage persists just fine. The issue is that it's too accessible to JavaScript, not that it's unreliable.">B) The data could be lost during a browser update</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Any JavaScript running on your page — including scripts injected via XSS attacks — can read localStorage. An attacker who finds an XSS vulnerability can steal every token and password in localStorage. Use HttpOnly cookies for auth tokens instead, as they can't be read by JavaScript.">C) Any JavaScript on the page can read it, making it vulnerable to XSS attacks</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Local Storage data is not visible to other websites. It's scoped to the origin. The risk is from malicious scripts on YOUR page.">D) Other websites can access your Local Storage data</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section id="summary" class="lesson-section">
+                <h2>Summary</h2>
+
+                <div class="card card-success">
+                    <h3>🎉 Key Takeaways</h3>
+                    <ul>
+                        <li><strong><code>localStorage.setItem(key, value)</code></strong> saves a string; <strong><code>getItem(key)</code></strong> retrieves it (or <code>null</code>)</li>
+                        <li><strong><code>removeItem(key)</code></strong> deletes one entry; <strong><code>clear()</code></strong> deletes everything for this origin</li>
+                        <li>Local Storage <strong>only stores strings</strong> — use <strong><code>JSON.stringify</code></strong> to save and <strong><code>JSON.parse</code></strong> to load objects and arrays</li>
+                        <li>Always wrap <code>JSON.parse</code> in <strong>try/catch</strong> and provide a <strong>default fallback</strong></li>
+                        <li><strong><code>sessionStorage</code></strong> has the same API but data is cleared when the tab closes</li>
+                        <li>The <strong><code>storage</code> event</strong> lets you sync data between tabs of the same origin</li>
+                        <li>Common patterns: <strong>persisted preferences</strong>, <strong>form draft auto-save</strong>, <strong>stateful app sync</strong></li>
+                        <li>Local Storage is <strong>synchronous</strong> and limited to <strong>~5–10 MB</strong> — use IndexedDB for larger data</li>
+                        <li><strong>Never store sensitive data</strong> (passwords, tokens) in Local Storage — it's vulnerable to XSS</li>
+                    </ul>
+                </div>
+
+                <h3>📚 Additional Resources</h3>
+                <ul>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" target="_blank" rel="noopener">MDN — localStorage</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage" target="_blank" rel="noopener">MDN — sessionStorage</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API" target="_blank" rel="noopener">MDN — Web Storage API</a></li>
+                    <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/StorageEvent" target="_blank" rel="noopener">MDN — StorageEvent (cross-tab sync)</a></li>
+                    <li><a href="https://javascript.info/localstorage" target="_blank" rel="noopener">javascript.info — LocalStorage &amp; SessionStorage</a></li>
+                </ul>
+
+                <h3>🚀 What's Next?</h3>
+                <p>Your apps can now persist data locally. But what about data from the outside world — weather, news, user accounts, anything on a server? In the next lesson, you'll learn to <strong>fetch data from APIs</strong> using Promises, async/await, and the Fetch API to build apps that talk to the internet.</p>
+            </section>
+
+            <nav class="lesson-nav" aria-label="Lesson Navigation">
+                <a href="lesson_18.html" class="prev-lesson">← Previous: Timers &amp; Animation</a>
+                <a href="index.html" class="home-link">🏠 Course Home</a>
+                <a href="lesson_20.html" class="next-lesson">Next: Working with APIs &amp; Fetch →</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Ray De La Paz / PetalFawnStudio. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://rays-home.netlify.app/">Ray's House of Fun</a>
+            <a href="https://rays-home.netlify.app/contact">Contact</a>
+            <a href="#" id="print-button">Print Page</a>
+        </div>
+        <p><small>Press <kbd>?</kbd> for keyboard shortcuts</small></p>
+    </footer>
+
+    <script src="js/clipboard.js"></script>
+    <script src="js/course-enhancements.js"></script>
+</body>
+</html>
