@@ -5,47 +5,25 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     initThemeToggle();
-    // initProgressIndicator();
     initSmoothScrolling();
     initCodeCopyButtons();
     initInteractiveTOC();
     initSearchFunctionality();
     initKeyboardShortcuts();
-    // initLessonProgress();
     initQuizInteractivity();
     initMobileMenu();
     initAccessibilityFeatures();
     initPrintStyles();
     initAnalytics();
+
+    // Centralized Mermaid init
+    setTimeout(initMermaid, 100);
 });
 
-/* ===========================
-   Theme Toggle (Light / Dark)
-   =========================== */
+/* ... */
 
-function initThemeToggle() {
-    const toggle = document.getElementById('theme-toggle');
-    const saved = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefersDark ? 'dark' : 'light');
-    applyTheme(theme);
-
-    if (toggle) {
-        toggle.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme') || 'light';
-            const next = current === 'light' ? 'dark' : 'light';
-            applyTheme(next);
-            localStorage.setItem('theme', next);
-        });
-    }
-}
-
-function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    document.querySelectorAll('#theme-toggle').forEach(btn => {
-        btn.textContent = theme === 'light' ? '🌙' : '☀️';
-        btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
-    });
+function initMermaid() {
+    const theme = document.documentElement.getAttribute('data-theme') || 'light';
     reinitMermaid(theme);
 }
 
