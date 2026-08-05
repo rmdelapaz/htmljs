@@ -5,13 +5,13 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     initThemeToggle();
-    initProgressIndicator();
+    // initProgressIndicator();
     initSmoothScrolling();
     initCodeCopyButtons();
     initInteractiveTOC();
     initSearchFunctionality();
     initKeyboardShortcuts();
-    initLessonProgress();
+    // initLessonProgress();
     initQuizInteractivity();
     initMobileMenu();
     initAccessibilityFeatures();
@@ -77,6 +77,7 @@ function reinitMermaid(theme) {
    Progress Indicator
    =========================== */
 
+/*
 function initProgressIndicator() {
     const bar = document.querySelector('.progress-bar');
     if (!bar) return;
@@ -90,6 +91,7 @@ function initProgressIndicator() {
     window.addEventListener('scroll', throttle(update, 50));
     update();
 }
+*/
 
 /* ===========================
    Smooth Scrolling
@@ -265,6 +267,7 @@ function showShortcutsModal() {
    Lesson Progress
    =========================== */
 
+/*
 function initLessonProgress() {
     const page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
     const progress = JSON.parse(localStorage.getItem('lessonProgress') || '{}');
@@ -308,6 +311,7 @@ function updateProgressIndicators(progress) {
             <p>${done} of ${total} lessons completed (${pct}%)</p>`;
     }
 }
+*/
 
 /* ===========================
    Quiz
