@@ -33,8 +33,9 @@ lesson's own.
 
 **Differences from the lesson listings (on purpose):**
 
-- **Contrast:** button and toast colors are one shade darker (e.g. `#15803d` instead of
-  `#22c55e`) so white text passes WCAG AA. Every control has a visible focus ring.
+- **Contrast:** button and toast colors use AA-passing shades (e.g. `#15803d`, not
+  `#22c55e`) so white text passes WCAG AA; every control has a visible focus ring.
+  (The L15/L16 lesson listings were updated to match.)
 - **L14:** the solution clears the inline background (`card.style.backgroundColor = ""`)
   before toggling `.dark`, exactly as the lesson's solution comment explains. The
   starter keeps the clash so students can see it happen when they click the button.

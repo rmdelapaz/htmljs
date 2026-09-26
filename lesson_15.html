@@ -643,7 +643,7 @@ controller.abort();
             border-radius: 6px; font-size: 1rem;
         }
         .add-form button {
-            padding: 0.5rem 1rem; background: #3b82f6; color: white;
+            padding: 0.5rem 1rem; background: #2563eb; color: white;
             border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;
         }
         #task-list { list-style: none; padding: 0; }
@@ -652,14 +652,19 @@ controller.abort();
             padding: 0.75rem; background: white; border-radius: 8px;
             margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        .task-item.done .task-text { text-decoration: line-through; color: #94a3b8; }
+        .task-item.done .task-text { text-decoration: line-through; color: #64748b; }
         .task-text { flex: 1; }
-        .complete-btn { background: #22c55e; color: white; border: none;
+        .complete-btn { background: #15803d; color: white; border: none;
             border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; }
-        .delete-btn { background: #ef4444; color: white; border: none;
+        .delete-btn { background: #dc2626; color: white; border: none;
             border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; }
         .counter { text-align: center; color: #64748b; margin-top: 1rem; }
+        button:focus-visible, input:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
         body.dark-mode { background: #0f172a; color: #e2e8f0; }
+        /* Cards need a dark background too, or light text lands on white */
+        body.dark-mode .task-item { background: #1e293b; }
+        body.dark-mode .task-item.done .task-text,
+        body.dark-mode .counter { color: #94a3b8; }
     &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -704,6 +709,7 @@ controller.abort();
     //    - Press Escape in the input to clear it
     //    - Listen on the document for "d" key to toggle
     //      a "dark-mode" class on the body
+    //      (skip it if Ctrl/Cmd/Alt is held or the user is typing in a field)
     &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -714,7 +720,7 @@ controller.abort();
                         <p><strong>1:</strong> Use <code>form.addEventListener("submit", ...)</code> with <code>event.preventDefault()</code>. Build the <code>&lt;li&gt;</code> with <code>document.createElement</code>, set its <code>innerHTML</code> to the <em>fixed</em> span-and-buttons markup, then fill the span with <code>li.querySelector(".task-text").textContent = text</code>. The user's text never goes through <code>innerHTML</code>.</p>
                         <p><strong>2:</strong> Use <code>taskList.addEventListener("click", ...)</code> and check <code>event.target.closest(".complete-btn")</code> or <code>event.target.closest(".delete-btn")</code> (safer than <code>matches()</code> if a button ever gets an icon or other child element inside it). Use <code>event.target.closest(".task-item")</code> to find the parent.</p>
                         <p><strong>3:</strong> Use <code>taskList.querySelectorAll("li").length</code> to count tasks.</p>
-                        <p><strong>4:</strong> Listen for <code>keydown</code> on the input for Escape, and on <code>document</code> for the "d" key (but only if the input isn't focused).</p>
+                        <p><strong>4:</strong> Listen for <code>keydown</code> on the input for Escape, and on <code>document</code> for the "d" key — but skip it when a modifier key (Ctrl/Cmd/Alt) is held or the user is typing in a field.</p>
                     </details>
 
                     <details>
@@ -780,8 +786,10 @@ taskInput.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-    // Only toggle dark mode if not typing in the input
-    if (event.key === "d" && document.activeElement !== taskInput) {
+    // Skip browser shortcuts (Ctrl+D bookmarks!) and typing in a field
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    if (event.target.matches("input, textarea")) return;
+    if (event.key === "d") {
         document.body.classList.toggle("dark-mode");
     }
 });

@@ -38,8 +38,7 @@ marked in comments ("Kit upgrade" / "Kit"):
 - **L18**: visible focus ring; `prefers-reduced-motion` turns off the ring
   transition; `aria-live` on the done message.
 - **L19**: visually-hidden `<label>` for the input; `aria-label` on each checkbox
-  ("Mark "…" as done") and × button ("Delete "…""), which the lesson's version
-  lacks; focus restored after `render()`; darker grays for contrast.
+  ("Mark "…" as done") and × button ("Delete "…"") — the lesson now does this too; focus restored after `render()`; darker grays for contrast.
 - **L20**: visually-hidden `<label>`; `USE_MOCK` and `AUTO_SEARCH` switches at
   the top of `script.js`; a stale-response guard (`latestSearch`) so an older,
   slower answer can't overwrite a newer one.

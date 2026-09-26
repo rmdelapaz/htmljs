@@ -23,7 +23,7 @@
             border-radius: 6px; font-size: 0.9rem; background: white;
         }
         .toolbar input { flex: 1; min-width: 150px; }
-        .toolbar input:focus, .toolbar select:focus { outline: none; border-color: #6366f1; }
+        .toolbar input:focus-visible, .toolbar select:focus-visible { outline: 2px solid #6366f1; outline-offset: 1px; border-color: #6366f1; }
         #new-note-btn {
             padding: 0.5rem 1.2rem; background: #6366f1; color: white;
             border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; white-space: nowrap;
@@ -40,7 +40,8 @@
             border-radius: 6px; font-size: 0.95rem; font-family: inherit;
         }
         #note-form textarea { resize: vertical; margin-bottom: 0.75rem; min-height: 80px; }
-        #note-form input:focus, #note-form select:focus, #note-form textarea:focus { outline: none; border-color: #6366f1; }
+        #note-form input:focus-visible, #note-form select:focus-visible, #note-form textarea:focus-visible { outline: 2px solid #6366f1; outline-offset: 1px; border-color: #6366f1; }
+        button:focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; }
         .input-error { border-color: #ef4444 !important; background: #fef2f2; }
         .field-error { color: #ef4444; font-size: 0.8rem; display: block; margin-top: 0.2rem; }
         .form-actions { display: flex; gap: 0.5rem; align-items: center; }
@@ -69,16 +70,16 @@
         .note-badge { font-size: 0.75rem; text-transform: capitalize; color: #64748b; }
         .note-title { font-size: 1.05rem; color: #1e293b; }
         .note-body { font-size: 0.85rem; color: #64748b; line-height: 1.5; flex: 1; }
-        .note-time { font-size: 0.75rem; color: #94a3b8; }
+        .note-time { font-size: 0.75rem; color: #64748b; }
         .note-actions { display: flex; gap: 0.25rem; }
         .note-actions button { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 0.2rem 0.4rem; border-radius: 4px; opacity: 0.5; transition: opacity 0.2s; }
         .note-actions button:hover { opacity: 1; background: #f1f5f9; }
 
         /* Empty State */
-        .empty-state { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: #94a3b8; }
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: #64748b; }
 
         /* Footer */
-        .app-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+        .app-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 0.8rem; color: #64748b; border-top: 1px solid #e2e8f0; }
         .shortcut-hint { display: flex; gap: 0.25rem; align-items: center; }
         kbd { background: #e2e8f0; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.75rem; font-family: inherit; }
 
@@ -98,8 +99,8 @@
         </header>
 
         <div class="toolbar">
-            <input type="text" id="search-input" placeholder="Search notes...">
-            <select id="filter-category">
+            <input type="text" id="search-input" aria-label="Search notes" placeholder="Search notes...">
+            <select id="filter-category" aria-label="Filter by category">
                 <option value="all">All Categories</option>
                 <option value="work">Work</option>
                 <option value="personal">Personal</option>
@@ -113,14 +114,14 @@
             <form id="note-form" novalidate>
                 <input type="hidden" id="note-id">
                 <div class="form-row">
-                    <input type="text" id="note-title" name="title" placeholder="Note title">
-                    <select id="note-category" name="category">
+                    <input type="text" id="note-title" name="title" aria-label="Note title" placeholder="Note title">
+                    <select id="note-category" name="category" aria-label="Category">
                         <option value="personal">Personal</option>
                         <option value="work">Work</option>
                         <option value="ideas">Ideas</option>
                     </select>
                 </div>
-                <textarea id="note-body" name="body" rows="4" placeholder="Write your note..."></textarea>
+                <textarea id="note-body" name="body" rows="4" aria-label="Note text" placeholder="Write your note..."></textarea>
                 <div class="form-actions">
                     <button type="submit" id="save-btn">Save Note</button>
                     <button type="button" id="cancel-btn">Cancel</button>
@@ -251,10 +252,13 @@
             const editBtn = document.createElement("button");
             editBtn.classList.add("edit-btn");
             editBtn.title = "Edit note";
+            // Emoji alone isn't a name a screen reader can announce
+            editBtn.setAttribute("aria-label", `Edit note: ${note.title}`);
             editBtn.textContent = "✏️";
             const delBtn = document.createElement("button");
             delBtn.classList.add("delete-btn");
             delBtn.title = "Delete note";
+            delBtn.setAttribute("aria-label", `Delete note: ${note.title}`);
             delBtn.textContent = "🗑️";
             actions.append(editBtn, delBtn);
 

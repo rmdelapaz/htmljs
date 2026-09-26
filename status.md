@@ -8,8 +8,8 @@
 
 ## What to Do Next
 1. **Aligned with htmlcss (2026-09-26)** — full content review + corrections of all 22 lessons, quizzes (4–6 per lesson, 112 total), a lesson-specific 📓 learning journal in every lesson, fixed shared JS (theme toggle was undefined → every page's init crashed), instructor kit (6 modules) + 5-day syllabus, `_redirects` + 404 hiding the kit.
-2. Pending decision: a11y/contrast fixes in L15/L16 exercise CSS and the L21 QuickNote source (labels, focus ring, #94a3b8 text) — the kit's lab versions already fix these.
-3. Commit + push (GPG-signed, Ray), then confirm on rays-htmljs.netlify.app that /instructor-kit/ returns 404.
+2. ✅ a11y/contrast fixes done 2026-09-26 in L15/L16 exercise CSS + L21 QuickNote (aria-labels, focus rings, AA colors, dark-mode cards); kit L21 lab + checkpoints updated to match.
+3. ✅ Committed + pushed 2026-09-26 (ab0c7ab); live site verified, /instructor-kit/ returns 404.
 
 ## Key Patterns
 - Nav logo: `Front-End JS Course`
@@ -68,7 +68,7 @@
 - [x] Quizzes in every lesson (112 items) + learning journal (`initJournal()`, localStorage key `htmljsJournal:<page>`)
 - [x] Instructor kit: instructor-kit/ (source/module-1..6 → build-combined.py → 3 books + PDFs, slides/, labs/, setup-guide, final-assessment, sell-sheet, README, LICENSE); hidden from live site via _redirects
 - [x] 5-day syllabus: syllabus.html, syllabus-print.html, Front-End-JS-Syllabus-5day.pdf
-- [ ] L15/L16/L21 exercise a11y + contrast (see What to Do Next)
+- [x] L15/L16/L21 exercise a11y + contrast
 
 ## Notes
 - Lesson files use **CRLF** line endings (L05–L22 have no final newline) — preserve them when editing (Python: `open(f, newline='')`).

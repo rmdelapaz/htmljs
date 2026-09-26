@@ -561,10 +561,11 @@ console.log(fragment.childNodes.length);  // 0
             padding: 0.5rem 1rem; border: none; border-radius: 6px;
             color: white; cursor: pointer; font-size: 0.9rem;
         }
-        .btn-success { background: #22c55e; }
-        .btn-warning { background: #f59e0b; }
-        .btn-error { background: #ef4444; }
-        .btn-info { background: #3b82f6; }
+        /* Darker shades so white text passes WCAG AA contrast (4.5:1) */
+        .btn-success { background: #15803d; }
+        .btn-warning { background: #b45309; }
+        .btn-error { background: #dc2626; }
+        .btn-info { background: #2563eb; }
         .btn-clear { background: #64748b; }
 
         #notification-area {
@@ -578,16 +579,17 @@ console.log(fragment.childNodes.length);  // 0
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             animation: slideIn 0.3s ease;
         }
-        .notification.success { background: #22c55e; }
+        .notification.success { background: #15803d; }
         .notification.warning { background: #f59e0b; color: #1e293b; }
-        .notification.error { background: #ef4444; }
-        .notification.info { background: #3b82f6; }
+        .notification.error { background: #dc2626; }
+        .notification.info { background: #2563eb; }
         .notification .close-btn {
             background: none; border: none; color: inherit;
             font-size: 1.2rem; cursor: pointer; padding: 0; margin-left: 0.5rem;
             opacity: 0.8;
         }
         .notification .close-btn:hover { opacity: 1; }
+        button:focus-visible { outline: 3px solid #1e293b; outline-offset: 2px; }
         .notification-text { flex: 1; }
         .counter { color: #64748b; }
 
