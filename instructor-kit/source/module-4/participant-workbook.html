@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workbook — Module 4</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Student workbook —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">write in it · bring it to every session</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Front-End JavaScript Workbook · Module 4</div>
+    <h1>The DOM</h1>
+    <p class="sub">Your working notebook for the four DOM lessons. Follow along, do the exercises in the space provided, and check yourself with the quizzes. This is the module where your JavaScript starts changing the page.</p>
+    <div class="meta-row">
+      <span class="chip">Lessons <b>13–16</b></span>
+      <span class="chip"><b>4</b> lessons</span>
+      <span class="chip">Name: ____________________</span>
+    </div>
+  </header>
+
+  <div class="note">
+    <div class="t">How to use this workbook</div>
+    <p>Each lesson has <b>Key Ideas</b> (the reference to keep), a <b>Worked Example</b> (read it), <b>Your Turn</b> (do it — write your code in the boxes), a <b>Self-Check</b> quiz, and <b>Notes</b>. The lined boxes are for you to write real code and answers. Self-check questions come from the lesson quizzes and keep the lesson's question numbers, so a set may read Q1 · Q4 · Q5. After each lesson, answer the <b>Journal</b> prompt. It takes five minutes and makes the learning stick.</p>
+  </div>
+
+  <!-- LAB TRACKER -->
+  <div class="sec"><h2>Module Lab Tracker</h2><span class="rule"></span></div>
+  <p style="font-size:.92rem;color:var(--ink-2)">Each lesson has its own small page to build. Tick each lab as you finish it:</p>
+  <ul class="tick lab">
+    <li>☐ <b>L13</b> — DOM Explorer: all 10 console tasks + the 3 "think about it" questions</li>
+    <li>☐ <b>L14</b> — Profile Card Editor: tasks 1–9 (+ the <code class="inline">updateProfile()</code> bonus)</li>
+    <li>☐ <b>L15</b> — Task List: add, complete, delete with one delegated listener (+ keyboard bonus)</li>
+    <li>☐ <b>L16</b> — Notification System: create, auto-remove, close, clear (+ batch bonus)</li>
+  </ul>
+
+  <!-- ===== L13 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L13</span><h3>Introduction to the DOM</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Explain what the DOM is and how the browser builds it from HTML</li>
+          <li>Name the key objects: <code class="inline">window</code>, <code class="inline">document</code>, elements and nodes</li>
+          <li>Move around the tree with parent, child and sibling properties</li>
+          <li>Tell the live DOM (Elements panel) from the HTML source (View Source)</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas — blueprint, building, contractor</div>
+        <ul class="tick">
+          <li><b>HTML is the blueprint, the DOM is the building, JavaScript is the contractor</b> who remodels it after it's built.</li>
+          <li><code class="inline">document</code> is your entry point to the page. <code class="inline">window</code> is the browser window that holds everything.</li>
+          <li>Elements are node type <b>1</b>; text is type <b>3</b>. The line breaks between your tags are text nodes too.</li>
+          <li>Use the <b>Element</b> properties: <code class="inline">parentElement</code>, <code class="inline">children</code>, <code class="inline">firstElementChild</code>, <code class="inline">nextElementSibling</code>. They skip the whitespace.</li>
+          <li>Console changes live in memory. Refresh and they're gone; View Source never shows them.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 660 312" role="img" aria-label="DOM tree: document at the top, then html, which has head and body children; body holds a whitespace text node, h1 and p; the p holds text, a strong element, and more text."><line x1="330" y1="40" x2="330" y2="66" stroke="#94a3b8" stroke-width="1.5"/><line x1="330" y1="94" x2="100" y2="120" stroke="#94a3b8" stroke-width="1.5"/><line x1="330" y1="94" x2="420" y2="120" stroke="#94a3b8" stroke-width="1.5"/><line x1="100" y1="148" x2="100" y2="174" stroke="#94a3b8" stroke-width="1.5"/><line x1="420" y1="148" x2="215" y2="174" stroke="#94a3b8" stroke-width="1.5"/><line x1="420" y1="148" x2="320" y2="174" stroke="#94a3b8" stroke-width="1.5"/><line x1="420" y1="148" x2="520" y2="174" stroke="#94a3b8" stroke-width="1.5"/><line x1="100" y1="202" x2="100" y2="228" stroke="#94a3b8" stroke-width="1.5"/><line x1="320" y1="202" x2="318" y2="228" stroke="#94a3b8" stroke-width="1.5"/><line x1="520" y1="202" x2="430" y2="228" stroke="#94a3b8" stroke-width="1.5"/><line x1="520" y1="202" x2="536" y2="228" stroke="#94a3b8" stroke-width="1.5"/><line x1="520" y1="202" x2="612" y2="228" stroke="#94a3b8" stroke-width="1.5"/><line x1="536" y1="256" x2="536" y2="282" stroke="#94a3b8" stroke-width="1.5"/><rect x="280" y="12" width="100" height="28" rx="4" fill="#fdf0dc" stroke="#b45309" stroke-width="1.8"/><text x="330" y="31" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#7c2d12">document</text><rect x="290" y="66" width="80" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="330" y="85" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">html</text><rect x="60" y="120" width="80" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="100" y="139" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">head</text><rect x="380" y="120" width="80" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="420" y="139" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">body</text><rect x="60" y="174" width="80" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="100" y="193" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">title</text><rect x="173" y="174" width="84" height="28" rx="14" fill="#ffffff" stroke="#6f7c8e" stroke-width="1.8" stroke-dasharray="4 3"/><text x="215" y="193" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">"\n  "</text><rect x="285" y="174" width="70" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="320" y="193" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">h1</text><rect x="490" y="174" width="60" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="520" y="193" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">p</text><rect x="50" y="228" width="100" height="28" rx="14" fill="#d7efe9" stroke="#0f766e" stroke-width="1.8"/><text x="100" y="247" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#134e4a">"My Page"</text><rect x="280" y="228" width="76" height="28" rx="14" fill="#d7efe9" stroke="#0f766e" stroke-width="1.8"/><text x="318" y="247" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#134e4a">"Hello!"</text><rect x="366" y="228" width="128" height="28" rx="14" fill="#d7efe9" stroke="#0f766e" stroke-width="1.8"/><text x="430" y="247" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#134e4a">"Welcome to my "</text><rect x="504" y="228" width="64" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="536" y="247" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">strong</text><rect x="574" y="228" width="76" height="28" rx="14" fill="#d7efe9" stroke="#0f766e" stroke-width="1.8"/><text x="612" y="247" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#134e4a">" page."</text><rect x="491" y="282" width="90" height="28" rx="14" fill="#d7efe9" stroke="#0f766e" stroke-width="1.8"/><text x="536" y="301" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#134e4a">"awesome"</text><rect x="20" y="284" width="18" height="14" rx="3" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.5"/><text x="44" y="295" font-family="'JetBrains Mono',monospace" font-size="11" fill="#45536a">element</text><rect x="140" y="284" width="18" height="14" rx="3" fill="#d7efe9" stroke="#0f766e" stroke-width="1.5"/><text x="164" y="295" font-family="'JetBrains Mono',monospace" font-size="11" fill="#45536a">text node</text><rect x="260" y="284" width="18" height="14" rx="3" fill="#ffffff" stroke="#6f7c8e" stroke-width="1.5" stroke-dasharray="4 3"/><text x="284" y="295" font-family="'JetBrains Mono',monospace" font-size="11" fill="#45536a">whitespace text</text></svg>
+          <figcaption>The DOM tree for a small page. Line breaks between tags become whitespace text nodes (dashed).</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">const</span> list = document.querySelector(<span class="s">"ul"</span>);
+list.children.length;       <span class="c">// how many &lt;li&gt; elements</span>
+list.firstElementChild;     <span class="c">// the first &lt;li&gt;</span>
+list.firstChild;            <span class="c">// #text — the whitespace before it!</span>
+list.firstElementChild.nextElementSibling;  <span class="c">// the second &lt;li&gt;</span>
+list.parentElement;         <span class="c">// whatever contains the list</span></pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — DOM Explorer</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Open the practice page, press F12, and work through the worksheet tasks in the Console. Write the line that walks from <code class="inline">document.documentElement</code> down to the <code class="inline">&lt;h1&gt;</code>, and what <code class="inline">#family.firstChild</code> returned:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">What is the DOM?</div>
+          <div class="opts"><div class="opt">A) The HTML file on the server</div><div class="opt">B) An in-memory tree of objects representing the page</div><div class="opt">C) A CSS styling system</div><div class="opt">D) A JavaScript library</div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">Your JavaScript adds a new <code class="inline">&lt;p&gt;</code> to the page. Where will you see it?</div>
+          <div class="opts"><div class="opt">A) In View Source (Ctrl + U)</div><div class="opt">B) In your HTML file in VS Code</div><div class="opt">C) In the DevTools Elements panel</div><div class="opt">D) Nowhere — it only exists in memory</div></div></div>
+        <div class="q"><div class="qn">Q5</div><div class="qt">For a <code class="inline">&lt;ul&gt;</code> written on several indented lines, why might <code class="inline">list.firstChild</code> not be the first <code class="inline">&lt;li&gt;</code>?</div>
+          <div class="opts"><div class="opt">A) firstChild only works on the document</div><div class="opt">B) Because it returns the last child instead</div><div class="opt">C) Because lists have no children</div><div class="opt">D) The whitespace before the first &lt;li&gt; is a text node, and firstChild includes text nodes</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Open one of your own pages from the HTML &amp; CSS course, then sketch its DOM tree from <code class="inline">document</code> down to one paragraph. Explain in your own words why a change you make in the console shows up in the Elements panel but not in View Source. What about parents, children, and siblings (or element vs. node properties) are you still unsure about?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L14 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L14</span><h3>Selecting &amp; Modifying Elements</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Select elements with <code class="inline">querySelector</code>, <code class="inline">querySelectorAll</code> and <code class="inline">getElementById</code></li>
+          <li>Change text safely with <code class="inline">textContent</code></li>
+          <li>Add, remove and toggle classes with <code class="inline">classList</code>; set inline styles</li>
+          <li>Read and set attributes and <code class="inline">data-*</code> values</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas</div>
+        <ul class="tick">
+          <li>If you know CSS selectors, you know <code class="inline">querySelector</code>. No match returns <b><code class="inline">null</code></b>.</li>
+          <li><code class="inline">querySelectorAll</code> returns a NodeList: <code class="inline">forEach</code> yes, <code class="inline">map</code> no — spread it with <code class="inline">[...list]</code>. It's a <b>snapshot</b>; re-query after adding elements.</li>
+          <li><b><code class="inline">textContent</code> for anything a user typed.</b> <code class="inline">innerHTML</code> parses HTML, so user text in it can run an attacker's code (XSS).</li>
+          <li><b>Prefer classes over inline styles.</b> <code class="inline">element.style</code> only reads inline styles; use <code class="inline">getComputedStyle</code> to read what's actually applied.</li>
+          <li><code class="inline">data-item-id</code> in HTML is <code class="inline">dataset.itemId</code> in JavaScript, and its value is always a string.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">const</span> card = document.querySelector(<span class="s">"#card"</span>);
+card.querySelector(<span class="s">"h2"</span>).textContent = <span class="s">"Ray de la Paz"</span>;
+card.classList.add(<span class="s">"highlight"</span>);
+card.classList.toggle(<span class="s">"dark"</span>);
+console.log(card.dataset.userId);   <span class="c">// "101"</span>
+card.dataset.status = <span class="s">"active"</span>;       <span class="c">// adds data-status="active"</span>
+document.querySelector(<span class="s">"#website"</span>).href = <span class="s">"https://example.com"</span>;</pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Dynamic Profile Card Editor</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Complete tasks 1–9 in <code class="inline">script.js</code>. After task 6, click <b>Toggle dark mode</b>: what happens to the background, and why? Write your fix, then your <code class="inline">updateProfile()</code> bonus:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">What does <code class="inline">querySelector</code> return if no element matches?</div>
+          <div class="opts"><div class="opt">A) undefined</div><div class="opt">B) An empty NodeList</div><div class="opt">C) null</div><div class="opt">D) It throws an error</div></div></div>
+        <div class="q"><div class="qn">Q2</div><div class="qt">Why should you avoid <code class="inline">innerHTML</code> with user input?</div>
+          <div class="opts"><div class="opt">A) It doesn't work in all browsers</div><div class="opt">B) It can execute malicious scripts (XSS attacks)</div><div class="opt">C) It's too slow for dynamic content</div><div class="opt">D) It removes existing CSS styles</div></div></div>
+        <div class="q"><div class="qn">Q5</div><div class="qt">Your stylesheet sets <code class="inline">h1 { font-size: 2rem; }</code>. What does <code class="inline">heading.style.fontSize</code> return if no inline style was set?</div>
+          <div class="opts"><div class="opt">A) "2rem"</div><div class="opt">B) "32px"</div><div class="opt">C) undefined</div><div class="opt">D) "" (an empty string)</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Pick one element on a page you built in the HTML &amp; CSS course and write the lines of JavaScript that would select it and change its text, a class, and one attribute. Then explain in your own words why <code class="inline">textContent</code> is safe for a visitor's name but <code class="inline">innerHTML</code> isn't. Which of these tools are you still unsure when to use?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L15 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L15</span><h3>Events &amp; Event Listeners</h3><span class="dur">55 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Respond to clicks, typing, key presses and form submits with <code class="inline">addEventListener</code></li>
+          <li>Use the event object (<code class="inline">target</code>, <code class="inline">key</code>) and <code class="inline">preventDefault()</code></li>
+          <li>Explain bubbling and capturing</li>
+          <li>Handle many children with one delegated listener; remove listeners</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas — the doorbell</div>
+        <ul class="tick">
+          <li>The <b>event</b> is someone pressing the doorbell; the <b>listener</b> is what you decide to do when it rings.</li>
+          <li><b>Pass the function, don't call it:</b> <code class="inline">addEventListener("click", handleClick)</code> — no <code class="inline">()</code>.</li>
+          <li><code class="inline">event.target</code> = what was actually clicked. <code class="inline">event.currentTarget</code> = where the listener lives.</li>
+          <li><code class="inline">event.preventDefault()</code> stops the browser's own behavior, like a form reloading the page.</li>
+          <li>Events <b>bubble up</b> from the target to its ancestors. <b>Delegation</b> uses this: one listener on the parent + <code class="inline">event.target.closest(".btn")</code>.</li>
+          <li><code class="inline">focus</code>, <code class="inline">blur</code>, <code class="inline">mouseenter</code> and <code class="inline">mouseleave</code> don't bubble, so you can't delegate them.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 560 290" role="img" aria-label="Event propagation: a click on a button travels down from document through html, body, div#outer and div#inner in the capturing phase, reaches the button in the target phase, then bubbles back up to document."><rect x="130" y="16" width="300" height="262" rx="6" fill="#f4f6fa" stroke="#bcc7d6" stroke-width="1.5"/><text x="140" y="35" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">document</text><rect x="148" y="46" width="264" height="222" rx="6" fill="#eef2f8" stroke="#bcc7d6" stroke-width="1.5"/><text x="158" y="65" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">html</text><rect x="166" y="76" width="228" height="182" rx="6" fill="#f4f6fa" stroke="#bcc7d6" stroke-width="1.5"/><text x="176" y="95" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">body</text><rect x="184" y="106" width="192" height="142" rx="6" fill="#eef2f8" stroke="#bcc7d6" stroke-width="1.5"/><text x="194" y="125" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">div#outer</text><rect x="202" y="136" width="156" height="102" rx="6" fill="#f4f6fa" stroke="#bcc7d6" stroke-width="1.5"/><text x="212" y="155" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">div#inner</text><rect x="220" y="166" width="120" height="50" rx="6" fill="#d7efe9" stroke="#0f766e" stroke-width="2"/><text x="280" y="187" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="600" fill="#134e4a">button</text><text x="280" y="205" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#134e4a">② target</text><line x1="96" y1="24" x2="96" y2="182" stroke="#1d4ed8" stroke-width="2.5"/><polygon points="96,194 90,180 102,180" fill="#1d4ed8"/><text transform="rotate(-90 76 110)" x="76" y="110" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1d4ed8">① capturing ↓ (capture: true)</text><line x1="464" y1="194" x2="464" y2="36" stroke="#b45309" stroke-width="2.5"/><polygon points="464,24 458,38 470,38" fill="#b45309"/><text transform="rotate(90 484 110)" x="484" y="110" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#b45309">③ bubbling ↑ (the default)</text></svg>
+          <figcaption>A click travels down (capturing), reaches the target, then bubbles back up. Listeners run on the way up unless you pass { capture: true }.</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code">form.addEventListener(<span class="s">"submit"</span>, (event) =&gt; {
+  event.preventDefault();                   <span class="c">// no page reload</span>
+  <span class="k">const</span> text = taskInput.value.trim();
+  <span class="k">if</span> (!text) <span class="k">return</span>;
+  <span class="c">// ...build the &lt;li&gt;, put text in with textContent</span>
+});
+
+taskList.addEventListener(<span class="s">"click"</span>, (event) =&gt; {  <span class="c">// ONE listener</span>
+  <span class="k">const</span> item = event.target.closest(<span class="s">".task-item"</span>);
+  <span class="k">if</span> (!item) <span class="k">return</span>;
+  <span class="k">if</span> (event.target.closest(<span class="s">".delete-btn"</span>)) item.remove();
+});</pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Interactive Task List</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Handle the form submit, build each task, delegate complete/delete from <code class="inline">#task-list</code>, and write <code class="inline">updateCounter()</code>. First, <b>predict</b>: in the lesson's bubbling example, what order do the three messages print? Then write your delegated click handler:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q2</div><div class="qt">What is <code class="inline">event.target</code>?</div>
+          <div class="opts"><div class="opt">A) The element the listener is attached to</div><div class="opt">B) The element that was actually clicked or interacted with</div><div class="opt">C) The type of event that occurred</div><div class="opt">D) The parent element of the event</div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">What is the main advantage of event delegation?</div>
+          <div class="opts"><div class="opt">A) Events fire faster on child elements</div><div class="opt">B) It prevents event propagation automatically</div><div class="opt">C) One listener handles events for all current and future children</div><div class="opt">D) It gives you access to more event properties</div></div></div>
+        <div class="q"><div class="qn">Q6</div><div class="qt">A delegated listener on a list checks <code class="inline">event.target.matches(".delete-btn")</code>, but clicking the 🗑️ <code class="inline">&lt;span&gt;</code> inside the button does nothing. What's the fix?</div>
+          <div class="opts"><div class="opt">A) Use <code class="inline">event.target.closest(".delete-btn")</code></div><div class="opt">B) Call <code class="inline">event.stopPropagation()</code> in the span</div><div class="opt">C) Add <code class="inline">{ capture: true }</code> to the listener</div><div class="opt">D) Spans can't be clicked, so remove the icon</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Before you click, predict the order of the console messages when you click the button inside #inner in the bubbling example, then explain in your own words how event delegation uses that same bubbling to handle tasks that didn't exist when the page loaded. Name one thing on your own site that could respond to a click, key press, or form submit. What about event.target, preventDefault(), or delegation are you still unsure about?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L16 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L16</span><h3>Creating &amp; Removing Elements</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Create an element, configure it, and insert it into the page</li>
+          <li>Insert with <code class="inline">append</code>/<code class="inline">prepend</code> (children) and <code class="inline">before</code>/<code class="inline">after</code> (siblings)</li>
+          <li>Remove, replace, clear and clone elements</li>
+          <li>Batch many inserts with a <code class="inline">DocumentFragment</code></li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas — create, configure, insert</div>
+        <ul class="tick">
+          <li><code class="inline">document.createElement("div")</code> makes an element <b>in memory</b>. It isn't on the page until you insert it.</li>
+          <li>An element lives in <b>one place</b>. Appending an existing element <b>moves</b> it; use <code class="inline">cloneNode(true)</code> for a copy.</li>
+          <li><code class="inline">el.remove()</code> deletes; <code class="inline">el.replaceWith(other)</code> swaps; <code class="inline">parent.replaceChildren()</code> empties.</li>
+          <li><b>User text → <code class="inline">createElement</code> + <code class="inline">textContent</code>.</b> Keep <code class="inline">innerHTML</code> for fixed markup you wrote yourself. <code class="inline">innerHTML +=</code> rebuilds everything and wipes listeners.</li>
+          <li>A <code class="inline">DocumentFragment</code> collects elements off-screen; appending it inserts them all in one step and leaves it empty.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">function</span> showNotification(type, message) {
+  <span class="k">const</span> note = document.createElement(<span class="s">"div"</span>);
+  note.classList.add(<span class="s">"notification"</span>, type);
+
+  <span class="k">const</span> text = document.createElement(<span class="s">"span"</span>);
+  text.textContent = message;              <span class="c">// safe</span>
+
+  <span class="k">const</span> close = document.createElement(<span class="s">"button"</span>);
+  close.textContent = <span class="s">"×"</span>;
+  close.setAttribute(<span class="s">"aria-label"</span>, <span class="s">"Dismiss notification"</span>);
+
+  note.append(text, close);
+  area.prepend(note);                      <span class="c">// now it's visible</span>
+  setTimeout(() =&gt; note.remove(), <span class="s">5000</span>);
+}</pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Dynamic Notification System</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Write <code class="inline">showNotification()</code>, delegate the control buttons and the close buttons, clear everything with <code class="inline">replaceChildren()</code>, and keep the count up to date. Bonus: the <b>"b"</b> key adds five at once with a <code class="inline">DocumentFragment</code>. Sketch your delegated close handler and your batch loop:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">What does <code class="inline">document.createElement("div")</code> return?</div>
+          <div class="opts"><div class="opt">A) A new &lt;div&gt; that is immediately visible on the page</div><div class="opt">B) A new &lt;div&gt; element in memory, not yet in the DOM</div><div class="opt">C) A string of HTML</div><div class="opt">D) A reference to an existing &lt;div&gt; on the page</div></div></div>
+        <div class="q"><div class="qn">Q2</div><div class="qt">What happens if you <code class="inline">append</code> an element that's already in the DOM?</div>
+          <div class="opts"><div class="opt">A) It creates a copy in the new location</div><div class="opt">B) It moves from its old position to the new one</div><div class="opt">C) It throws an error</div><div class="opt">D) Nothing — the element stays where it was</div></div></div>
+        <div class="q"><div class="qn">Q5</div><div class="qt">Why use a <code class="inline">DocumentFragment</code> when adding many elements?</div>
+          <div class="opts"><div class="opt">A) It prevents XSS attacks</div><div class="opt">B) It keeps a backup of the elements</div><div class="opt">C) It batches many insertions into one DOM update</div><div class="opt">D) It's the only way to add multiple elements</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Imagine adding a "guestbook" to your own site where visitors type a message that appears on the page. Describe, step by step, how you'd build each new entry with <code class="inline">createElement</code>, <code class="inline">textContent</code>, and <code class="inline">append</code>, and explain in your own words why pasting the visitor's message into <code class="inline">innerHTML</code> would be dangerous. Looking back over all of Module 4, which DOM skill are you still unsure about?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <div class="note">
+    <div class="t">You finished Module 4 🎉</div>
+    <p>You can now read the document tree, select and change any element, respond to clicks, keys and form submits, and build or remove elements on the fly — safely. In Module 5 you'll put the whole toolkit to work on real interactive features.</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Front-End JavaScript: Make Your Web Pages Come Alive</span>
+    </div>
+    <div class="ver">Workbook · Module 4 · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

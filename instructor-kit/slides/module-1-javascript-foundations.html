@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slides — Module 1</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg:#0b1220; --bg2:#111c30; --ink:#eaf1fb; --ink2:#9fb2cd;
+    --accent:#5b9dff; --accent2:#3b82f6; --lab:#34d3bd; --warn:#fbbf24;
+    --line:#22314c; --code:#0a1526;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--ink);
+    font-family:"Source Sans 3",system-ui,sans-serif;overflow:hidden}
+  .deck{height:100%;width:100%;position:relative}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:6vh 8vw;gap:20px}
+  .slide.on{display:flex}
+  .mono{font-family:"JetBrains Mono",monospace}
+  h1,h2,h3{font-family:"Archivo",sans-serif;line-height:1.1;text-wrap:balance}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:clamp(.7rem,1.4vw,.95rem);font-weight:600;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+  .slide h1{font-size:clamp(2rem,6vw,4rem);font-weight:800;letter-spacing:-.02em}
+  .slide h2{font-size:clamp(1.5rem,4.2vw,2.8rem);font-weight:800;letter-spacing:-.01em}
+  .slide p.lead{font-size:clamp(1.05rem,2.4vw,1.5rem);color:var(--ink2);max-width:24ch}
+  ul{list-style:none;display:flex;flex-direction:column;gap:14px;margin-top:6px}
+  ul li{position:relative;padding-left:34px;font-size:clamp(1.05rem,2.3vw,1.6rem)}
+  ul li::before{content:"";position:absolute;left:0;top:.55em;width:12px;height:12px;border-radius:3px;
+    background:var(--accent);transform:rotate(45deg)}
+  ul.lab li::before{background:var(--lab)}
+  code.k{font-family:"JetBrains Mono",monospace;color:#a9c7ff;font-size:.92em}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:22px 26px;
+    font-family:"JetBrains Mono",monospace;font-size:clamp(.85rem,1.9vw,1.35rem);line-height:1.55;
+    overflow:auto;max-width:100%}
+  pre .k{color:#7dd3fc} pre .s{color:#86efac} pre .c{color:#7183a3;font-style:italic}
+  .tag{display:inline-flex;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;
+    font-size:clamp(.7rem,1.4vw,.95rem);color:var(--ink2)}
+  .tag .pill{background:var(--accent2);color:#fff;font-weight:700;border-radius:999px;padding:3px 12px;letter-spacing:.06em}
+  .tag .pill.lab{background:var(--lab);color:#062b26}
+  .tag .pill.warn{background:var(--warn);color:#3a2a05}
+  .section{background:linear-gradient(135deg,#12213c,#0b1220)}
+  .section .big{font-size:clamp(3rem,12vw,8rem);font-family:"Archivo";font-weight:800;color:var(--accent2);line-height:.9}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}
+  @media (max-width:760px){ .two{grid-template-columns:1fr} }
+  /* chrome */
+  .bar{position:fixed;left:0;top:0;height:4px;background:var(--accent2);width:0;transition:width .25s;z-index:5}
+  .count{position:fixed;right:16px;bottom:12px;font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--ink2);z-index:5}
+  .nav{position:fixed;inset:auto 0 0 0;display:flex;justify-content:space-between;pointer-events:none;z-index:4}
+  .nav button{pointer-events:auto;background:transparent;border:none;color:transparent;width:22vw;height:100vh;cursor:pointer}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+code,pre,.mono{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 title -->
+  <section class="slide on section">
+    <div class="eyebrow">Front-End JavaScript · Instructor Kit</div>
+    <h1>Module 1<br>JavaScript Foundations</h1>
+    <p class="lead">Four lessons from "what is JavaScript?" to a working tip calculator.</p>
+  </section>
+
+  <!-- 2 agenda -->
+  <section class="slide">
+    <div class="eyebrow">What we'll cover</div>
+    <h2>The arc of this module</h2>
+    <ul>
+      <li><b>L01</b> Welcome to JavaScript — the third layer of the web</li>
+      <li><b>L02</b> Linking Scripts &amp; the Console — <code class="k">app.js</code> + DevTools</li>
+      <li><b>L03</b> Variables &amp; Data Types — storing values</li>
+      <li><b>L04</b> Operators &amp; Expressions — working with them</li>
+    </ul>
+  </section>
+
+  <!-- L01 -->
+  <section class="slide section"><div class="big">L01</div><h2>Welcome to JavaScript</h2><p class="lead">HTML is the skeleton. CSS is the paint. JavaScript is the wiring.</p></section>
+  <section class="slide">
+    <div class="eyebrow">Three layers, one page</div>
+    <h2>Structure · presentation · behavior</h2>
+    <div class="two">
+      <ul><li><b>HTML</b> — what is on the page</li><li><b>CSS</b> — how it looks</li><li><b>JavaScript</b> — what happens when users interact</li></ul>
+      <ul><li>Built into every browser — nothing to install</li><li><b>Event-driven</b>: load, wait, react</li><li>JavaScript ≠ Java · ECMAScript = the rulebook</li></ul>
+    </div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">Try it — open the Console</div>
+    <h2>Change a live page</h2>
+    <div class="two">
+      <pre>document.title
+document.title = <span class="s">"I changed this with JavaScript!"</span>
+document.body.style.backgroundColor = <span class="s">"lightyellow"</span></pre>
+      <ul class="lab"><li><code class="k">F12</code> → Console</li><li><code class="k">Ctrl+Shift+J</code> · <code class="k">Cmd+Option+J</code></li><li>Refresh — it all comes back</li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> You only changed <em>your copy</em> of the page. Type the lines — pasting is blocked until you type <code class="k">allow pasting</code>.</div>
+  </section>
+
+  <!-- L02 -->
+  <section class="slide section"><div class="big">L02</div><h2>Linking Scripts &amp; the Console</h2><p class="lead">Move the code into a file the page loads every time.</p></section>
+  <section class="slide">
+    <div class="eyebrow">External script = the professional default</div>
+    <h2>Link app.js before &lt;/body&gt;</h2>
+    <div class="two">
+      <pre>&lt;<span class="k">body</span>&gt;
+  &lt;<span class="k">h1</span>&gt;JavaScript Practice&lt;/<span class="k">h1</span>&gt;
+  &lt;<span class="k">script</span> src=<span class="s">"app.js"</span>&gt;&lt;/<span class="k">script</span>&gt;
+&lt;/<span class="k">body</span>&gt;
+
+<span class="c">&lt;!-- or, in the head --&gt;</span>
+&lt;<span class="k">script</span> src=<span class="s">"app.js"</span> <span class="k">defer</span>&gt;&lt;/<span class="k">script</span>&gt;</pre>
+      <ul><li>Before <code class="k">&lt;/body&gt;</code>: every element exists</li><li><code class="k">defer</code>: download now, run after parsing</li><li>Head without <code class="k">defer</code>: runs too early</li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> Code between the tags of a <code class="k">src</code> script is silently ignored.</div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">Your #1 debugging tool</div>
+    <h2>The console methods</h2>
+    <div class="two">
+      <pre>console.log(<span class="s">"Regular log message"</span>);
+console.warn(<span class="s">"This is a warning"</span>);
+console.error(<span class="s">"This is an error (not a real one!)"</span>);
+console.log(<span class="s">"5 + 3 ="</span>, 5 + 3);
+console.table([<span class="s">"HTML"</span>, <span class="s">"CSS"</span>, <span class="s">"JavaScript"</span>]);
+<span class="c">// comment the WHY, not the what</span></pre>
+      <ul><li>Output goes to the <b>Console</b>, not the page</li><li>Nothing shows? Check the file name &amp; folder</li><li>Real errors say <code class="k">Uncaught</code> + file:line</li></ul>
+    </div>
+  </section>
+
+  <!-- L03 -->
+  <section class="slide section"><div class="big">L03</div><h2>Variables &amp; Data Types</h2><p class="lead">A variable is a labeled box. A type says what's inside.</p></section>
+  <section class="slide">
+    <div class="eyebrow">const by default · let when it changes</div>
+    <h2>Declare, then use</h2>
+    <div class="two">
+      <pre><span class="k">const</span> firstName = <span class="s">"Ray"</span>;
+<span class="k">let</span> age = 30;
+<span class="k">let</span> nickname = <span class="k">null</span>;
+
+age = 31;               <span class="c">// ✅ let can change</span>
+firstName = <span class="s">"Raymond"</span>;  <span class="c">// ❌ TypeError</span>
+console.log(`Hello, ${firstName}!`);</pre>
+      <ul><li><code class="k">=</code> means <b>store</b>, not "equals"</li><li>Never <code class="k">var</code> in new code</li><li>Backticks + <code class="k">${…}</code> = template literal</li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> <code class="k">const</code> locks the variable, not an array's contents — <code class="k">push</code> still works (Module 3).</div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">string · number · boolean · null · undefined</div>
+    <h2>typeof and its surprises</h2>
+    <div class="two">
+      <pre><span class="k">typeof</span> <span class="s">"Hello"</span>   <span class="c">// "string"</span>
+<span class="k">typeof</span> 42        <span class="c">// "number"</span>
+<span class="k">typeof</span> <span class="k">null</span>      <span class="c">// "object" (!)</span>
+<span class="s">"5"</span> + 3           <span class="c">// "53"</span>
+<span class="s">"5"</span> - 3           <span class="c">// 2</span>
+149.99 - 29.99    <span class="c">// 120.00000000000001</span></pre>
+      <ul><li><code class="k">null</code> = deliberately empty</li><li><code class="k">undefined</code> = not assigned yet</li><li>Money: <code class="k">.toFixed(2)</code></li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> Declaring the same name twice in one file is a SyntaxError — nothing in the file runs.</div>
+  </section>
+
+  <!-- L04 -->
+  <section class="slide section"><div class="big">L04</div><h2>Operators &amp; Expressions</h2><p class="lead">Calculate, compare, combine.</p></section>
+  <section class="slide">
+    <div class="eyebrow">Always === and !==</div>
+    <h2>Strict vs loose equality</h2>
+    <div class="two">
+      <pre>5 === <span class="s">"5"</span>     <span class="c">// false — type differs</span>
+5 == <span class="s">"5"</span>      <span class="c">// true  — converts first</span>
+<span class="s">""</span> == 0       <span class="c">// true  (!)</span>
+<span class="s">""</span> == <span class="s">"0"</span>     <span class="c">// false (!!)</span>
+10 % 3        <span class="c">// 1 — remainder</span>
+<span class="k">true</span> &amp;&amp; <span class="k">false</span> || <span class="k">true</span>  <span class="c">// true</span></pre>
+      <ul><li><code class="k">%</code> is remainder, not percent</li><li><code class="k">&amp;&amp;</code> before <code class="k">||</code>; <code class="k">*</code> before <code class="k">+</code></li><li>Falsy: <code class="k">false 0 "" null undefined NaN</code></li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> <code class="k">"0"</code> is truthy — it's a non-empty string.</div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">Lab — Tip Calculator</div>
+    <h2>$85.50 · 20% · 3 people</h2>
+    <div class="two">
+      <pre><span class="k">const</span> tipAmount = billAmount * tipPercentage / 100;
+<span class="k">const</span> totalWithTip = billAmount + tipAmount;
+<span class="k">const</span> perPerson = totalWithTip / numberOfPeople;
+console.log(`Per person: $${perPerson.toFixed(2)}`);
+<span class="k">const</span> isExpensive = totalWithTip &gt; 100;</pre>
+      <ul class="lab"><li>Tip <b>$17.10</b> · Total <b>$102.60</b></li><li>Per person <b>$34.20</b></li><li>Bonus: <code class="k">Expensive? true</code></li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> Without <code class="k">.toFixed(2)</code>: 34.199999999999996. Normal — format money for display.</div>
+  </section>
+
+  <!-- close -->
+  <section class="slide section">
+    <div class="eyebrow">You can now…</div>
+    <h2>Write and run real JavaScript</h2>
+    <ul class="lab">
+      <li>Change a live page from the Console</li>
+      <li>Link an external script and read its output</li>
+      <li>Store values with const/let and check their types</li>
+      <li>Calculate and compare with === and logic</li>
+    </ul>
+    <p class="lead" style="margin-top:10px">Next: Module 2 — Control Flow &amp; Functions.</p>
+  </section>
+
+</div>
+
+<div class="count" id="count">1 / 15</div>
+<div class="nav"><button id="prev" aria-label="Previous slide"></button><button id="next" aria-label="Next slide"></button></div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const bar=document.getElementById('bar'), count=document.getElementById('count');
+  let i=0;
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+    bar.style.width=((i+1)/slides.length*100)+'%';
+    count.textContent=(i+1)+' / '+slides.length;
+  }
+  document.getElementById('next').onclick=()=>show(i+1);
+  document.getElementById('prev').onclick=()=>show(i-1);
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ') {e.preventDefault();show(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp') {e.preventDefault();show(i-1);}
+    else if(e.key==='Home') show(0);
+    else if(e.key==='End') show(slides.length-1);
+  });
+  show(0);
+</script>
+</body>
+</html>

@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Master JavaScript array methods — map, filter, reduce, find, forEach, sort, and method chaining for clean, powerful data transformations.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 11: Array Methods - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -84,6 +90,7 @@
                         <li><a href="#chaining" class="toc-link">Method Chaining</a></li>
                         <li><a href="#choosing" class="toc-link">Choosing the Right Method</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -133,8 +140,8 @@ names.forEach((name, index) => {
                     <p>If you need a new array, use <code>map</code> or <code>filter</code> instead. A common mistake is trying to use <code>forEach</code> to build a new array — it's the wrong tool for that.</p>
                     <pre><code class="language-javascript">
 // ❌ Wrong — forEach returns undefined
-const doubled = names.forEach(n => n.toUpperCase());
-console.log(doubled);  // undefined!
+const shouted = names.forEach(n => n.toUpperCase());
+console.log(shouted);  // undefined!
 
 // ✅ Right — use map to create a new array
 const uppercased = names.map(n => n.toUpperCase());
@@ -153,7 +160,8 @@ const prices = [10, 20, 30, 40];
 
 // Add 8% tax to each price
 const withTax = prices.map(price => price * 1.08);
-console.log(withTax);  // [10.8, 21.6, 32.4, 43.2]
+console.log(withTax);  // [10.8, 21.6, 32.400000000000006, 43.2]
+// (floating-point rounding — format with toFixed(2) for display)
 
 // Original is unchanged
 console.log(prices);   // [10, 20, 30, 40]
@@ -214,11 +222,7 @@ const scores = [85, 42, 93, 67, 78, 55, 91];
 
 // Keep only passing scores (70+)
 const passing = scores.filter(score => score >= 70);
-console.log(passing);  // [85, 93, 67, 78, 91]
-// Wait — 67 isn't >= 70! Let me fix that:
-
-const actuallyPassing = scores.filter(score => score >= 70);
-console.log(actuallyPassing);  // [85, 93, 78, 91]
+console.log(passing);  // [85, 93, 78, 91]  (42, 67 and 55 are left out)
 
 // Original unchanged
 console.log(scores);  // [85, 42, 93, 67, 78, 55, 91]
@@ -239,12 +243,12 @@ const available = products.filter(p => p.inStock);
 console.log(available.length);  // 3
 
 // Products under $500
-const affordable = products.filter(p => p.price < 500);
+const affordable = products.filter(p => p.price &lt; 500);
 console.log(affordable);
 // [{ name: "Tablet", ... }, { name: "Watch", ... }]
 
 // Combine conditions
-const deals = products.filter(p => p.inStock && p.price < 500);
+const deals = products.filter(p => p.inStock && p.price &lt; 500);
 console.log(deals.map(p => p.name));  // ["Tablet", "Watch"]
                 </code></pre>
 
@@ -260,7 +264,7 @@ console.log(todos);    // Original unchanged
 
                 <div class="mermaid">
                     graph LR
-                    A["[85, 42, 93, 67, 78]"] --> B["filter(s => s >= 70)"]
+                    A["[85, 42, 93, 67, 78]"] --> B["filter: keep if ≥ 70"]
                     B --> C["85 ✅"]
                     B --> D["42 ❌"]
                     B --> E["93 ✅"]
@@ -506,14 +510,17 @@ console.log(users.map(u => u.name));  // ["Alice", "Bob", "Carol"]
 
                 <div class="card card-danger">
                     <h4>❌ sort() Mutates the Original Array</h4>
-                    <p>Unlike <code>map</code> and <code>filter</code>, <code>sort()</code> modifies the array in place. If you need the original order preserved, copy first.</p>
+                    <p>Unlike <code>map</code> and <code>filter</code>, <code>sort()</code> modifies the array in place. If you need the original order preserved, use <code>toSorted()</code> (supported in all modern browsers) or copy first.</p>
                     <pre><code class="language-javascript">
 const original = [3, 1, 4, 1, 5];
 
-// ✅ Sort a copy, keep the original intact
-const sorted = [...original].sort((a, b) => a - b);
+// ✅ toSorted() returns a sorted COPY
+const sorted = original.toSorted((a, b) => a - b);
 console.log(sorted);    // [1, 1, 3, 4, 5]
 console.log(original);  // [3, 1, 4, 1, 5] — unchanged!
+
+// ✅ The older way: spread into a copy, then sort the copy
+const sorted2 = [...original].sort((a, b) => a - b);
                     </code></pre>
                 </div>
 
@@ -525,9 +532,9 @@ const letters = ["a", "b", "c", "d"];
 letters.reverse();
 console.log(letters);  // ["d", "c", "b", "a"]
 
-// Non-mutating reverse
+// Non-mutating reverse — toReversed() (or [...nums].reverse())
 const nums = [1, 2, 3];
-const reversed = [...nums].reverse();
+const reversed = nums.toReversed();
 console.log(reversed);  // [3, 2, 1]
 console.log(nums);      // [1, 2, 3] — unchanged
                 </code></pre>
@@ -571,7 +578,7 @@ console.log(result);
 
                 <h3>Chaining with reduce</h3>
                 <pre><code class="language-javascript">
-// Total cost of all in-stock electronics
+// Total cost of all electronics
 const totalElectronics = products
     .filter(p => p.category === "electronics")
     .reduce((sum, p) => sum + p.price, 0);
@@ -586,8 +593,9 @@ console.log(totalElectronics);  // 2147
 // ✅ Better — filter first, then map (processes fewer elements)
 products.filter(p => p.price > 100).map(p => p.name);
 
-// ❌ Wasteful — maps everything, then filters
-products.map(p => p.name).filter(name => /* can't access price anymore! */);
+// ❌ Backwards — after map() you only have name strings,
+//    so the price you wanted to filter on is gone!
+// products.map(p => p.name).filter(name => ???);
                     </code></pre>
                 </div>
             </section>
@@ -711,7 +719,7 @@ console.log(accessories.map(p => p.name));
 const totalValue = products
     .filter(p => p.inStock)
     .reduce((sum, p) => sum + p.price, 0);
-console.log(totalValue.toFixed(2));  // "374.94"
+console.log(totalValue.toFixed(2));  // "374.94"  (raw value is 374.94000000000005)
 
 // 5. All rated 4.0+?
 const allHighRated = products.every(p => p.rating >= 4.0);
@@ -747,7 +755,7 @@ console.log(saleList);
                         <p><strong>Question 1:</strong> What does <code>map()</code> return?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="That's what reduce() does — collapses an array into one value.">A) A single value</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="map() always returns a new array with the same number of elements, each transformed by the callback function.">B) A new array with the same number of elements</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! map() always returns a new array with the same number of elements, each transformed by the callback function.">B) A new array with the same number of elements</button>
                             <button class="quiz-option" data-correct="false" data-hint="filter() returns fewer elements. map() keeps the same count but transforms each element.">C) A new array with fewer elements</button>
                             <button class="quiz-option" data-correct="false" data-hint="That's forEach(). map() always returns a new array.">D) undefined</button>
                         </div>
@@ -759,7 +767,7 @@ console.log(saleList);
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="filter() returns a new array, not a single value.">A) true</button>
                             <button class="quiz-option" data-correct="false" data-hint="The element 1 is not greater than 1, so it's excluded.">B) [1, 2, 3]</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="filter() keeps only elements where the callback returns true. 2 > 1 is true, 3 > 1 is true, but 1 > 1 is false.">C) [2, 3]</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! filter() keeps only elements where the callback returns true. 2 > 1 is true, 3 > 1 is true, but 1 > 1 is false.">C) [2, 3]</button>
                             <button class="quiz-option" data-correct="false" data-hint="filter() returns all matching elements, not just the first one.">D) [2]</button>
                         </div>
                         <div class="quiz-feedback"></div>
@@ -769,7 +777,7 @@ console.log(saleList);
                         <p><strong>Question 3:</strong> What is the second argument to <code>reduce()</code>?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="The callback function is the first argument, not the second.">A) The callback function</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="The second argument is the initial value of the accumulator. Always provide one to avoid errors on empty arrays!">B) The initial value of the accumulator</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The second argument is the initial value of the accumulator. Always provide one to avoid errors on empty arrays!">B) The initial value of the accumulator</button>
                             <button class="quiz-option" data-correct="false" data-hint="There's no maximum iteration argument. reduce() always processes all elements.">C) The maximum number of iterations</button>
                             <button class="quiz-option" data-correct="false" data-hint="You access the index through the callback's third parameter, not as a separate argument.">D) The starting index</button>
                         </div>
@@ -781,11 +789,26 @@ console.log(saleList);
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="map() returns a new array — the original is unchanged.">A) map()</button>
                             <button class="quiz-option" data-correct="false" data-hint="filter() returns a new array — the original is unchanged.">B) filter()</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="sort() modifies the original array in place. To sort without mutation, copy the array first: [...arr].sort()">C) sort()</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! sort() modifies the original array in place. To sort without mutation, use arr.toSorted() or copy first: [...arr].sort()">C) sort()</button>
                             <button class="quiz-option" data-correct="false" data-hint="reduce() returns a new value — the original array is unchanged.">D) reduce()</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Pick a small dataset you care about (your movies, workouts, or expenses) and write, in plain English, a filter → sort → map pipeline you'd run on it. Why does <code>filter</code> usually come before <code>map</code>? Which method — probably <code>reduce</code>? — are you still unsure about?</em></p>
                 </div>
             </section>
 

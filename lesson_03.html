@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Learn how to declare variables with let, const, and var, and understand JavaScript's core data types: strings, numbers, booleans, null, and undefined.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 3: Variables &amp; Data Types - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -80,6 +86,7 @@
                         <li><a href="#typeof" class="toc-link">Checking Types with typeof</a></li>
                         <li><a href="#type-conversion" class="toc-link">Type Conversion Basics</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -88,8 +95,8 @@
             <!-- Section 1 -->
             <section id="intro" class="lesson-section">
                 <h2>Introduction</h2>
-                <p>Programs need to store and work with information: a user's name, a score, a list of products, or authentication status. <strong>Variables</strong> allow you to store this information, while <strong>data types</strong> define its structure.</p>
-                <p>This lesson covers fundamental concepts—the essential building blocks you'll leverage in every project.</p>
+                <p>Every program needs to remember things: your visitor's name, a game score, the items in a shopping cart, whether someone is logged in. <strong>Variables</strong> are how JavaScript remembers, and <strong>data types</strong> describe what <em>kind</em> of thing is being remembered — text, a number, a yes/no answer, and so on.</p>
+                <p>You'll use what you learn here in literally every line of JavaScript you write from now on, so take your time and try each example in the console.</p>
             </section>
 
             <!-- Section 2 -->
@@ -150,7 +157,7 @@ const SITE_NAME = "My Website";
 
 PI = 3.0;  // ❌ ERROR! Cannot reassign a const
                 </code></pre>
-                <p><code>const</code> stands for "constant." Once assigned, the value <strong>cannot be reassigned</strong>.</p>
+                <p><code>const</code> stands for "constant." Once assigned, the variable <strong>cannot be reassigned</strong> — trying it throws a <code>TypeError: Assignment to constant variable</code>. (One subtlety you'll meet in Module 3: if a <code>const</code> holds an array or object, you can still change what's <em>inside</em> it; you just can't point the variable at a brand-new value.)</p>
 
                 <h3><code>var</code> — The Old Way (Avoid)</h3>
                 <pre><code class="language-javascript">
@@ -266,7 +273,7 @@ const BASE_URL = "https://api.example.com";
                 <pre><code class="language-javascript">
 let greeting = "Hello, World!";      // double quotes
 let language = 'JavaScript';          // single quotes
-let message = `Welcome, ${userName}`; // backticks (template literal)
+let message = `I love ${language}!`;  // backticks (template literal)
 
 // String length
 console.log(greeting.length);  // 13
@@ -445,7 +452,7 @@ console.log(true + 1);   // 2   (true becomes 1)
 // Example: console.log(`firstName: ${firstName} (${typeof firstName})`);
 
 // TODO: Create a greeting using template literals
-// Example output: "Hello, Ray De La Paz! You are 30 years old."
+// Example output: "Hello, Ray de la Paz! You are 30 years old."
 
 // TODO: Try changing a let variable and logging it again
 // TODO: Try changing a const variable — what happens?
@@ -461,7 +468,7 @@ console.log(true + 1);   // 2   (true becomes 1)
                         <pre><code class="language-javascript">
 // User Profile
 const firstName = "Ray";
-const lastName = "De La Paz";
+const lastName = "de la Paz";
 let age = 30;
 const email = "ray@example.com";
 let isPremiumMember = false;
@@ -490,7 +497,9 @@ console.log("\n--- After updates ---");
 console.log(`Age: ${age}`);
 console.log(`Premium: ${isPremiumMember}`);
 console.log(`Nickname: ${nickname}`);
-console.log(`Balance: $${accountBalance}`);
+console.log(`Balance: $${accountBalance.toFixed(2)}`); // "120.00"
+// (Without .toFixed(2) you'd see 120.00000000000001 — computers store
+//  decimals in binary, so tiny rounding errors creep in. Lesson 4 has more.)
 
 // Try changing a const — uncomment to see the error:
 // firstName = "Raymond";  // TypeError: Assignment to constant variable
@@ -506,7 +515,7 @@ console.log(`Balance: $${accountBalance}`);
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="var is the legacy keyword and should be avoided in modern code.">A) var</button>
                             <button class="quiz-option" data-correct="false" data-hint="let is for variables that need to change. Start with const and switch to let only if needed.">B) let</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="const is the safest default. It prevents accidental reassignment. Switch to let only when you know the value needs to change.">C) const</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! const is the safest default. It prevents accidental reassignment. Switch to let only when you know the value needs to change.">C) const</button>
                             <button class="quiz-option" data-correct="false" data-hint="define is not a JavaScript keyword for variables.">D) define</button>
                         </div>
                         <div class="quiz-feedback"></div>
@@ -516,7 +525,7 @@ console.log(`Balance: $${accountBalance}`);
                         <p><strong>Question 2:</strong> What is the result of <code>typeof null</code>?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="That would make sense, but it's not what JavaScript returns.">A) "null"</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="This is a famous bug from JavaScript's earliest days. typeof null returns 'object' instead of 'null'.">B) "object"</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! This is a famous bug from JavaScript's earliest days. typeof null returns 'object' instead of 'null'.">B) "object"</button>
                             <button class="quiz-option" data-correct="false" data-hint="undefined and null are different values in JavaScript.">C) "undefined"</button>
                             <button class="quiz-option" data-correct="false" data-hint="boolean represents true/false values, not null.">D) "boolean"</button>
                         </div>
@@ -527,12 +536,49 @@ console.log(`Balance: $${accountBalance}`);
                         <p><strong>Question 3:</strong> What does <code>"5" + 3</code> evaluate to?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="When + is used with a string, JavaScript concatenates instead of adding.">A) 8</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="The + operator concatenates when one operand is a string. JavaScript converts 3 to '3' and joins them: '5' + '3' = '53'.">B) "53"</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The + operator concatenates when one operand is a string. JavaScript converts 3 to '3' and joins them: '5' + '3' = '53'.">B) "53"</button>
                             <button class="quiz-option" data-correct="false" data-hint="JavaScript won't throw an error — it will try to handle the mixed types.">C) Error</button>
                             <button class="quiz-option" data-correct="false" data-hint="NaN occurs with invalid math operations, but this is valid string concatenation.">D) NaN</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> You write <code>let favoriteColor;</code> and then <code>console.log(favoriteColor);</code>. What appears in the console?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The variable exists but hasn't been given a value yet, so its value is undefined. null only appears if you deliberately assign it.">A) undefined</button>
+                            <button class="quiz-option" data-correct="false" data-hint="null means you deliberately set it to empty. Here nothing was assigned at all.">B) null</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The variable was declared with let, so it exists — it just has no value yet.">C) ReferenceError: favoriteColor is not defined</button>
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript doesn't fill in an empty string for you. What does a declared-but-unassigned variable hold?">D) "" (an empty string)</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> Which of these is a <strong>valid</strong> JavaScript variable name?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Variable names can't start with a digit.">A) <code>2ndPlace</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="Hyphens aren't allowed — JavaScript would read this as user minus name. Use camelCase instead.">B) <code>user-name</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="const is a reserved word, so it can't be used as a variable name.">C) <code>const</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! $totalScore starts with $ and contains only letters — perfectly valid. The others start with a digit, contain a hyphen, or are a reserved word.">D) <code>$totalScore</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Think about your own website from the HTML &amp; CSS course. List five pieces of information it could store in variables (for example, your name, a visit counter, whether dark mode is on). For each one, choose its data type and decide between <code>const</code> and <code>let</code> — and explain why. Then describe the difference between <code>null</code> and <code>undefined</code> in your own words. Which part still feels shaky?</em></p>
                 </div>
             </section>
 

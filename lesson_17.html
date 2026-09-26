@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Learn how to read form values with JavaScript, prevent default submission, and build robust client-side validation with real-time feedback.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 17: Forms &amp; Validation - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -47,7 +53,7 @@
         <div class="container">
             <header>
                 <h1>📝 Lesson 17: Forms &amp; Validation</h1>
-                <p class="lead">Forms are the primary way users send data to your web applications—from login credentials and search queries to registration information and user feedback. In this lesson, you'll master how to read form values with JavaScript, intercept form submissions to prevent default behavior, and implement robust, real-time client-side validation.</p>
+                <p class="lead">Every time you log in, search, sign up, or leave a comment, you're using a form. In the HTML &amp; CSS course you built forms that <em>look</em> good — now you'll make them <em>smart</em>. You'll read what people type, stop the page from reloading when they hit Submit, and give friendly, instant feedback like "That doesn't look like an email address" before anything is sent.</p>
 
                 <div class="card card-info">
                     <h2>🎯 Learning Objectives</h2>
@@ -81,6 +87,7 @@
                         <li><a href="#realtime-validation" class="toc-link">Real-Time Validation</a></li>
                         <li><a href="#constraint-api" class="toc-link">The Constraint Validation API</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -200,7 +207,7 @@ console.log(form.elements.length);  // Number of form controls
 
                 <div class="mermaid">
                     graph LR
-                    A["&lt;form&gt;"] --> B["form.elements"]
+                    A["⟨form⟩"] --> B["form.elements"]
                     B --> C["By name<br/>.username"]
                     B --> D["By index<br/>[0]"]
                     B --> E["By ID<br/>.email"]
@@ -242,7 +249,7 @@ form.addEventListener("submit", (event) => {
 
                 <div class="card card-warning">
                     <h4>⚠️ Why preventDefault() Is Essential</h4>
-                    <p>Without <code>event.preventDefault()</code>, the browser will navigate away from your page when the form is submitted. Your JavaScript code after the submit event won't have time to run — the page is already reloading. Always call it first in your submit handler.</p>
+                    <p>Without <code>event.preventDefault()</code>, the browser navigates away (or reloads) as soon as your submit handler finishes. Any on-page result you show is wiped out instantly, and anything that finishes <em>later</em> — like a <code>fetch()</code> request to a server — gets cut off. Call it at the very top of your handler: if a bug throws an error before it runs, the page reloads and your console message disappears with it, which makes the bug hard to spot.</p>
                 </div>
 
                 <h3>Gathering All Form Data at Once</h3>
@@ -368,9 +375,9 @@ function doFieldsMatch(value1, value2) {
 }
 
 const password = form.elements.password.value;
-const confirm = form.elements["confirm-password"].value;
+const confirmInput = form.elements["confirm-password"];
 
-if (!doFieldsMatch(password, confirm)) {
+if (!doFieldsMatch(password, confirmInput.value)) {
     showError(confirmInput, "Passwords do not match");
 }
                 </code></pre>
@@ -457,7 +464,7 @@ form.addEventListener("submit", (event) => {
                             <tr><td><code>input</code></td><td>Every keystroke / change</td><td>Live character counts, password strength</td></tr>
                             <tr><td><code>blur</code></td><td>User leaves the field</td><td>Full field validation (email, username)</td></tr>
                             <tr><td><code>focus</code></td><td>User enters the field</td><td>Showing hints or clearing errors</td></tr>
-                            <tr><td><code>change</code></td><td>Value changes &amp; field loses focus</td><td>Selects, checkboxes, radio buttons</td></tr>
+                            <tr><td><code>change</code></td><td>Value is committed — right away for selects, checkboxes, and radios; for text fields, when the user leaves the field after changing it</td><td>Selects, checkboxes, radio buttons</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -612,8 +619,8 @@ console.log(input.validity.valid);         // true or false
 // Check specific validity states
 console.log(input.validity.valueMissing);  // true if required & empty
 console.log(input.validity.typeMismatch);  // true if wrong type (e.g. not email)
-console.log(input.validity.tooShort);      // true if below minlength
-console.log(input.validity.tooLong);       // true if above maxlength
+console.log(input.validity.tooShort);      // true if below minlength (only after the user edits it)
+console.log(input.validity.tooLong);       // true if above maxlength (rare: browsers stop typing at maxlength)
 console.log(input.validity.patternMismatch); // true if doesn't match pattern
 
 // Check the entire form at once
@@ -637,11 +644,15 @@ email.addEventListener("invalid", (event) => {
     }
 });
 
-// Or set a custom message for the browser's built-in tooltip
-email.setCustomValidity("Please enter your company email");
-// IMPORTANT: Clear it when valid, or the field stays "invalid"
+// Or add your OWN rule to the browser's system with setCustomValidity()
+// Any non-empty message marks the field invalid (validity.customError = true)
 email.addEventListener("input", () => {
-    email.setCustomValidity("");
+    if (email.value && !email.value.endsWith("@mycompany.com")) {
+        email.setCustomValidity("Please enter your company email");
+    } else {
+        // IMPORTANT: clear it with "" when valid, or the field stays invalid forever
+        email.setCustomValidity("");
+    }
 });
                 </code></pre>
 
@@ -659,7 +670,9 @@ email.addEventListener("input", () => {
 
                 <pre><code class="language-javascript">
 // You can still use checkValidity() and validity states
-// but now YOU control what error messages look like
+// but now YOU control what error messages look like.
+// (checkValidity() just answers true/false; reportValidity() would
+//  also show the browser's own bubbles, even with novalidate.)
 form.addEventListener("submit", (event) => {
     event.preventDefault();
 
@@ -712,7 +725,9 @@ form.addEventListener("submit", (event) => {
             width: 100%; padding: 0.6rem 0.75rem; border: 2px solid #cbd5e1;
             border-radius: 8px; font-size: 1rem; transition: border-color 0.2s;
         }
-        input:focus { outline: none; border-color: #6366f1; }
+        /* Never remove the focus outline without a visible replacement —
+           keyboard users rely on it to see where they are. */
+        input:focus { outline: 2px solid #6366f1; outline-offset: 2px; border-color: #6366f1; }
         input.input-error { border-color: #ef4444; background: #fef2f2; }
         input.input-success { border-color: #22c55e; background: #f0fdf4; }
         .error-message {
@@ -735,7 +750,7 @@ form.addEventListener("submit", (event) => {
         button[type="submit"]:hover { background: #4f46e5; }
         button[type="submit"]:disabled { background: #94a3b8; cursor: not-allowed; }
         .success-message {
-            text-align: center; color: #22c55e; font-weight: 600;
+            text-align: center; color: #15803d; font-weight: 600;
             display: none; padding: 1rem;
         }
     &lt;/style&gt;
@@ -945,8 +960,8 @@ form.elements.password.addEventListener("input", () => {
         { label: "Very weak", color: "#ef4444" },
         { label: "Weak", color: "#f97316" },
         { label: "Fair", color: "#eab308" },
-        { label: "Strong", color: "#22c55e" },
-        { label: "Very strong", color: "#16a34a" }
+        { label: "Strong", color: "#15803d" },     // dark enough to read on white
+        { label: "Very strong", color: "#166534" }
     ];
 
     strengthBar.style.backgroundColor = levels[score].color;
@@ -973,6 +988,10 @@ Object.keys(validators).forEach(name => {
     input.addEventListener("input", () => {
         if (touched.has(name)) {
             validators[name](input);
+        }
+        // Changing the password can make "confirm" match (or stop matching)
+        if (name === "password" && touched.has("confirm-password")) {
+            validateConfirm(form.elements["confirm-password"]);
         }
     });
 });
@@ -1006,8 +1025,8 @@ form.addEventListener("submit", (event) => {
                     <div class="quiz-question">
                         <p><strong>Question 1:</strong> How do you read what the user typed into a text input?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="false" data-hint="textContent reads the text inside an element (like a paragraph or span), not an input's value.">A) <code>input.textContent</code></button>
-                            <button class="quiz-option" data-correct="true" data-explanation="The .value property gives you the current content of an input, textarea, or select element. It's always a string.">B) <code>input.value</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The .value property gives you the current content of an input, textarea, or select element. It's always a string.">A) <code>input.value</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="textContent reads the text inside an element (like a paragraph or span), not an input's value.">B) <code>input.textContent</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="innerHTML reads the HTML inside an element. It doesn't work for reading input values.">C) <code>input.innerHTML</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="There's no .text property on input elements. Use .value instead.">D) <code>input.text</code></button>
                         </div>
@@ -1018,8 +1037,8 @@ form.addEventListener("submit", (event) => {
                         <p><strong>Question 2:</strong> What does <code>event.preventDefault()</code> do in a submit handler?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="Stopping propagation is a separate method (stopPropagation). preventDefault stops the browser's default action.">A) Stops the event from bubbling up to parent elements</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="By default, submitting a form causes the browser to navigate to the action URL (or reload the page). preventDefault() stops that, letting your JavaScript handle the data instead.">B) Stops the browser from reloading the page or navigating away</button>
-                            <button class="quiz-option" data-correct="false" data-hint="preventDefault doesn't clear form data. That's what form.reset() does.">C) Clears all the form fields</button>
+                            <button class="quiz-option" data-correct="false" data-hint="preventDefault doesn't clear form data. That's what form.reset() does.">B) Clears all the form fields</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! By default, submitting a form makes the browser navigate to the action URL (or reload the page). preventDefault() stops that, letting your JavaScript handle the data instead.">C) Stops the browser from reloading the page or navigating away</button>
                             <button class="quiz-option" data-correct="false" data-hint="preventDefault doesn't remove the listener. It just prevents the browser's default behavior for this specific event.">D) Removes the event listener after it fires once</button>
                         </div>
                         <div class="quiz-feedback"></div>
@@ -1029,9 +1048,9 @@ form.addEventListener("submit", (event) => {
                         <p><strong>Question 3:</strong> How do you check if a checkbox is checked?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="For checkboxes, .value gives the value attribute (often 'on'), not whether it's checked.">A) <code>checkbox.value === true</code></button>
-                            <button class="quiz-option" data-correct="true" data-explanation="The .checked property is a boolean — true if the checkbox is checked, false if it's not. This works for radio buttons too.">B) <code>checkbox.checked</code></button>
-                            <button class="quiz-option" data-correct="false" data-hint="There's no .selected property on checkboxes. That's for &lt;option&gt; elements in a &lt;select&gt;.">C) <code>checkbox.selected</code></button>
-                            <button class="quiz-option" data-correct="false" data-hint="getAttribute returns the HTML attribute string, not the current state. The checked property reflects the live state.">D) <code>checkbox.getAttribute("checked")</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no .selected property on checkboxes. That's for &lt;option&gt; elements in a &lt;select&gt;.">B) <code>checkbox.selected</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="getAttribute returns the HTML attribute string (the starting state), not the current state. The checked property reflects the live state.">C) <code>checkbox.getAttribute("checked")</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The .checked property is a boolean — true if the checkbox is checked, false if it's not. It works for radio buttons too.">D) <code>checkbox.checked</code></button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
@@ -1040,7 +1059,7 @@ form.addEventListener("submit", (event) => {
                         <p><strong>Question 4:</strong> When is the <code>blur</code> event useful for form validation?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="The blur event fires when the user leaves a field, not on every keystroke. That's the 'input' event.">A) When you want to validate on every keystroke</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="blur fires when the user tabs out of or clicks away from a field. This is ideal for running validation after they've finished entering a value — checking too early (on every keystroke) can feel aggressive.">B) When you want to validate after the user finishes with a field and moves on</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! blur fires when the user tabs out of or clicks away from a field. That's the ideal moment to validate — they've finished entering a value, and checking on every keystroke from the start can feel aggressive.">B) When you want to validate after the user finishes with a field and moves on</button>
                             <button class="quiz-option" data-correct="false" data-hint="blur fires on individual fields, not on form submission. The 'submit' event handles that.">C) When the form is submitted</button>
                             <button class="quiz-option" data-correct="false" data-hint="blur fires when the user LEAVES a field, not enters one. The 'focus' event fires when they enter it.">D) When the user first clicks into a field</button>
                         </div>
@@ -1052,11 +1071,37 @@ form.addEventListener("submit", (event) => {
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="Modern browsers handle client-side validation well, including mobile. The issue isn't browser support.">A) It doesn't work in most browsers</button>
                             <button class="quiz-option" data-correct="false" data-hint="Client-side validation is fast (no network round-trip). Speed is actually one of its strengths.">B) It's too slow for real-time feedback</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="Anyone can open DevTools, disable JavaScript, or send requests directly to your server endpoint. Client-side validation improves UX but cannot be trusted for security or data integrity. Always validate on the server too.">C) Users can bypass it through DevTools, disabling JS, or direct API calls</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Anyone can open DevTools, disable JavaScript, or send requests directly to your server endpoint. Client-side validation improves UX but cannot be trusted for security or data integrity. Always validate on the server too.">C) Users can bypass it through DevTools, disabling JS, or direct API calls</button>
                             <button class="quiz-option" data-correct="false" data-hint="Regular expressions work perfectly in JavaScript. Client-side validation handles patterns just fine.">D) JavaScript can't handle regular expressions for patterns</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 6:</strong> You call <code>email.setCustomValidity("Use your company email")</code>. The user fixes the address, but the form still won't submit. Why?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The browser doesn't re-check your custom rule for you — it has no idea what 'company email' means. Something has to switch the message off.">A) The browser needs a page reload to re-check the field</button>
+                            <button class="quiz-option" data-correct="false" data-hint="setCustomValidity works on any form control, including type=&quot;email&quot; inputs.">B) setCustomValidity only works on text inputs, not email inputs</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The field isn't invalid because of its type — it's invalid because the custom message is still set.">C) The input needs <code>type="text"</code> instead of <code>type="email"</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Any non-empty custom message keeps the field invalid (validity.customError stays true). You must call setCustomValidity(&quot;&quot;) with an empty string once the value is acceptable.">D) The custom message was never cleared with <code>setCustomValidity("")</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Pick a form on a site you use (or the contact form on your own site). List each field and the rule you'd check for it, and decide for each one: HTML attribute, custom JavaScript, or both? In your own words, why must the server check the data again even after your JavaScript approves it? What part of validation are you still unsure about?</em></p>
                 </div>
             </section>
 

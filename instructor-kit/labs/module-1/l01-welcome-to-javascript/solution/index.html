@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:,">
+    <title>Explore Me — Console Practice</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem;
+               line-height: 1.6; color: #1a202c; background: #ffffff; }
+        h1 { color: #1a365d; }
+        code { background: #eef2f8; padding: 0 .3em; border-radius: 4px; }
+        .card { border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; }
+        /* instructor add-on: on-page copy of the console output (see console-mirror.js) */
+        #console-mirror { background: #0f1729; color: #e8eefc; border-radius: 8px; padding: .75rem 1rem;
+                          font: .9rem/1.5 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; }
+        #console-mirror .lvl { display: inline-block; min-width: 3.5rem; color: #93c5fd; }
+        #console-mirror .warn .lvl { color: #fcd34d; }
+        #console-mirror .error .lvl { color: #fca5a5; }
+    </style>
+</head>
+<body>
+    <h1>Explore Me</h1>
+    <p>Reference solution for the L01 worksheet. <code>app.js</code> runs the same three
+       statements students type into the Console — open DevTools (<kbd>F12</kbd>) to compare.</p>
+
+    <div class="card">
+        <h2>What the worksheet statements do</h2>
+        <ol>
+            <li><code>document.title</code> — reads the tab text (a string)</li>
+            <li><code>document.title = "…"</code> — changes the tab text, for your copy only</li>
+            <li><code>document.body.style.backgroundColor = "lightyellow"</code> — repaints the page</li>
+        </ol>
+    </div>
+
+    <section aria-labelledby="mirror-heading">
+        <h2 id="mirror-heading">Console output</h2>
+        <div id="console-mirror" role="log" aria-live="polite"></div>
+    </section>
+
+    <script src="console-mirror.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

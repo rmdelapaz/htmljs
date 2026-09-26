@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facilitator Guide — Module 5</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">contains answers &amp; timing · not for students</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Instructor Kit · Facilitator Guide</div>
+    <h1>Module 5 — Building Interactive Pages</h1>
+    <p class="sub">How to teach the four lessons where students stop writing exercises and start building real features: a validated sign-up form, a Pomodoro timer, a to-do list that survives a refresh, and a live GitHub search. This guide covers timing, live-demo scripts, the async misconceptions to deal with early, and how to run each lab.</p>
+    <div class="meta-row">
+      <span class="chip"><b>4</b> lessons</span>
+      <span class="chip"><b>~3.5 hrs</b> teaching</span>
+      <span class="chip">Lessons <b>L17–L20</b></span>
+      <span class="chip">Level <b>Intermediate</b></span>
+      <span class="chip">Maps to <b>Day 4 PM (L17–L18) → Day 5 AM</b></span>
+    </div>
+  </header>
+
+  <!-- HOW TO USE -->
+  <div class="sec"><h2>How to Use This Guide</h2><span class="rule"></span></div>
+  <ul class="tick">
+    <li>Each lesson follows the same rhythm: <b>Frame</b> (why it matters), <b>Teach</b> (live-code the concept), <b>Lab</b> (students build), then <b>Check</b> (quiz and recap). The minute timings add up to the lesson's length. Adjust by ±10 min for your group. End each lesson with 3–5 minutes on the lesson's <b>Learning Journal</b> prompt, which appears in the lesson and in the workbook.</li>
+    <li><b>Live-code everything,</b> with the <b>Console</b> and the relevant DevTools panel open: Elements for forms, Application for storage, Network for fetch. This module is all about things students can't see, like timers waiting in a queue, strings stored in the browser, and requests in flight. DevTools is how you show them.</li>
+    <li>Blue blocks are concepts, <span style="color:var(--lab);font-weight:600">teal</span> blocks are hands-on, and <span style="color:var(--warn);font-weight:600">amber</span> blocks are watch-outs: the errors that eat class time if you don't head them off.</li>
+    <li>The quiz answers here are for you. The student workbook has 3 questions from each lesson quiz, without answers, labeled with the lesson's question numbers. The separate <b>Answer Key</b> covers every question, with the same numbers, for grading.</li>
+  </ul>
+
+  <div class="note">
+    <div class="t">Before you start the module</div>
+    <p>Students need VS Code with <b>Live Server</b> running. L19's storage and L20's mock fallback both need an <code class="inline">http://</code> origin, not <code class="inline">file://</code>. They should be comfortable with <code class="inline">querySelector</code>, <code class="inline">addEventListener</code>, <code class="inline">createElement</code>, and <code class="inline">textContent</code> from Module 4. Each lab is a stand-alone folder in <code class="inline">labs/module-5/</code>. Hand out the <b>starter</b> folders at the start of the module. If someone falls behind, pair them up. Don't stop the whole room to fix one setup.</p>
+  </div>
+
+  <div class="note warn">
+    <div class="t">L20 needs a plan: GitHub's rate limit</div>
+    <p>Without logging in, the GitHub API allows about <b>60 requests per hour per IP address</b>. A classroom behind one shared IP can use that up in minutes, and after that every request comes back <b>403</b>. Before Day 5, read the L20 lab notes below and <code class="inline">labs/module-5/README.md</code>. The solution has a clearly marked <code class="inline">USE_MOCK</code> switch that uses <code class="inline">mock-user.json</code> instead of GitHub.</p>
+  </div>
+
+  <!-- AT A GLANCE -->
+  <div class="sec"><h2>Module at a Glance</h2><span class="rule"></span></div>
+  <table class="timing">
+    <thead><tr><th>Lesson</th><th>Topic</th><th>Time</th><th>Students leave able to…</th></tr></thead>
+    <tbody>
+      <tr><td class="t">L17</td><td>Forms &amp; Validation</td><td class="t">55m</td><td>Validate a form on blur and input, with accessible errors</td></tr>
+      <tr><td class="t">L18</td><td>Timers &amp; Animation</td><td class="t">50m</td><td>Schedule, repeat, and cancel work; explain the event loop</td></tr>
+      <tr><td class="t">L19</td><td>Local Storage</td><td class="t">45m</td><td>Persist app state with JSON and a safe load/save pair</td></tr>
+      <tr><td class="t">L20</td><td>Working with APIs &amp; Fetch</td><td class="t">60m</td><td>Fetch live data with async/await and handle every outcome</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.9rem;color:var(--ink-2)">Unlike earlier modules, these are <b>four separate mini-apps</b>, one per lesson. They share one pattern that you should name out loud every time: <b>state → render → events → update state → render again</b>. L17 starts it (validation state drives what the page shows), L19 makes it explicit, and the L20 search app follows it too. By the end, students have four portfolio-ready pages and the tools for the Module 6 capstone.</p>
+
+  <!-- LESSON 17 -->
+  <div class="sec"><h2>Lesson Plans</h2><span class="rule"></span></div>
+
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L17</span><h3>Forms &amp; Validation</h3><span class="dur">55 min</span></div>
+    <div class="lesson-body">
+
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Read form values with <code class="inline">.value</code> / <code class="inline">.checked</code> and through <code class="inline">form.elements</code></li>
+          <li>Handle <code class="inline">submit</code> with <code class="inline">event.preventDefault()</code>; collect data with <code class="inline">FormData</code></li>
+          <li>Write required, length, pattern (regex), and matching-field checks</li>
+          <li>Validate on <code class="inline">blur</code>, then re-validate on <code class="inline">input</code> once a field is "touched"</li>
+          <li>Show accessible errors (<code class="inline">role="alert"</code>, text as well as color) and know the Constraint Validation API</li>
+          <li>Explain why the <b>server must validate again</b></li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (4m).</b> Fill in a sign-up form with a bad email and hit Submit. The page reloads and everything is gone. Ask: "What would a <em>good</em> form have done?" Collect answers: warned me sooner, kept my data, told me what was wrong. That's today's list.</li>
+          <li><b>Reading values (6m).</b> Type in an input, then read it in the console: <code class="inline">document.querySelector("#username").value</code>. Show that a number input still gives a <b>string</b>, and that a checkbox needs <code class="inline">.checked</code>, not <code class="inline">.value</code>. Then show <code class="inline">form.elements.email.value</code> as the tidy way to reach fields by <code class="inline">name</code>.</li>
+          <li><b>Submit + preventDefault (7m).</b> Live-write the handler <em>without</em> <code class="inline">preventDefault()</code> first, so the console message flashes and disappears on reload. Then add it as the very first line:
+            <pre class="code">form.addEventListener(<span class="s">"submit"</span>, (event) =&gt; {
+  event.<span class="k">preventDefault</span>();   <span class="c">// first line, always</span>
+  <span class="k">const</span> data = Object.fromEntries(<span class="k">new</span> FormData(form));
+  console.log(data);
+});</pre>
+            Point out: listen for <code class="inline">submit</code> on the <em>form</em>, not <code class="inline">click</code> on the button. That way pressing Enter works too.</li>
+          <li><b>Validation patterns (8m).</b> Build <code class="inline">isRequired</code>, <code class="inline">isLengthValid</code>, and the email regex <code class="inline">/^[^\s@]+@[^\s@]+\.[^\s@]+$/</code>. Read the regex aloud as "something, @, something, dot, something" and don't turn it into a regex lecture. Add the password-match check. Each validator returns <code class="inline">true</code>/<code class="inline">false</code> <em>and</em> shows or clears its own message.</li>
+          <li><b>Real-time: blur then input (7m).</b> Show the "yelling form" first: validating on every keystroke from the start, so the email field turns red after one letter. Then add a <code class="inline">touched</code> Set: <code class="inline">blur</code> marks the field touched and validates it, and <code class="inline">input</code> only re-validates touched fields. Demo <code class="inline">showError</code>/<code class="inline">showSuccess</code> with <code class="inline">role="alert"</code> on the message span.</li>
+          <li><b>Constraint API + the server rule (5m).</b> Quick tour: <code class="inline">required</code>/<code class="inline">minlength</code>/<code class="inline">pattern</code>, <code class="inline">input.validity</code>, <code class="inline">novalidate</code>, and <code class="inline">setCustomValidity("")</code> to clear. Then the most important part: disable JavaScript in DevTools (or point out that anyone can call the endpoint with <code class="inline">fetch()</code> from the console) and show that the garbage gets sent without any checks. <em>"Anything in the browser can be bypassed. Client-side validation is for user experience. The server always checks again."</em></li>
+          <li><b>Lab (15m).</b> Launch the registration-form lab (below).</li>
+          <li><b>Check + journal (3m).</b> Quick quiz poll, then the journal prompt.</li>
+        </ol>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Registration Form with Real-Time Validation</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Students complete TODOs 1–5 in <code class="inline">script.js</code>: helpers, four validators, a 0–5 password strength meter, blur-then-input wiring, and a submit handler that hides the form and shows the success message. Starter in <code class="inline">labs/module-5/l17-forms-validation/starter/</code>; solution in <code class="inline">labs/module-5/l17-forms-validation/solution/</code>. The lesson calls the page <code class="inline">registration.html</code>; the lab splits it into <code class="inline">index.html</code> + <code class="inline">style.css</code> + <code class="inline">script.js</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Run these three test cases</b> on your screen and have every student run them too: (1) <b>empty submit</b>: all four errors appear and focus jumps to Username; (2) a <b>weak password</b> like <code class="inline">abc</code>: the meter reads "Very weak" and blur shows the length error; (3) type a <b>mismatched confirm</b>, tab out to see "Passwords do not match," then go back and <em>change the password</em> to match. The confirm error should clear on its own. If it doesn't, they're missing the "password changed → re-check confirm" line.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>preventDefault() in the wrong place.</b> If a bug throws before it runs, the page reloads and wipes the console, so the error looks like "nothing happens." Put it on line one. Tick <b>Preserve log</b> in the console to catch it.</li>
+          <li><b><code class="inline">.value</code> is always a string.</b> <code class="inline">"25" &gt; "100"</code> is <code class="inline">true</code>. Convert with <code class="inline">Number()</code> before comparing.</li>
+          <li><b>Short-circuiting the validators.</b> <code class="inline">validateA() &amp;&amp; validateB()</code> stops at the first failure, so the other errors never show. The solution uses <code class="inline">map()</code> to run them all, then <code class="inline">every(Boolean)</code>.</li>
+          <li><b>Duplicate error spans.</b> Creating a new span on every blur stacks messages. Find the existing one first, create only if it's missing, and set <code class="inline">textContent</code> (never <code class="inline">innerHTML</code>).</li>
+          <li><b>"My JS validation makes it secure."</b> It doesn't. Repeat the server rule until students can say it back.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: read a text input with <b>A) <code class="inline">input.value</code></b>; <code class="inline">preventDefault()</code> in submit <b>C) stops the reload/navigation</b>; checkbox state = <b>D) <code class="inline">checkbox.checked</code></b>; <code class="inline">blur</code> is for <b>B) validating after the user leaves a field</b>; client-side isn't enough because <b>C) users can bypass it</b>; the stuck custom message = <b>D) never cleared with <code class="inline">setCustomValidity("")</code></b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 18 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L18</span><h3>Timers &amp; Animation</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Delay and cancel with <code class="inline">setTimeout</code>/<code class="inline">clearTimeout</code>; repeat and stop with <code class="inline">setInterval</code>/<code class="inline">clearInterval</code></li>
+          <li>Build a countdown; know when recursive <code class="inline">setTimeout</code> beats <code class="inline">setInterval</code></li>
+          <li>Tell <b>debounce</b> from <b>throttle</b></li>
+          <li>Explain the event loop: call stack, microtask queue, task queue</li>
+          <li>Animate with <code class="inline">requestAnimationFrame</code> or, better, by toggling a class for a CSS transition</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (3m).</b> Show the finished Pomodoro timer from <code class="inline">labs/module-5/l18-timers-animation/solution/</code> on the 1-minute preset. "By the end of the hour, you'll have built this."</li>
+          <li><b>setTimeout + cancel (6m).</b> <code class="inline">setTimeout(showWelcome, 2000)</code>, then the classic bug <code class="inline">setTimeout(showWelcome(), 2000)</code>: it fires <em>immediately</em>. "Parentheses call it now. No parentheses hands it over for later." Store the returned ID and cancel it with <code class="inline">clearTimeout</code>.</li>
+          <li><b>setInterval + countdown (6m).</b> Live-code <code class="inline">startCountdown(10, display)</code> and cancel it with <code class="inline">clearInterval</code> when it reaches 0. Draw the recursive-<code class="inline">setTimeout</code> comparison: the interval fires on a fixed rhythm, while the recursive timeout waits until each run is done.</li>
+          <li><b>Debounce vs throttle (6m).</b> Type into a search box with a plain listener and the console floods. Wrap it in <code class="inline">debounce(fn, 300)</code> and the messages come only after typing stops. Compare it to an elevator door that waits for people to stop coming in. Throttle is "at most once every N ms," which suits scroll. Tell them to keep <code class="inline">debounce</code> handy: it comes back in L20.</li>
+          <li><b>The event loop (7m).</b> Ask the room to <em>predict</em> the output before you run anything. Open <code class="inline">labs/module-5/l18-timers-animation/demo/event-loop.html</code>, click <b>Run it</b>, and get <b>A, D, C, B</b>. Walk through the diagram below: sync code runs first, then <em>all</em> microtasks (promises), then <em>one</em> task (timers). Then click the quiz button: <b>sync, promise, timer</b>.
+            <figure class="fig">
+              <svg viewBox="0 0 480 262" role="img" aria-label="Event loop: the call stack runs synchronous code first, then every waiting microtask such as promise callbacks, then one task such as a timer.">
+                <defs><marker id="fg-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#45536a"/></marker></defs>
+                <rect x="14" y="30" width="160" height="186" rx="8" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+                <text x="94" y="52" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1d4ed8" letter-spacing="1">CALL STACK</text>
+                <text x="94" y="72" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="12" fill="#45536a">one thing at a time</text>
+                <rect x="30" y="92" width="128" height="30" rx="4" fill="#ffffff" stroke="#1d4ed8"/>
+                <text x="94" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">log("A")</text>
+                <rect x="30" y="130" width="128" height="30" rx="4" fill="#ffffff" stroke="#1d4ed8"/>
+                <text x="94" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">log("D")</text>
+                <text x="94" y="190" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="12" font-weight="600" fill="#1d4ed8">① sync code first</text>
+                <rect x="262" y="30" width="204" height="78" rx="8" fill="#f1e8fd" stroke="#7c3aed" stroke-width="2"/>
+                <text x="364" y="52" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#6d28d9" letter-spacing="1">MICROTASK QUEUE</text>
+                <text x="364" y="72" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="12" fill="#45536a">promise .then / after await</text>
+                <text x="364" y="94" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">log("C")</text>
+                <rect x="262" y="138" width="204" height="78" rx="8" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+                <text x="364" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#b45309" letter-spacing="1">TASK QUEUE</text>
+                <text x="364" y="180" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="12" fill="#45536a">setTimeout, setInterval, clicks</text>
+                <text x="364" y="202" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">log("B")</text>
+                <path d="M258 69 L180 69" stroke="#45536a" stroke-width="1.8" fill="none" marker-end="url(#fg-ar)"/>
+                <text x="218" y="61" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11.5" font-weight="600" fill="#6d28d9">② ALL of them</text>
+                <path d="M258 177 L180 177" stroke="#45536a" stroke-width="1.8" fill="none" marker-end="url(#fg-ar)"/>
+                <text x="218" y="169" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11.5" font-weight="600" fill="#b45309">③ ONE task</text>
+                <text x="240" y="248" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="600" fill="#16202e">Output: A · D · C · B</text>
+              </svg>
+              <figcaption>The event loop: sync code, then every microtask, then one task, and repeat.</figcaption>
+            </figure>
+            Land the takeaway: <em>a timer's delay is a minimum, not a promise.</em> This is also why the stretch timer calculates from <code class="inline">Date.now()</code> instead of counting ticks.</li>
+          <li><b>rAF + CSS transitions (5m).</b> Show one <code class="inline">requestAnimationFrame</code> loop using the timestamp, then the easier approach: CSS defines the transition and JS only toggles a class. Mention <code class="inline">prefers-reduced-motion</code>: big motion is something users should be able to opt out of.</li>
+          <li><b>Lab (14m).</b> Launch the Pomodoro lab.</li>
+          <li><b>Check + journal (3m).</b></li>
+        </ol>
+      </div>
+      <div class="blk lab"><div class="h">Lab — Pomodoro Timer with Animated Progress</div>
+        <p style="font-size:.92rem;margin:.2rem 0">TODOs 1–8: DOM references, state, <code class="inline">updateDisplay()</code> (MM:SS with <code class="inline">padStart</code>, plus the ring's <code class="inline">stroke-dashoffset = CIRCUMFERENCE × (1 − remaining/total)</code>, where r = 130 and the circumference is <b>816.81</b>), start/pause/reset, the 25/15/5/1-min presets, and the bonus colors: <b>red under 30 s, green at 0</b>. Files in <code class="inline">labs/module-5/l18-timers-animation/</code>: <code class="inline">starter/</code>, <code class="inline">solution/</code> (the lesson's tick-counting version), and <code class="inline">stretch/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Testing tip:</b> nobody should wait 25 minutes. Use the 1-min preset, or type <code class="inline">remainingSeconds = 5</code> in the console before pressing Start. <b>Stretch for fast finishers:</b> the lesson's "Going further." Store <code class="inline">endTime = Date.now() + remainingSeconds * 1000</code> on Start and calculate <code class="inline">Math.ceil((endTime - Date.now()) / 1000)</code> on each tick. Then switch tabs for 30 s and compare the two versions. Also add a <code class="inline">prefers-reduced-motion</code> rule that turns off the ring transition. Reference: <code class="inline">stretch/</code>.</p>
+      </div>
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Double-click Start = double speed.</b> Each click starts another interval, and the timer runs 2× fast and can't be paused. The <code class="inline">if (isRunning) return;</code> guard fixes it. Let a student find this bug. It teaches more than any slide.</li>
+          <li><b>Lost interval ID.</b> <code class="inline">const intervalId = setInterval(...)</code> declared <em>inside</em> <code class="inline">start()</code> can't be reached by <code class="inline">pause()</code>. State lives outside the functions.</li>
+          <li><b>Calling instead of passing:</b> <code class="inline">addEventListener("click", start())</code> runs <code class="inline">start</code> once, at load.</li>
+          <li><b>The ring goes the wrong way or doesn't move.</b> Check that <code class="inline">stroke-dasharray</code> is 816.81 and the formula is <code class="inline">1 − remaining/total</code>. The SVG is rotated −90° so the ring starts at 12 o'clock.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: <code class="inline">setTimeout</code> returns <b>D) a numeric timer ID for <code class="inline">clearTimeout()</code></b>; A / timeout B / C logs <b>B) A, C, B</b>; interval vs recursive timeout = <b>C) interval fires regardless; recursive waits for completion</b>; rAF because <b>A) it syncs with the display and pauses in background tabs</b>; debouncing = <b>D) delay until events stop, resetting on each event</b>; timer/promise/sync logs <b>B) sync, promise, timer</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 19 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L19</span><h3>Local Storage</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Use <code class="inline">setItem</code>, <code class="inline">getItem</code>, <code class="inline">removeItem</code>, <code class="inline">clear</code></li>
+          <li>Store arrays and objects with <code class="inline">JSON.stringify</code> / <code class="inline">JSON.parse</code>, with a safe fallback</li>
+          <li>Choose between <code class="inline">localStorage</code> and <code class="inline">sessionStorage</code></li>
+          <li>Apply the load → render → update → save pattern; know the <code class="inline">storage</code> event</li>
+          <li>Know the limits (~5 MB, synchronous) and never store secrets</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (3m).</b> Add three tasks to a plain to-do list, then refresh the page, and they're gone. "Everything we've built so far forgets on refresh. Today it starts remembering."</li>
+          <li><b>The four methods + DevTools (6m).</b> Split the screen: console on one side, <b>Application → Local Storage</b> on the other. <code class="inline">setItem("theme", "dark")</code> and watch the row appear. <code class="inline">getItem</code> on a missing key gives <b><code class="inline">null</code></b>. Then <code class="inline">setItem("score", 42)</code> and <code class="inline">typeof getItem("score")</code> gives <code class="inline">"string"</code>.</li>
+          <li><b>The JSON round-trip (7m).</b> <code class="inline">setItem("user", {name: "Ray"})</code> stores <code class="inline">"[object Object]"</code>. Show it in DevTools, because the reveal matters. Then show the fix: <code class="inline">JSON.stringify</code> on the way in, <code class="inline">JSON.parse</code> on the way out, and the <code class="inline">loadData(key, fallback)</code> helper with try/catch. Corrupt the value by hand in DevTools and reload to show why the catch matters.</li>
+          <li><b>session vs local (4m).</b> Same API, different lifetime. Open a second tab: <code class="inline">localStorage</code> is shared across tabs and <code class="inline">sessionStorage</code> is not. Quick rule: "Would the user expect it tomorrow? Use local."</li>
+          <li><b>State-sync pattern + storage event (5m).</b> Write the pattern on the board: <b>load once → render → on every change: update the array, save, render</b>. The array is the truth, and the page is drawn from it. Mention the <code class="inline">storage</code> event: it fires in the <em>other</em> tabs, never in the one that made the change.</li>
+          <li><b>Limits &amp; security (4m).</b> About 5 MB, synchronous, <code class="inline">QuotaExceededError</code>. Then the rule: <em>any script on the page can read storage, so never store passwords or tokens there.</em> HttpOnly cookies are the answer for auth.</li>
+          <li><b>Lab (13m).</b> Launch the to-do lab.</li>
+          <li><b>Check + journal (3m).</b></li>
+        </ol>
+      </div>
+      <div class="blk lab"><div class="h">Lab — Persistent To-Do List</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Seven TODOs: <b>1</b> <code class="inline">loadTodos</code>/<code class="inline">saveTodos</code> (try/catch, <code class="inline">[]</code> fallback) · <b>2</b> <code class="inline">render</code> (empty state; checkbox, <code class="inline">span.todo-text</code>, <code class="inline">button.delete-btn</code>) · <b>3</b> <code class="inline">addTodo</code> · <b>4</b> <code class="inline">toggleTodo</code>/<code class="inline">deleteTodo</code> · <b>5</b> <code class="inline">updateCount</code> · <b>6</b> listeners, with <b>event delegation</b> on the <code class="inline">&lt;ul&gt;</code> · <b>7</b> load and render on start. Files in <code class="inline">labs/module-5/l19-local-storage/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Improvement in the kit solution:</b> the lesson's solution builds the checkbox and the × button with no accessible name, so a screen reader announces "checkbox" and "times." The lab solution adds <code class="inline">aria-label</code>s (<code class="inline">Mark "Buy milk" as done</code>, <code class="inline">Delete "Buy milk"</code>), a visually-hidden <code class="inline">&lt;label&gt;</code> for the input, and puts focus back after <code class="inline">render()</code> rebuilds the list. Show this at the end of the lab as the "production polish" step. <b>Success check:</b> add two tasks, tick one, <b>refresh</b>, and everything is still there.</p>
+      </div>
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Forgetting to save.</b> The list works until refresh, then comes back stale. Every function that changes <code class="inline">todos</code> must call <code class="inline">saveTodos</code>.</li>
+          <li><b>ID type mismatch.</b> <code class="inline">li.dataset.id</code> is a <b>string</b> and <code class="inline">todo.id</code> is a <b>number</b>, so <code class="inline">===</code> never matches and toggle/delete silently do nothing. The fix is <code class="inline">Number(li.dataset.id)</code>.</li>
+          <li><b>Listeners on each item instead of delegation.</b> They vanish every time <code class="inline">render()</code> clears the list. One listener on the <code class="inline">&lt;ul&gt;</code> + <code class="inline">closest(".todo-item")</code> handles everything.</li>
+          <li><b>Shared origin in class.</b> Every student project on <code class="inline">127.0.0.1:5500</code> shares the same <code class="inline">todos</code> key. Old demo data can show up in a new project. Teach <code class="inline">localStorage.removeItem("todos")</code>.</li>
+          <li><b><code class="inline">innerHTML</code> with task text.</b> Always use <code class="inline">textContent</code>. Have someone add the task <code class="inline">&lt;b&gt;hi&lt;/b&gt;</code> to prove it shows as plain text.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: missing key returns <b>B) <code class="inline">null</code></b>; storing an object directly gives <b>D) <code class="inline">"[object Object]"</code></b>; store an array with <b>A) <code class="inline">JSON.stringify(myArray)</code></b>; sessionStorage <b>C) clears when the tab closes</b>; no tokens because <b>C) any JS on the page can read it (XSS)</b>; the <code class="inline">storage</code> event fires <b>B) in the other tabs, not Tab A</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 20 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L20</span><h3>Working with APIs &amp; Fetch</h3><span class="dur">60 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Explain APIs, endpoints, REST methods, and JSON</li>
+          <li>Describe a Promise's three states; chain <code class="inline">.then()</code>/<code class="inline">.catch()</code></li>
+          <li>Use <code class="inline">fetch()</code>, check <code class="inline">response.ok</code>, parse with <code class="inline">response.json()</code></li>
+          <li>Rewrite with <code class="inline">async</code>/<code class="inline">await</code> + try/catch; run requests in parallel with <code class="inline">Promise.all</code></li>
+          <li>Show loading, data, and error states safely (escape or <code class="inline">textContent</code>)</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (4m).</b> Paste <code class="inline">https://api.github.com/users/octocat</code> into the browser address bar, and raw JSON appears. "That's an API. Today your page asks for this and turns it into a profile card."</li>
+          <li><b>APIs, REST, JSON (5m).</b> Request → endpoint → response. Keep the GET/POST/PUT/DELETE table short: today is almost all GET.</li>
+          <li><b>Promises (8m).</b> Use the restaurant-buzzer analogy: you get the buzzer (the Promise) right away and the food (the value) later. Three states: pending, fulfilled, rejected. Live-code the <code class="inline">.then().then().catch().finally()</code> chain against JSONPlaceholder, then remove a <code class="inline">return</code> to show the next <code class="inline">.then</code> receiving <code class="inline">undefined</code>.</li>
+          <li><b>fetch + response.ok (8m).</b> Fetch <code class="inline">/users/9999</code> from JSONPlaceholder. It's a 404, <em>but the <code class="inline">.then</code> still runs</em>. This is the big surprise: <b>fetch only rejects for network failures.</b> Add <code class="inline">if (!response.ok) throw …</code>. Open the <b>Network</b> tab and show the request, its status, and its response body. Use the diagram below.
+            <figure class="fig">
+              <svg viewBox="0 0 500 214" role="img" aria-label="Fetch lifecycle: fetch returns a promise for a Response; if response.ok, await response.json and show the data; if not ok, check the status and show an error; if the network fails, the promise rejects and catch shows an error.">
+                <defs><marker id="fg-ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#45536a"/></marker></defs>
+                <rect x="8" y="20" width="108" height="46" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+                <text x="62" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#1d4ed8">fetch(url)</text>
+                <path d="M116 43 L146 43" stroke="#45536a" stroke-width="1.8" marker-end="url(#fg-ar2)"/>
+                <text x="131" y="34" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#45536a">await</text>
+                <rect x="150" y="20" width="100" height="46" rx="6" fill="#ffffff" stroke="#6f7c8e" stroke-width="1.5"/>
+                <text x="200" y="40" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">Response</text>
+                <text x="200" y="56" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#45536a">status, ok</text>
+                <path d="M250 43 L280 43" stroke="#45536a" stroke-width="1.8" marker-end="url(#fg-ar2)"/>
+                <polygon points="330,14 382,43 330,72 278,43" fill="#f1e8fd" stroke="#7c3aed" stroke-width="2"/>
+                <text x="330" y="47" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="600" fill="#6d28d9">ok?</text>
+                <path d="M382 43 L404 43" stroke="#45536a" stroke-width="1.8" marker-end="url(#fg-ar2)"/>
+                <text x="392" y="34" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" font-weight="600" fill="#0f766e">yes</text>
+                <rect x="408" y="20" width="86" height="46" rx="6" fill="#d7efe9" stroke="#0f766e" stroke-width="2"/>
+                <text x="451" y="40" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#0f766e">.json()</text>
+                <text x="451" y="56" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#0f766e">→ showUser</text>
+                <path d="M330 72 L330 108" stroke="#45536a" stroke-width="1.8" marker-end="url(#fg-ar2)"/>
+                <text x="342" y="94" font-family="'Source Sans 3',sans-serif" font-size="11" font-weight="600" fill="#b45309">no</text>
+                <rect x="250" y="112" width="244" height="46" rx="6" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+                <text x="372" y="132" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#b45309">404 · 403/429 · 5xx</text>
+                <text x="372" y="148" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#7a3f06">resolves normally → YOU check status</text>
+                <path d="M62 66 L62 164" stroke="#45536a" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#fg-ar2)"/>
+                <text x="70" y="118" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#45536a">network fails</text>
+                <rect x="8" y="168" width="220" height="40" rx="6" fill="#fdecec" stroke="#b91c1c" stroke-width="2"/>
+                <text x="118" y="192" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#b91c1c">rejects → catch (TypeError)</text>
+              </svg>
+              <figcaption>Only a network failure lands in catch. HTTP errors resolve, so check response.ok.</figcaption>
+            </figure></li>
+          <li><b>async/await + try/catch (8m).</b> Rewrite the same request with <code class="inline">async</code>/<code class="inline">await</code>, side by side with the <code class="inline">.then</code> version. Point out that <code class="inline">await</code> only works inside an <code class="inline">async</code> function (or a module). Show <code class="inline">Promise.all</code>: the total time is the slowest request, not the sum of all of them.</li>
+          <li><b>Displaying data (6m).</b> Loading → data | error. Render with <code class="inline">createElement</code> + <code class="inline">textContent</code>, and show <code class="inline">escapeHTML</code> for when you must use a template string. Briefly mention CORS: the fix is on the server, not in your code.</li>
+          <li><b>Lab (18m).</b> Launch GitHub User Search, using the rate-limit plan below.</li>
+          <li><b>Check + journal (3m).</b></li>
+        </ol>
+      </div>
+      <div class="blk lab"><div class="h">Lab — GitHub User Search</div>
+        <p style="font-size:.92rem;margin:.2rem 0">TODOs 1–7: DOM references; <code class="inline">showLoading</code>/<code class="inline">showError</code>/<code class="inline">showUser</code> (avatar, name, @login, bio, repos/followers/following, all as text); <code class="inline">async searchUser</code> with separate branches for <b>404</b>, <b>403/429 (rate limit)</b>, other statuses, and a <b>catch</b> for network errors; click + Enter; bonus debounce and profile link. Files in <code class="inline">labs/module-5/l20-apis-fetch/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Rate-limit plan (60 requests/hour per IP, and the room shares one IP):</b> (1) <b>pair up.</b> One laptop searches while the partner reads the code and predicts the branch. (2) <b>No auto-search in class:</b> debounced search-as-you-type spends a request on every pause. It's off (<code class="inline">AUTO_SEARCH = false</code>) in the solution, so demo it once and turn it off again. (3) Test <b>404</b> with one made-up name rather than many. (4) When the room hits 403, switch to the <b>fallback</b>: open the solution as <code class="inline">index.html?mock</code> or set <code class="inline">USE_MOCK = true</code>. In mock mode, <code class="inline">octocat</code> returns the sample profile from <code class="inline">mock-user.json</code>, <code class="inline">ratelimit</code> simulates a 403, and any other name simulates a 404. Students can point their own fetch at <code class="inline">mock-user.json</code>; the starter's top comment explains how. Treat the 403 as a teaching moment: this is the error branch they just wrote, working.</p>
+      </div>
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Forgetting <code class="inline">await</code>.</b> <code class="inline">const user = response.json()</code> logs <code class="inline">Promise {&lt;pending&gt;}</code> and every field is <code class="inline">undefined</code>. When you see "Promise" in the console, look for a missing <code class="inline">await</code>.</li>
+          <li><b>Expecting 404 in catch.</b> It never gets there. Branch on <code class="inline">response.status</code>/<code class="inline">response.ok</code> <em>before</em> parsing.</li>
+          <li><b>Raw API text in <code class="inline">innerHTML</code>.</b> Bios are user-written. Use <code class="inline">textContent</code>, or <code class="inline">escapeHTML</code> when you use a template.</li>
+          <li><b>Double requests.</b> Enter + a debounced input listener both fire, which burns quota twice as fast.</li>
+          <li><b>file:// URLs.</b> Some browsers block or restrict requests from <code class="inline">file://</code> pages, and the mock JSON won't load. Use Live Server.</li>
+        </ul>
+      </div>
+      <div class="note">
+        <div class="t">Discussion (5 min, if time allows): the stale-response race</div>
+        <p>With debounced search, a student types <code class="inline">oc</code>, pauses, then finishes <code class="inline">octocat</code>. Two requests are now in flight. If the <code class="inline">oc</code> answer comes back <em>last</em>, it overwrites the right result. Ask: "The responses came back in a different order than we sent them. How do we make sure only the newest search wins?" Take ideas, then show the solution's guard: a <code class="inline">latestSearch</code> counter, where each search remembers its own number and returns early after every <code class="inline">await</code> if a newer search has started. (<code class="inline">AbortController</code> is the more advanced tool. Mention it by name only.)</p>
+      </div>
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: <code class="inline">fetch()</code> returns <b>B) a Promise that resolves to a Response</b>; on 404 <b>A) the Promise resolves with <code class="inline">ok</code> = false</b>; <code class="inline">async</code> <b>C) always returns a Promise and enables <code class="inline">await</code></b>; <code class="inline">Promise.all</code> because <b>B) parallel: total = slowest, not the sum</b>; the three UI states = <b>D) loading, data, error</b>; the CORS error = <b>C) the server didn't allow your origin</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRAP -->
+  <div class="sec"><h2>Closing the Module</h2><span class="rule"></span></div>
+  <div class="note lab">
+    <div class="t">Module 5 wrap-up (10 min)</div>
+    <p>Ask for one volunteer per app to demo: the form catching a bad email, the timer turning red, the to-do list surviving a refresh, and the search finding a real profile (or the mock one). Recap the arc: <b>capture input → act over time → remember → talk to the world.</b> Then name the pattern they used four times: state → render → events → update. Preview Module 6: "You now have every tool you need. Next you put them together into a capstone app of your own."</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Technical trainer, full-stack developer &amp; course developer — 30+ years</span>
+    </div>
+    <div class="ver">Instructor Kit · Module 5 · Facilitator Guide · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

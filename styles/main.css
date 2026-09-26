@@ -932,6 +932,52 @@ svg text { fill: var(--text-color); }
 svg .svg-bg { fill: var(--card-bg); }
 
 /* ===========================
+   Learning Journal editor (autosaved to this device)
+   =========================== */
+.journal-editor { margin-top: 1.25rem; }
+.journal-label { display: block; font-weight: 600; margin-bottom: .45rem; }
+.journal-note { font-weight: 400; color: var(--text-light); font-size: .9em; }
+.journal-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-family-base);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: .75rem .9rem;
+    resize: vertical;
+    min-height: 8rem;
+}
+.journal-textarea:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 1px;
+    border-color: var(--primary-color);
+}
+.journal-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: .5rem;
+    flex-wrap: wrap;
+}
+.journal-status { font-size: .85rem; color: var(--text-light); }
+.journal-export {
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-color);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: .35rem .7rem;
+}
+.journal-export:hover { background: var(--primary-light); }
+
+/* ===========================
    Search Results
    =========================== */
 

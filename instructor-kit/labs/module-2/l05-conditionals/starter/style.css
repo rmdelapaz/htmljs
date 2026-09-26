@@ -1,0 +1,60 @@
+/* Shared lab page styles — Module 2 (Control Flow & Functions).
+   You don't need to edit this file; the lab work happens in script.js. */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+  line-height: 1.6;
+}
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+h1 { font-size: 1.6rem; margin: 0 0 .25rem; color: #0f172a; }
+
+.lead { margin: 0 0 1.5rem; color: #475569; }
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #f59e0b;
+  border-radius: 10px;
+  padding: 16px 20px;
+}
+
+.panel h2 {
+  margin: 0 0 .5rem;
+  font-size: .8rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #92400e;
+}
+
+#output {
+  margin: 0;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: .92rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: #0f172a;
+}
+
+.hint { font-size: .9rem; color: #475569; margin-top: 1rem; }
+
+code {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #e2e8f0;
+  padding: 0 .3em;
+  border-radius: 4px;
+}
+
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teach Front-End JavaScript</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="kit.css">
+<style>
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0 6px; }
+  .statcard { background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:14px 12px; text-align:center; }
+  .statcard .n { font-family:"Archivo",sans-serif; font-weight:800; font-size:1.7rem; color:var(--accent); line-height:1; }
+  .statcard .l { font-size:.72rem; color:var(--ink-3); margin-top:5px; text-transform:uppercase; letter-spacing:.04em; }
+  .tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:14px 0; }
+  .tier { border:1px solid var(--line); border-radius:var(--radius); padding:18px 18px 20px; background:var(--surface); display:flex; flex-direction:column; }
+  .tier.feature { border:2px solid var(--accent); box-shadow:var(--shadow); }
+  .tier .name { font-family:"JetBrains Mono",monospace; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); }
+  .tier .price { font-family:"Archivo",sans-serif; font-weight:800; font-size:1.9rem; margin:6px 0 2px; letter-spacing:-.02em; }
+  .tier .price span { font-size:.8rem; font-weight:500; color:var(--ink-3); }
+  .tier ul { margin:10px 0 0; }
+  .tier .who { font-size:.82rem; color:var(--ink-2); margin-bottom:2px; }
+  .badge { display:inline-block; font-family:"JetBrains Mono",monospace; font-size:.62rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#fff; background:var(--accent); border-radius:999px; padding:2px 9px; margin-bottom:8px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  @media (max-width:680px){ .stats{grid-template-columns:1fr 1fr} .tiers{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Sell sheet —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">for pitching the kit to other instructors</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Course-in-a-Box · Instructor License</div>
+    <h1>Teach Front-End JavaScript — Without Building It Yourself</h1>
+    <p class="sub">A complete, ready-to-deliver curriculum that takes learners who know HTML &amp; CSS from their first line of JavaScript to a complete interactive app in five days. Everything you need to walk in and teach: guides, slides, labs, workbooks, and answer keys.</p>
+    <div class="stats">
+      <div class="statcard"><div class="n">6</div><div class="l">Modules</div></div>
+      <div class="statcard"><div class="n">22</div><div class="l">Lessons</div></div>
+      <div class="statcard"><div class="n">24</div><div class="l">Ready docs &amp; decks</div></div>
+      <div class="statcard"><div class="n">112</div><div class="l">Quiz items + keys</div></div>
+    </div>
+  </header>
+
+  <div class="sec"><h2>What You Get</h2><span class="rule"></span></div>
+  <div class="grid2">
+    <div class="blk"><div class="h">For every module (×6)</div>
+      <ul class="tick">
+        <li><b>Facilitator guide</b> — timing, live-demo scripts, the mistakes to pre-empt, checks for understanding</li>
+        <li><b>Participant workbook</b> — objectives, worked examples, write-in exercises, self-check quizzes</li>
+        <li><b>Answer key</b> — every quiz answered and explained, with solution notes</li>
+        <li><b>Slide deck</b> — a self-contained projector deck (no software to install)</li>
+        <li><b>Labs</b> — runnable starter files and reference solutions for every lesson</li>
+      </ul>
+    </div>
+    <div class="blk"><div class="h">Across the kit</div>
+      <ul class="tick">
+        <li><b>5-day syllabus</b> (3h AM + 3h PM, ~30 h) — plus web, print, and PDF formats</li>
+        <li><b>6 slide decks</b> plus <b>custom diagrams</b> — the DOM tree, scope chain, event loop, fetch lifecycle &amp; more</li>
+        <li>A <b>complete capstone app</b> (QuickNote) — forms, storage, and live API data, ready to demo</li>
+        <li><b>Student setup guide</b> + <b>final assessment</b> (3 app briefs) &amp; rubric</li>
+        <li><b>Print-ready PDFs</b> throughout — hand out or project</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec"><h2>Why Instructors Choose It</h2><span class="rule"></span></div>
+  <ul class="tick">
+    <li><b>Minimal prep to teach.</b> The facilitator guide scripts each lesson — timing, demos, and the exact beginner mistakes to head off. Walk in and deliver.</li>
+    <li><b>Learners actually build.</b> Every learner leaves with a working app that saves data and talks to a live API — the outcome that sells your class and earns referrals.</li>
+    <li><b>Flexible delivery.</b> Runs as a 5-day class, an evening series, a bootcamp module, or self-paced. Corporate L&amp;D, community college, bootcamp, or solo trainer.</li>
+    <li><b>Modern, safe &amp; accessible by default.</b> Modern vanilla JavaScript with no frameworks to install, <code class="inline">textContent</code> over <code class="inline">innerHTML</code>, labeled forms and accessible feedback — good habits from lesson one.</li>
+  </ul>
+
+  <div class="sec"><h2>Who It's For</h2><span class="rule"></span></div>
+  <div class="meta-row">
+    <span class="chip">Independent trainers</span>
+    <span class="chip">Coding bootcamps</span>
+    <span class="chip">Community colleges &amp; CE</span>
+    <span class="chip">Corporate L&amp;D teams</span>
+    <span class="chip">Libraries &amp; workforce programs</span>
+  </div>
+
+  <div class="sec"><h2>License &amp; Pricing</h2><span class="rule"></span></div>
+  <div class="tiers">
+    <div class="tier">
+      <div class="name">Solo</div>
+      <div class="price">$499<span> one-time</span></div>
+      <div class="who">One instructor · teach unlimited students</div>
+      <ul class="tick">
+        <li>Full kit, all 6 modules</li>
+        <li>Print the workbook for your class</li>
+        <li>Perpetual license</li>
+      </ul>
+    </div>
+    <div class="tier feature">
+      <div class="badge">Most popular</div>
+      <div class="name">Organization</div>
+      <div class="price">$1,997<span> one-time</span></div>
+      <div class="who">Multiple instructors at one org</div>
+      <ul class="tick">
+        <li>Everything in Solo</li>
+        <li>Unlimited instructors, one organization</li>
+        <li>Best value per seat</li>
+      </ul>
+    </div>
+    <div class="tier">
+      <div class="name">White-label</div>
+      <div class="price">$4,997<span> one-time</span></div>
+      <div class="who">Rebrand &amp; edit freely</div>
+      <ul class="tick">
+        <li>Everything in Organization</li>
+        <li>Add your own branding</li>
+        <li>Edit &amp; adapt the materials</li>
+      </ul>
+    </div>
+  </div>
+  <p style="font-size:.85rem;color:var(--ink-3)">Optional content-updates subscription: <b>$149/yr</b>. Volume and education pricing available. See <code class="inline">LICENSE.md</code> for full terms.</p>
+
+  <div class="note lab">
+    <div class="t">Ready to teach it?</div>
+    <p>Get in touch for a sample module and licensing details.<br><b>Ray de la Paz</b> · via the contact form on the site.</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Technical trainer, full-stack developer &amp; course developer — 30+ years</span>
+    </div>
+    <div class="ver">Instructor Sell Sheet · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

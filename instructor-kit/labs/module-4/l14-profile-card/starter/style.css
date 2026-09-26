@@ -1,0 +1,23 @@
+/* Profile Card Editor — styles from the lesson, plus focus + dark-link fixes */
+body { font-family: sans-serif; padding: 2rem; background: #f1f5f9; color: #1e293b; }
+.profile-card {
+    max-width: 400px; padding: 2rem; background: white;
+    border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.profile-card h2 { margin-top: 0; }
+.profile-card a { color: #1d4ed8; }
+.highlight { border: 3px solid #f59e0b; }
+.dark { background: #1e293b; color: #e2e8f0; }
+.dark a { color: #93c5fd; }          /* keep the link readable on the dark card */
+.hidden { display: none; }
+
+.controls { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.5rem; }
+.controls button {
+    padding: .5rem 1rem; border: none; border-radius: 6px; cursor: pointer;
+    background: #1d4ed8; color: white; font-size: 1rem;
+}
+.controls button.secondary { background: #475569; }
+a:focus-visible, button:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+
+.log { max-width: 400px; margin-top: 1.5rem; font-family: ui-monospace, Consolas, monospace; font-size: .85rem; color: #334155; }
+.log li { margin: .2rem 0; }

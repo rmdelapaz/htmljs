@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Learn JavaScript arrays — how to create, access, and modify collections of data using push, pop, splice, and other essential methods.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 9: Arrays - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -85,6 +91,7 @@
                         <li><a href="#combining" class="toc-link">Combining &amp; Extracting</a></li>
                         <li><a href="#iterating" class="toc-link">Iterating Over Arrays</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -421,7 +428,7 @@ const fruits = ["apple", "banana", "cherry", "banana"];
 console.log(fruits.indexOf("banana"));   // 1 (first occurrence)
 console.log(fruits.indexOf("grape"));    // -1 (not found)
 
-// Classic pattern: check existence before indexOf existed
+// Older pattern (before includes() existed): compare with -1
 if (fruits.indexOf("cherry") !== -1) {
     console.log("Found cherry!");
 }
@@ -540,7 +547,7 @@ console.log(letters);  // ["a", "b", "c", "d", "e"]
                     <p>Some methods change the original array (<strong>mutating</strong>), while others return a new one and leave the original alone (<strong>non-mutating</strong>). Knowing the difference prevents bugs!</p>
                     <ul>
                         <li><strong>Mutating:</strong> <code>push</code>, <code>pop</code>, <code>shift</code>, <code>unshift</code>, <code>splice</code>, <code>sort</code>, <code>reverse</code></li>
-                        <li><strong>Non-mutating:</strong> <code>concat</code>, <code>slice</code>, <code>map</code>, <code>filter</code>, <code>find</code>, <code>includes</code></li>
+                        <li><strong>Non-mutating:</strong> <code>concat</code>, <code>slice</code>, <code>map</code>, <code>filter</code>, <code>find</code>, <code>includes</code>, plus the copy-returning versions <code>toSorted</code>, <code>toReversed</code>, and <code>toSpliced</code></li>
                     </ul>
                 </div>
             </section>
@@ -595,9 +602,9 @@ colors.forEach((color, index) => {
                 <div class="card card-info">
                     <h4>💡 Which Loop Should I Use?</h4>
                     <ul>
-                        <li><strong><code>for...of</code></strong> — default choice for most situations. Clean and readable.</li>
-                        <li><strong><code>for</code></strong> — when you need the index, or need <code>break</code>/<code>continue</code>.</li>
-                        <li><strong><code>forEach</code></strong> — when you want a callback pattern. Note: you can't <code>break</code> out of <code>forEach</code>.</li>
+                        <li><strong><code>for...of</code></strong> — default choice for most situations. Clean and readable, and <code>break</code>/<code>continue</code> work here too.</li>
+                        <li><strong><code>for</code></strong> — when you need the index number, or want to count backwards or skip elements.</li>
+                        <li><strong><code>forEach</code></strong> — when you want a callback that gets the element <em>and</em> its index. Note: you can't <code>break</code> out of <code>forEach</code>.</li>
                     </ul>
                 </div>
 
@@ -610,9 +617,11 @@ const withTax = [];
 for (const price of prices) {
     withTax.push(price * 1.08);
 }
-console.log(withTax);  // [10.8, 21.6, 32.4, 43.2]
+console.log(withTax);  // [10.8, 21.6, 32.400000000000006, 43.2]
+// (That long decimal is normal floating-point rounding —
+//  use toFixed(2) when you display money.)
 
-// In the next lesson (Array Methods), you'll learn
+// In Lesson 11 (Array Methods), you'll learn
 // a cleaner way: prices.map(price => price * 1.08)
                 </code></pre>
             </section>
@@ -657,6 +666,7 @@ const todos = ["Buy groceries", "Walk the dog", "Finish homework"];
 // addTodo(todos, "Read a book");
 // listTodos(todos);
 // removeTodo(todos, "Walk the dog");
+// listTodos(todos);
 // completeTodo(todos);
 // insertTodoAt(todos, 1, "Call dentist");
 // listTodos(todos);
@@ -748,7 +758,7 @@ listTodos(todos);
                     <div class="quiz-question">
                         <p><strong>Question 1:</strong> What is the index of the first element in a JavaScript array?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="true" data-explanation="JavaScript arrays are zero-indexed — the first element is always at index 0.">A) 0</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! JavaScript arrays are zero-indexed — the first element is always at index 0.">A) 0</button>
                             <button class="quiz-option" data-correct="false" data-hint="Some languages use 1-based indexing (like Lua), but JavaScript starts at 0.">B) 1</button>
                             <button class="quiz-option" data-correct="false" data-hint="-1 is used with methods like at() to access the last element.">C) -1</button>
                             <button class="quiz-option" data-correct="false" data-hint="The first index is always fixed at 0, regardless of the array's length.">D) It depends on the array</button>
@@ -760,7 +770,7 @@ listTodos(todos);
                         <p><strong>Question 2:</strong> Which method adds an element to the END of an array?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="unshift() adds to the beginning, not the end.">A) unshift()</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="push() adds one or more elements to the end of an array and returns the new length.">B) push()</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! push() adds one or more elements to the end of an array and returns the new length.">B) push()</button>
                             <button class="quiz-option" data-correct="false" data-hint="pop() removes the last element — it's the opposite of what you want here.">C) pop()</button>
                             <button class="quiz-option" data-correct="false" data-hint="concat() creates a new array by merging arrays — it doesn't modify the original.">D) concat()</button>
                         </div>
@@ -772,7 +782,7 @@ listTodos(todos);
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="That describes slice(), not splice(). They sound similar but work differently!">A) Creates a copy of part of an array</button>
                             <button class="quiz-option" data-correct="false" data-hint="concat() and the spread operator join arrays. splice works on a single array.">B) Joins two arrays together</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="splice() is the Swiss Army knife — it can remove, insert, or replace elements at any position in an array. It modifies the original array.">C) Removes, inserts, or replaces elements at any position</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! splice() is the Swiss Army knife — it can remove, insert, or replace elements at any position in an array. It modifies the original array.">C) Removes, inserts, or replaces elements at any position</button>
                             <button class="quiz-option" data-correct="false" data-hint="sort() handles sorting. splice is about adding/removing at specific positions.">D) Sorts the array in place</button>
                         </div>
                         <div class="quiz-feedback"></div>
@@ -782,12 +792,27 @@ listTodos(todos);
                         <p><strong>Question 4:</strong> What does <code>["a","b","c"].includes("b")</code> return?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="indexOf() returns 1 for this case. includes() returns a boolean, not a number.">A) 1</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="includes() returns true because 'b' exists in the array. It's a simple boolean check.">B) true</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! includes() returns true because 'b' exists in the array. It's a simple boolean check.">B) true</button>
                             <button class="quiz-option" data-correct="false" data-hint="'b' is clearly in the array at index 1, so includes() returns true.">C) false</button>
                             <button class="quiz-option" data-correct="false" data-hint="includes() always returns a boolean (true or false), never the element itself.">D) &quot;b&quot;</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Think of a list on a page you'd like to build — a playlist, a reading list, a set of scores. Which array methods would you use to add, remove, and find items in it? In your own words, explain the difference between <code>splice</code> and <code>slice</code>, and note which method you're still unsure about.</em></p>
                 </div>
             </section>
 

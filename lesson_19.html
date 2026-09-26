@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Learn to persist data in the browser with localStorage and sessionStorage — saving user preferences, form drafts, and app state across page refreshes.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 19: Local Storage - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -81,6 +87,7 @@
                         <li><a href="#practical-patterns" class="toc-link">Practical Patterns</a></li>
                         <li><a href="#limits-and-gotchas" class="toc-link">Limits, Errors &amp; When Not to Use It</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -101,11 +108,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td>Storage limit</td><td>~5–10 MB per origin (domain)</td></tr>
+                            <tr><td>Storage limit</td><td>About 5 MB per origin in today's major browsers</td></tr>
                             <tr><td>Data format</td><td>Strings only (use JSON for objects)</td></tr>
                             <tr><td>Persistence</td><td>Until explicitly deleted</td></tr>
                             <tr><td>Scope</td><td>Per origin (protocol + domain + port)</td></tr>
-                            <tr><td>Accessible from</td><td>JavaScript only (not sent to server)</td></tr>
+                            <tr><td>Accessible from</td><td>JavaScript on the page (never sent to the server automatically, unlike cookies)</td></tr>
                             <tr><td>Synchronous?</td><td>Yes — blocks the main thread</td></tr>
                         </tbody>
                     </table>
@@ -136,7 +143,7 @@
 
                 <h3>setItem — Save Data</h3>
                 <pre><code class="language-javascript">
-// Store a value (both key and value must be strings)
+// Store a value (keys and values are always stored as strings)
 localStorage.setItem("username", "ray");
 localStorage.setItem("theme", "dark");
 localStorage.setItem("fontSize", "16");
@@ -274,9 +281,9 @@ const settings = loadData("settings", { theme: "light", fontSize: 16 });
 
                 <div class="mermaid">
                     graph LR
-                    A["JavaScript Object<br/>{name: 'Ray'}"] -->|JSON.stringify| B["JSON String<br/>'{\"name\":\"Ray\"}'"]
+                    A["JavaScript Object<br/>{name: 'Ray'}"] -->|JSON.stringify| B["JSON String<br/>'{#quot;name#quot;:#quot;Ray#quot;}'"]
                     B -->|setItem| C["Local Storage"]
-                    C -->|getItem| D["JSON String<br/>'{\"name\":\"Ray\"}'"]
+                    C -->|getItem| D["JSON String<br/>'{#quot;name#quot;:#quot;Ray#quot;}'"]
                     D -->|JSON.parse| E["JavaScript Object<br/>{name: 'Ray'}"]
                     style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
                     style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
@@ -304,7 +311,7 @@ console.log(new Date(loaded.date)); // Convert back to Date manually
             <section id="sessionstorage" class="lesson-section">
                 <h2>sessionStorage — The Short-Lived Sibling</h2>
 
-                <p><code>sessionStorage</code> works exactly like <code>localStorage</code> — same API, same methods — but the data only lasts for the <strong>current browser tab session</strong>. Close the tab, and it's gone.</p>
+                <p><code>sessionStorage</code> works exactly like <code>localStorage</code> — same API, same methods — but the data only lasts for the <strong>current browser tab session</strong>. Close the tab, and it's gone. Each tab gets its own separate sessionStorage, so opening your site in a second tab starts with an empty one.</p>
 
                 <pre><code class="language-javascript">
 // Exact same API as localStorage
@@ -328,7 +335,7 @@ sessionStorage.clear();
                             <tr><td>Persists after closing browser</td><td>✅ Yes</td><td>❌ No</td></tr>
                             <tr><td>Shared across tabs</td><td>✅ Yes (same origin)</td><td>❌ No (per tab)</td></tr>
                             <tr><td>Survives page refresh</td><td>✅ Yes</td><td>✅ Yes</td></tr>
-                            <tr><td>Storage limit</td><td>~5–10 MB</td><td>~5–10 MB</td></tr>
+                            <tr><td>Storage limit</td><td>~5 MB</td><td>~5 MB</td></tr>
                             <tr><td>API</td><td>Identical</td><td>Identical</td></tr>
                         </tbody>
                     </table>
@@ -343,12 +350,13 @@ localStorage.setItem("todos", JSON.stringify([])); // App state
 // sessionStorage — data for this visit only
 sessionStorage.setItem("wizardStep", "2");       // Multi-step form progress
 sessionStorage.setItem("scrollPos", "450");      // Restore scroll on back-nav
-sessionStorage.setItem("authToken", token);      // Session-only auth
+sessionStorage.setItem("lastSearch", "pizza");   // Remember a search for this visit
                 </code></pre>
 
                 <div class="card card-success">
                     <h4>✅ Quick Rule</h4>
                     <p>If the user would expect the data to still be there after reopening the browser tomorrow, use <code>localStorage</code>. If the data is only relevant to this particular browsing session, use <code>sessionStorage</code>.</p>
+                    <p>Heads-up: "shorter-lived" doesn't mean "safer." Any script on the page can read <code>sessionStorage</code> too, so the security rules later in this lesson apply to both.</p>
                 </div>
             </section>
 
@@ -465,6 +473,8 @@ render();
                 <h3>Pattern 4: The storage Event — Cross-Tab Sync</h3>
                 <p>When one tab changes Local Storage, other tabs for the same origin receive a <code>storage</code> event. This lets you sync data between tabs without any server.</p>
 
+                <p>Two details to remember: the event fires only in the <em>other</em> tabs (never in the tab that called <code>setItem</code>), and if another tab calls <code>clear()</code>, <code>event.key</code> is <code>null</code>.</p>
+
                 <pre><code class="language-javascript">
 // This fires in OTHER tabs (not the one that made the change)
 window.addEventListener("storage", (event) => {
@@ -472,11 +482,11 @@ window.addEventListener("storage", (event) => {
     console.log("Key:", event.key);         // Which key changed
     console.log("Old:", event.oldValue);    // Previous value
     console.log("New:", event.newValue);    // New value
-    console.log("URL:", event.url);         // Which tab made the change
+    console.log("URL:", event.url);         // Address of the page that made the change
 
     // Example: sync theme across tabs
     if (event.key === "theme") {
-        document.body.dataset.theme = event.newValue;
+        document.body.dataset.theme = event.newValue || "light";
     }
 
     // Example: sync todos across tabs
@@ -508,7 +518,7 @@ window.addEventListener("storage", (event) => {
                 <h2>Limits, Errors &amp; When Not to Use It</h2>
 
                 <h3>Storage Limits</h3>
-                <p>Most browsers allow <strong>5–10 MB</strong> per origin. If you exceed it, <code>setItem</code> throws a <code>QuotaExceededError</code>.</p>
+                <p>Today's major browsers allow about <strong>5 MB</strong> per origin (the exact amount varies by browser). If you exceed it, <code>setItem</code> throws a <code>QuotaExceededError</code>.</p>
 
                 <pre><code class="language-javascript">
 // Always wrap setItem in try/catch for production apps
@@ -571,7 +581,7 @@ if (isStorageAvailable()) {
 
                 <div class="card card-warning">
                     <h4>⚠️ Security: Local Storage Is Not Secure Storage</h4>
-                    <p>Any JavaScript running on your page can read Local Storage — including scripts injected via XSS attacks. <strong>Never</strong> store authentication tokens, passwords, credit card numbers, or other sensitive data in Local Storage. For auth tokens, use <code>HttpOnly</code> cookies that JavaScript can't access.</p>
+                    <p>Any JavaScript running on your page can read Local Storage — including scripts injected via XSS attacks. <strong>Never</strong> store authentication tokens, passwords, credit card numbers, or other sensitive data in Local Storage (or <code>sessionStorage</code> — same risk). For auth tokens, use <code>HttpOnly</code> cookies that JavaScript can't access.</p>
                 </div>
 
                 <div class="card card-info">
@@ -607,6 +617,7 @@ if (isStorageAvailable()) {
             background: #6366f1; color: white; padding: 1.5rem;
         }
         .app-header h1 { font-size: 1.3rem; margin-bottom: 1rem; }
+        .input-label { display: block; font-size: 0.9rem; margin-bottom: 0.4rem; }
         .input-row { display: flex; gap: 0.5rem; }
         .input-row input {
             flex: 1; padding: 0.6rem 0.75rem; border: none;
@@ -663,6 +674,7 @@ if (isStorageAvailable()) {
     &lt;div class="app"&gt;
         &lt;div class="app-header"&gt;
             &lt;h1&gt;✅ To-Do List&lt;/h1&gt;
+            &lt;label for="todo-input" class="input-label"&gt;New task&lt;/label&gt;
             &lt;div class="input-row"&gt;
                 &lt;input type="text" id="todo-input" placeholder="What needs to be done?"&gt;
                 &lt;button id="add-btn"&gt;Add&lt;/button&gt;
@@ -685,13 +697,16 @@ if (isStorageAvailable()) {
     //      return [] if nothing stored. Use try/catch!
     //    - saveTodos: JSON.stringify the array and setItem
 
-    // 2. Write render(todos):
+    // 2. Write render() (it reads the shared todos array):
     //    - Clear the #todo-list
     //    - If no todos, show an empty state message
     //    - For each todo, create an &lt;li class="todo-item"&gt; with:
     //      a checkbox, a span.todo-text, and a button.delete-btn ("×")
     //    - Add "done" class to the &lt;li&gt; if todo.done is true
     //    - Set checkbox.checked to todo.done
+    //    - Give the checkbox and the × button an aria-label that
+    //      includes the task text (e.g. "Delete: Buy milk")
+    //    - Call updateCount() at the end
 
     // 3. Write addTodo(text):
     //    - Push a new object { id: Date.now(), text, done: false }
@@ -702,14 +717,14 @@ if (isStorageAvailable()) {
     //    - delete: filter out the matching todo
     //    - Both: saveTodos, then render
 
-    // 5. Write updateCount(todos):
+    // 5. Write updateCount() (it also reads the todos array):
     //    - Count todos where done === false
     //    - Update #count-display text: "X items left"
 
     // 6. Hook up event listeners:
     //    - #add-btn click and Enter key: addTodo
-    //    - Event delegation on #todo-list for checkbox change
-    //      and delete button click
+    //    - Event delegation on #todo-list: a "change" listener
+    //      for checkboxes and a "click" listener for delete buttons
     //    - #clear-done-btn: filter out done todos, save, render
 
     // 7. Load and render on page start
@@ -721,7 +736,7 @@ if (isStorageAvailable()) {
                     <details>
                         <summary>💡 Hint</summary>
                         <p><strong>1:</strong> Wrap <code>JSON.parse</code> in a try/catch. If the stored string is corrupted, <code>JSON.parse</code> will throw — return <code>[]</code> in that case.</p>
-                        <p><strong>2:</strong> Use <code>document.createElement</code> for each list item. Set <code>checkbox.checked = todo.done</code> and add event listeners or use delegation.</p>
+                        <p><strong>2:</strong> Use <code>document.createElement</code> for each list item. Set <code>checkbox.checked = todo.done</code> and add event listeners or use delegation. For accessible names, use <code>checkbox.setAttribute("aria-label", `Mark done: ${todo.text}`)</code> — <code>setAttribute</code> treats the text as plain text, never HTML.</p>
                         <p><strong>4:</strong> For toggle: <code>todos.map(t => t.id === id ? { ...t, done: !t.done } : t)</code>. For delete: <code>todos.filter(t => t.id !== id)</code>.</p>
                         <p><strong>6:</strong> For the add button, remember to trim the input and ignore empty strings. Clear the input after adding.</p>
                     </details>
@@ -776,6 +791,7 @@ function render() {
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.checked = todo.done;
+            checkbox.setAttribute("aria-label", `Mark done: ${todo.text}`);
 
             const text = document.createElement("span");
             text.classList.add("todo-text");
@@ -784,6 +800,7 @@ function render() {
             const deleteBtn = document.createElement("button");
             deleteBtn.classList.add("delete-btn");
             deleteBtn.textContent = "×";
+            deleteBtn.setAttribute("aria-label", `Delete: ${todo.text}`);
 
             li.append(checkbox, text, deleteBtn);
             todoList.append(li);
@@ -838,17 +855,18 @@ todoInput.addEventListener("keydown", (event) => {
     }
 });
 
-// Event delegation for checkboxes and delete buttons
-todoList.addEventListener("click", (event) => {
+// Event delegation: "change" for checkboxes (fires for mouse AND keyboard),
+// "click" for delete buttons
+todoList.addEventListener("change", (event) => {
+    if (event.target.type !== "checkbox") return;
     const li = event.target.closest(".todo-item");
-    if (!li) return;
-    const id = Number(li.dataset.id);
+    toggleTodo(Number(li.dataset.id));
+});
 
-    if (event.target.type === "checkbox") {
-        toggleTodo(id);
-    } else if (event.target.matches(".delete-btn")) {
-        deleteTodo(id);
-    }
+todoList.addEventListener("click", (event) => {
+    if (!event.target.matches(".delete-btn")) return;
+    const li = event.target.closest(".todo-item");
+    deleteTodo(Number(li.dataset.id));
 });
 
 clearDoneBtn.addEventListener("click", () => {
@@ -870,7 +888,7 @@ render();
                         <p><strong>Question 1:</strong> What does <code>localStorage.getItem("key")</code> return if the key doesn't exist?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="undefined is what you get when accessing a missing property on an object. getItem returns null instead.">A) <code>undefined</code></button>
-                            <button class="quiz-option" data-correct="true" data-explanation="When a key doesn't exist in localStorage, getItem returns null — not undefined, not an empty string. Always check for null when reading from storage.">B) <code>null</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! When a key doesn't exist in localStorage, getItem returns null — not undefined, not an empty string. Always check for null when reading from storage.">B) <code>null</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="An empty string is a valid stored value. getItem returns null (not an empty string) when the key is missing.">C) An empty string <code>""</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="getItem never throws an error for missing keys. It simply returns null.">D) It throws an error</button>
                         </div>
@@ -881,9 +899,9 @@ render();
                         <p><strong>Question 2:</strong> What happens when you store a JavaScript object directly with <code>setItem</code>?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="setItem doesn't automatically use JSON.stringify. It calls the value's .toString() method, which for objects returns '[object Object]'.">A) It's automatically serialized as JSON</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="localStorage only stores strings. When you pass an object to setItem, JavaScript calls .toString() on it, which returns '[object Object]' — losing all your data. Use JSON.stringify() before storing objects.">B) It's stored as the string <code>"[object Object]"</code></button>
-                            <button class="quiz-option" data-correct="false" data-hint="setItem doesn't throw for non-string values. It silently converts them to strings, which for objects gives useless results.">C) It throws a TypeError</button>
-                            <button class="quiz-option" data-correct="false" data-hint="setItem doesn't silently fail — it does store something. Unfortunately, it stores the useless string '[object Object]'.">D) It silently fails and stores nothing</button>
+                            <button class="quiz-option" data-correct="false" data-hint="setItem doesn't throw for non-string values. It silently converts them to strings, which for objects gives useless results.">B) It throws a TypeError</button>
+                            <button class="quiz-option" data-correct="false" data-hint="setItem doesn't silently fail — it does store something. Unfortunately, it stores the useless string '[object Object]'.">C) It silently fails and stores nothing</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! localStorage only stores strings. When you pass an object to setItem, JavaScript calls .toString() on it, which returns '[object Object]' — losing all your data. Use JSON.stringify() before storing objects.">D) It's stored as the string <code>"[object Object]"</code></button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
@@ -891,8 +909,8 @@ render();
                     <div class="quiz-question">
                         <p><strong>Question 3:</strong> What is the correct way to store an array in Local Storage?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="false" data-hint="Passing an array directly to setItem converts it to a comma-separated string (e.g., '1,2,3'), losing structure and types.">A) <code>localStorage.setItem("data", myArray)</code></button>
-                            <button class="quiz-option" data-correct="true" data-explanation="JSON.stringify converts the array (including nested objects, numbers, booleans) into a string that preserves its structure. JSON.parse converts it back when you read it.">B) <code>localStorage.setItem("data", JSON.stringify(myArray))</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! JSON.stringify converts the array (including nested objects, numbers, booleans) into a string that preserves its structure. JSON.parse converts it back when you read it.">A) <code>localStorage.setItem("data", JSON.stringify(myArray))</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="Passing an array directly to setItem converts it to a comma-separated string (e.g., '1,2,3'), losing structure and types.">B) <code>localStorage.setItem("data", myArray)</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="toString() on an array gives '1,2,3' — a flat string with no type information or structure. Use JSON.stringify instead.">C) <code>localStorage.setItem("data", myArray.toString())</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="There's no storeArray method on localStorage. The API only has setItem, getItem, removeItem, clear, key, and length.">D) <code>localStorage.storeArray("data", myArray)</code></button>
                         </div>
@@ -902,9 +920,9 @@ render();
                     <div class="quiz-question">
                         <p><strong>Question 4:</strong> How does <code>sessionStorage</code> differ from <code>localStorage</code>?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="false" data-hint="Both use the same API (setItem, getItem, etc.) and the same ~5-10MB limit. The difference is how long data persists.">A) sessionStorage has different methods and a smaller size limit</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="sessionStorage data is cleared when the browser tab is closed. It's also not shared between tabs. localStorage persists until explicitly deleted, even across browser restarts, and is shared across tabs of the same origin.">B) sessionStorage data is cleared when the tab is closed; localStorage persists until deleted</button>
-                            <button class="quiz-option" data-correct="false" data-hint="Neither localStorage nor sessionStorage sends data to the server automatically. Cookies do that, not Web Storage.">C) sessionStorage sends data to the server; localStorage doesn't</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Both use the same API (setItem, getItem, etc.) and the same ~5 MB limit. The difference is how long data persists.">A) sessionStorage has different methods and a smaller size limit</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Neither localStorage nor sessionStorage sends data to the server automatically. Cookies do that, not Web Storage.">B) sessionStorage sends data to the server; localStorage doesn't</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! sessionStorage data is cleared when the browser tab is closed. It's also not shared between tabs. localStorage persists until explicitly deleted, even across browser restarts, and is shared across tabs of the same origin.">C) sessionStorage data is cleared when the tab is closed; localStorage persists until deleted</button>
                             <button class="quiz-option" data-correct="false" data-hint="sessionStorage is actually per-tab, not shared between tabs. localStorage is the one that's shared across tabs.">D) sessionStorage is shared across all browser windows; localStorage isn't</button>
                         </div>
                         <div class="quiz-feedback"></div>
@@ -915,11 +933,36 @@ render();
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="Local Storage has enough space for tokens. The problem isn't size — it's security.">A) Local Storage doesn't have enough space</button>
                             <button class="quiz-option" data-correct="false" data-hint="Local Storage persists just fine. The issue is that it's too accessible to JavaScript, not that it's unreliable.">B) The data could be lost during a browser update</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="Any JavaScript running on your page — including scripts injected via XSS attacks — can read localStorage. An attacker who finds an XSS vulnerability can steal every token and password in localStorage. Use HttpOnly cookies for auth tokens instead, as they can't be read by JavaScript.">C) Any JavaScript on the page can read it, making it vulnerable to XSS attacks</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Any JavaScript running on your page — including scripts injected via XSS attacks — can read localStorage. An attacker who finds an XSS vulnerability can steal every token and password in localStorage. Use HttpOnly cookies for auth tokens instead, as they can't be read by JavaScript.">C) Any JavaScript on the page can read it, making it vulnerable to XSS attacks</button>
                             <button class="quiz-option" data-correct="false" data-hint="Local Storage data is not visible to other websites. It's scoped to the origin. The risk is from malicious scripts on YOUR page.">D) Other websites can access your Local Storage data</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 6:</strong> You have your to-do app open in two tabs. In Tab A you add a task, which calls <code>localStorage.setItem("todos", ...)</code>. Where does the <code>storage</code> event fire?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The tab that made the change already knows about it, so the browser doesn't send it a storage event.">A) Only in Tab A, the tab that made the change</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The storage event fires in the OTHER tabs and windows of the same origin — never in the tab that called setItem. That's what makes it perfect for keeping several open tabs in sync.">B) In Tab B (and any other open tabs of the same origin), but not in Tab A</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Close, but the tab that made the change doesn't receive its own storage event.">C) In both Tab A and Tab B</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Local Storage is shared by every tab of the same origin, and the browser does notify the others. Think about which tabs need to hear about the change.">D) Nowhere — tabs can't see each other's changes</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Pick one thing on a site you've built (or want to build) that should be remembered between visits — a theme choice, a half-typed message, a list. Would you use <code>localStorage</code> or <code>sessionStorage</code>, and why? In your own words, explain why you have to <code>JSON.stringify</code> it before saving, and name one thing you'd never put in storage. What are you still unsure about?</em></p>
                 </div>
             </section>
 
@@ -937,7 +980,7 @@ render();
                         <li><strong><code>sessionStorage</code></strong> has the same API but data is cleared when the tab closes</li>
                         <li>The <strong><code>storage</code> event</strong> lets you sync data between tabs of the same origin</li>
                         <li>Common patterns: <strong>persisted preferences</strong>, <strong>form draft auto-save</strong>, <strong>stateful app sync</strong></li>
-                        <li>Local Storage is <strong>synchronous</strong> and limited to <strong>~5–10 MB</strong> — use IndexedDB for larger data</li>
+                        <li>Local Storage is <strong>synchronous</strong> and limited to <strong>about 5 MB</strong> — use IndexedDB for larger data</li>
                         <li><strong>Never store sensitive data</strong> (passwords, tokens) in Local Storage — it's vulnerable to XSS</li>
                     </ul>
                 </div>

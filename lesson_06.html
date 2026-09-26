@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Master JavaScript loops — for, while, for...of, and for...in — to repeat actions, process collections, and iterate efficiently.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 6: Loops - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -81,6 +87,7 @@
                         <li><a href="#break-continue" class="toc-link">break &amp; continue</a></li>
                         <li><a href="#common-pitfalls" class="toc-link">Common Pitfalls</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -89,9 +96,9 @@
             <!-- Section 1 -->
             <section id="intro" class="lesson-section">
                 <h2>Introduction</h2>
-                <p>Adopting the DRY (Don't Repeat Yourself) principle is crucial for maintainable software. Manually writing identical instructions for collection items—such as products in an inventory or users in a list—is inefficient and prone to error.</p>
-                <p><strong>Loops</strong> automate repetitive tasks, enabling efficient data processing and collection iteration. This lesson introduces various loop types, helping you select the appropriate approach for different requirements.</p>
-            </section>
+                <p>Imagine you have a list of 50 products and you want to show each one on your page. You <em>could</em> write 50 nearly identical lines of code, but that's tedious, and if you ever change how a product looks, you'd have to fix all 50. Programmers have a motto for this: <strong>DRY</strong>, short for "Don't Repeat Yourself."</p>
+                <p><strong>Loops</strong> are how you stay DRY. You write the instructions once, and JavaScript repeats them for you: for every item in a list, for a set number of times, or until something changes. In this lesson you'll meet the main kinds of loops and learn which one to reach for in each situation.</p>
+
                 <div class="mermaid">
                     graph TD
                     A["Start"] --> B{"More items?"}
@@ -489,7 +496,8 @@ const nums = [1, 2, 3, 4, 5];
 //     }
 // }
 
-// ✅ Safer — loop backwards or use filter()
+// ✅ Safer — loop backwards, or build a new array with filter()
+// (filter() and the => arrow syntax are coming in Lessons 7 and 11)
 const odds = nums.filter(n => n % 2 !== 0);
 console.log(odds);  // [1, 3, 5]
                 </code></pre>
@@ -512,6 +520,14 @@ console.log(odds);  // [1, 3, 5]
 
 // Hint: Use a for loop to build the string
 // Use "★" for filled stars and "☆" for empty stars
+
+// Functions get a full lesson next time (Lesson 7).
+// For now, start from this shell and fill in the loop:
+// function starRating(rating) {
+//     let stars = "";
+//     // your loop goes here
+//     return stars;   // hands the finished string back
+// }
                     </code></pre>
 
                     <h4>Part 2: Simple Search Filter</h4>
@@ -593,7 +609,7 @@ console.log(`${matchCount} result${matchCount === 1 ? "" : "s"} found.`);
 }</code></pre>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="The loop starts at 0 and runs while i < 3, so it includes 0, 1, and 2.">A) 2</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="The loop runs for i = 0, 1, and 2. When i becomes 3, the condition i < 3 is false and the loop stops.">B) 3</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The loop runs for i = 0, 1, and 2. When i becomes 3, the condition i < 3 is false and the loop stops.">B) 3</button>
                             <button class="quiz-option" data-correct="false" data-hint="The condition is < 3 (not <= 3), so 3 itself is not included.">C) 4</button>
                             <button class="quiz-option" data-correct="false" data-hint="Count the values: 0, 1, 2 — that's three iterations.">D) 1</button>
                         </div>
@@ -604,7 +620,7 @@ console.log(`${matchCount} result${matchCount === 1 ? "" : "s"} found.`);
                         <p><strong>Question 2:</strong> Which loop should you use to iterate over an array's values?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="for...in gives you keys (string indices) — it's designed for objects.">A) for...in</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="for...of gives you the values directly and is the cleanest way to iterate over arrays.">B) for...of</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! for...of gives you the values directly and is the cleanest way to iterate over arrays.">B) for...of</button>
                             <button class="quiz-option" data-correct="false" data-hint="while loops work but require manual index management — not ideal for simple array iteration.">C) while</button>
                             <button class="quiz-option" data-correct="false" data-hint="do...while guarantees at least one run, but you'd still need to manage an index manually.">D) do...while</button>
                         </div>
@@ -615,12 +631,53 @@ console.log(`${matchCount} result${matchCount === 1 ? "" : "s"} found.`);
                         <p><strong>Question 3:</strong> What does <code>continue</code> do inside a loop?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="That's what 'break' does — continue has a different purpose.">A) Exits the loop entirely</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="'continue' skips the rest of the current iteration's code and jumps to the next iteration of the loop.">B) Skips to the next iteration</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! 'continue' skips the rest of the current iteration's code and jumps to the next iteration of the loop.">B) Skips to the next iteration</button>
                             <button class="quiz-option" data-correct="false" data-hint="'continue' affects the current loop iteration, not anything after the loop.">C) Skips the code after the loop</button>
                             <button class="quiz-option" data-correct="false" data-hint="'continue' doesn't restart — it moves forward to the next iteration.">D) Restarts the loop from the beginning</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> What is the key difference between <code>while</code> and <code>do...while</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Both loops can run as many times as needed. The difference is about when the condition is checked.">A) do...while can only run once</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Both work with any condition. Think about what happens when the condition is false right from the start.">B) while only works with numbers</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Neither loop is faster in any way that matters. Focus on when the condition is checked.">C) do...while is faster</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! do...while checks its condition AFTER running the body, so the body always runs at least once. A while loop checks first, so it might not run at all.">D) do...while always runs its body at least once</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> What goes wrong with this loop?</p>
+                        <pre><code class="language-javascript">const items = ["a", "b", "c"];
+for (let i = 0; i &lt;= items.length; i++) {
+    console.log(items[i]);
+}</code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="i increases by 1 each time, so the condition eventually becomes false. This loop does stop.">A) It&#39;s an infinite loop</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! This is an off-by-one error. items.length is 3, so &lt;= lets i reach 3, and items[3] doesn&#39;t exist, so the last line printed is undefined. Use i &lt; items.length.">B) It runs one extra time and logs undefined</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Reading an index that doesn&#39;t exist isn&#39;t an error in JavaScript. It just gives you undefined.">C) It throws an error on the last pass</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Start at i = 0: the first pass logs items[0], which is &quot;a&quot;.">D) It skips the first item</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Journal -->
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>In your own words, explain when you&#39;d pick <code>for</code>, <code>while</code>, <code>for...of</code>, and <code>for...in</code>. Then name one list on a page you&#39;d like to build (products, photos, to-dos, quiz questions) and describe which loop you&#39;d use to go through it. What still trips you up: off-by-one errors, <code>break</code> vs. <code>continue</code>, or something else?</em></p>
                 </div>
             </section>
 

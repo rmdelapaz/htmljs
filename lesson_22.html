@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Master debugging techniques, code organization patterns, and discover where to go next on your JavaScript journey — frameworks, tools, and career paths.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 22: Next Steps &amp; Best Practices - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -77,6 +83,8 @@
                         <li><a href="#modern-javascript" class="toc-link">Modern JavaScript Features</a></li>
                         <li><a href="#ecosystem" class="toc-link">The JavaScript Ecosystem</a></li>
                         <li><a href="#learning-path" class="toc-link">Your Learning Path Forward</a></li>
+                        <li><a href="#quiz" class="toc-link">Check Your Understanding</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Course Summary &amp; Final Thoughts</a></li>
                     </ol>
                 </nav>
@@ -116,7 +124,7 @@
                             <tr><td><code>X is not a function</code></td><td>Calling a non-function value</td><td>Check spelling, import, variable type</td></tr>
                             <tr><td><code>X is not defined</code></td><td>Variable doesn't exist in scope</td><td>Check spelling, scope, declaration order</td></tr>
                             <tr><td><code>Unexpected token</code></td><td>Syntax error (missing bracket, comma)</td><td>Check the line BEFORE the error line</td></tr>
-                            <tr><td><code>Cannot set properties of undefined</code></td><td>Accessing nested property that doesn't exist</td><td>Use optional chaining (<code>?.</code>)</td></tr>
+                            <tr><td><code>Cannot read properties of undefined</code></td><td>Reading a nested property whose parent doesn't exist (e.g., <code>data.user.name</code> when <code>user</code> is missing)</td><td>Log the data to check its shape; use optional chaining (<code>?.</code>) for parts that may be missing</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -140,17 +148,18 @@ console.groupEnd();
 console.warn("Deprecated function used");
 console.error("Failed to save data");
 
-// Timing operations
+// Timing operations (top-level await works in the DevTools console;
+// in your own files, put this inside an async function)
 console.time("fetch");
 await fetch("/api/data");
-console.timeEnd("fetch");  // "fetch: 234ms"
+console.timeEnd("fetch");  // e.g. "fetch: 234.5 ms"
 
 // Conditional logging
 console.assert(user !== null, "User should not be null!", user);
                 </code></pre>
 
                 <h3>3. The Debugger</h3>
-                <p>The <code>debugger</code> statement pauses execution and opens DevTools at that exact line. It's like freezing time — you can inspect every variable, step through code line by line, and see exactly what's happening.</p>
+                <p>With DevTools open, the <code>debugger</code> statement pauses execution at that exact line. (If DevTools is closed, the browser simply ignores it — so open DevTools first, then reload.) It's like freezing time — you can inspect every variable, step through code line by line, and see exactly what's happening.</p>
 
                 <pre><code class="language-javascript">
 function processOrder(order) {
@@ -275,7 +284,7 @@ function handleFormSubmit(event) {
                 </code></pre>
 
                 <h3>File Structure for Larger Projects</h3>
-                <p>When a project outgrows a single file, split it into modules. Modern JavaScript supports this with <code>&lt;script type="module"&gt;</code>.</p>
+                <p>When a project outgrows a single file, split it into modules. Modern JavaScript supports this with <code>&lt;script type="module" src="js/app.js"&gt;&lt;/script&gt;</code>. One catch: modules must be loaded from a web server (Live Server works great) — double-clicking the HTML file to open it as <code>file://</code> will block the imports.</p>
 
                 <pre><code class="language-javascript">
 // File structure:
@@ -364,11 +373,12 @@ null === undefined  // false
                 <pre><code class="language-javascript">
 // ❌ This doesn't create a copy — both point to the same object
 const original = { name: "Ray", scores: [90, 85] };
-const copy = original;
-copy.name = "Alice";
+const alias = original;
+alias.name = "Alice";
 console.log(original.name);  // "Alice" — original was changed!
 
 // ✅ Shallow copy with spread operator
+original.name = "Ray";          // (reset for the next example)
 const copy = { ...original };
 copy.name = "Alice";
 console.log(original.name);  // "Ray" — original is safe
@@ -377,24 +387,33 @@ console.log(original.name);  // "Ray" — original is safe
 copy.scores.push(100);
 console.log(original.scores);  // [90, 85, 100] — still linked!
 
-// ✅ Deep copy (for nested data)
-const deepCopy = JSON.parse(JSON.stringify(original));
-// Or: const deepCopy = structuredClone(original);
+// ✅ Deep copy (for nested data) — built into every modern browser
+const deepCopy = structuredClone(original);
+// Older trick: JSON.parse(JSON.stringify(original))
+// (works for plain data, but loses Dates, undefined, and functions)
                 </code></pre>
 
-                <h3>5. Memory Leaks from Event Listeners</h3>
+                <h3>5. Piling Up Duplicate Event Listeners</h3>
                 <pre><code class="language-javascript">
-// ❌ Adding listeners in a render loop without removing old ones
+// ❌ Adding a listener to the SAME element every time render() runs
 function render() {
+    list.innerHTML = "";
     items.forEach(item => {
         const btn = document.createElement("button");
-        // This listener is added every render — they pile up!
-        btn.addEventListener("click", () => deleteItem(item.id));
+        btn.classList.add("delete-btn");
+        btn.dataset.id = item.id;
+        btn.textContent = "Delete";
         list.append(btn);
+    });
+    // A brand-new listener is added on EVERY render — after 5 renders,
+    // one click runs deleteItem 5 times!
+    list.addEventListener("click", (event) => {
+        const btn = event.target.closest(".delete-btn");
+        if (btn) deleteItem(Number(btn.dataset.id));
     });
 }
 
-// ✅ Use event delegation instead (one listener, never re-added)
+// ✅ Add the delegated listener ONCE, outside render()
 list.addEventListener("click", (event) => {
     const btn = event.target.closest(".delete-btn");
     if (btn) deleteItem(Number(btn.dataset.id));
@@ -430,7 +449,7 @@ function divide(a, b) {
             <section id="modern-javascript" class="lesson-section">
                 <h2>Modern JavaScript Features</h2>
 
-                <p>JavaScript evolves every year. Here are some newer features you should know about as you continue learning.</p>
+                <p>JavaScript gets new features every year. Here are some modern ones you'll see constantly in other people's code — all of them work in every current browser, so you can use them today.</p>
 
                 <h3>Optional Chaining (<code>?.</code>)</h3>
                 <pre><code class="language-javascript">
@@ -451,8 +470,8 @@ const name = user.name ?? "Anonymous";     // "Anonymous" if null/undefined
 const count = settings.count ?? 10;        // 10 if null/undefined
 
 // Different from || which treats 0, "", and false as falsy
-const score = user.score || 10;   // 10 if score is 0 (probably wrong!)
-const score = user.score ?? 10;   // 0 is kept (correct!)
+const scoreA = user.score || 10;   // 10 if score is 0 (probably wrong!)
+const scoreB = user.score ?? 10;   // 0 is kept (correct!)
                 </code></pre>
 
                 <h3>Destructuring</h3>
@@ -522,7 +541,7 @@ const deepCopy = structuredClone(complexObject);
                     C --> C2["npm / packages"]
                     D --> D1["Node.js"]
                     D --> D2["Express / APIs"]
-                    E --> E1["Jest / Vitest"]
+                    E --> E1["Vitest / Jest"]
                     style A fill:#ecfdf5,stroke:#22c55e,stroke-width:3px,color:#1e293b
                     style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
                     style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
@@ -550,14 +569,19 @@ const deepCopy = structuredClone(complexObject);
                     </table>
                 </div>
 
+                <div class="card card-info">
+                    <h4>💡 Starting a Framework Project Today</h4>
+                    <p>You'll still find older tutorials that start React projects with <code>create-react-app</code>. Skip it — it was officially deprecated in 2025. Today the usual starting point is <strong>Vite</strong> (<code>npm create vite@latest</code> lets you pick React, Vue, Svelte, or plain JavaScript), or a full "meta-framework" built on top of a framework, such as <strong>Next.js</strong> (React), <strong>Nuxt</strong> (Vue), or <strong>SvelteKit</strong> (Svelte).</p>
+                </div>
+
                 <h3>Build Tools: Vite, npm</h3>
-                <p><strong>npm</strong> (Node Package Manager) lets you install thousands of open-source libraries with one command. <strong>Vite</strong> is a modern build tool that gives you fast development servers, hot module replacement, and production bundling. You'll use these on virtually every professional project.</p>
+                <p><strong>npm</strong> (it comes bundled with Node.js) lets you install any of millions of open-source packages with one command. <strong>Vite</strong> is the go-to modern build tool: it gives you a fast development server that updates the page instantly as you save (hot module replacement) and bundles your code for production. You'll use tools like these on virtually every professional project.</p>
 
                 <h3>Back-End JavaScript: Node.js</h3>
-                <p><strong>Node.js</strong> lets you run JavaScript outside the browser — on servers, command-line tools, and APIs. With Node, you can build full-stack applications using one language for both front-end and back-end. <strong>Express</strong> is the most popular Node framework for building APIs.</p>
+                <p><strong>Node.js</strong> lets you run JavaScript outside the browser — on servers, command-line tools, and APIs. With Node, you can build full-stack applications using one language for both front-end and back-end. When you install it from <a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a>, choose the <strong>LTS</strong> (Long-Term Support) version — it's the stable one most projects expect. <strong>Express</strong> is the most widely used Node framework for building APIs.</p>
 
                 <h3>TypeScript</h3>
-                <p><strong>TypeScript</strong> adds static types to JavaScript — it catches bugs at development time instead of runtime. Most professional projects use TypeScript now. It's JavaScript with guardrails.</p>
+                <p><strong>TypeScript</strong> adds static types to JavaScript — it catches bugs at development time instead of runtime. Most new professional projects use TypeScript, and every framework above supports it out of the box. It's JavaScript with guardrails — and everything you learned in this course still applies.</p>
 
                 <pre><code class="language-javascript">
 // TypeScript — JavaScript with type annotations
@@ -571,7 +595,7 @@ greet("Ray", "thirty"); // ❌ Error: Argument of type 'string'
                 </code></pre>
 
                 <h3>Testing</h3>
-                <p>Testing ensures your code works correctly and keeps working as you make changes. <strong>Jest</strong> and <strong>Vitest</strong> are popular testing frameworks. Start with unit tests (testing individual functions) — your data layer functions from QuickNote would be a great first target.</p>
+                <p>Testing ensures your code works correctly and keeps working as you make changes. <strong>Vitest</strong> (a natural fit if you use Vite) and <strong>Jest</strong> are popular unit-testing frameworks, and <strong>Playwright</strong> can drive a real browser to test whole pages end to end. Start with unit tests (testing individual functions) — your data layer functions from QuickNote would be a great first target.</p>
             </section>
 
             <!-- Section 6 -->
@@ -661,6 +685,82 @@ greet("Ray", "thirty"); // ❌ Error: Argument of type 'string'
                 </ul>
             </section>
 
+            <!-- Section 7: Check your understanding -->
+            <section id="quiz" class="lesson-section">
+                <h2>Check Your Understanding</h2>
+                <p>One last quiz — no pressure. These questions pull together ideas from this lesson.</p>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> The console shows <code>Cannot read properties of null (reading 'textContent')</code>. What's the most likely cause?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="textContent is a real DOM property — the problem is the thing BEFORE the dot.">A) <code>textContent</code> is misspelled</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Browsers support textContent everywhere. Look at the word 'null' in the message.">B) The browser doesn't support <code>textContent</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! querySelector returns null when nothing matches — usually a typo in the selector, or the script ran before the element existed. Reading .textContent on null throws this error.">C) <code>querySelector</code> didn't find the element, so it returned <code>null</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> A player's score is <code>0</code>. What does <code>const shown = player.score ?? 10;</code> set <code>shown</code> to?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! ?? only falls back when the left side is null or undefined. 0 is a real value, so it's kept. (With || you'd get 10, because 0 is falsy.)">A) <code>0</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's what || would give you. ?? is pickier — it only replaces null and undefined.">B) <code>10</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="?? never returns a boolean on its own — it returns one of its two sides.">C) <code>false</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> You copy an object with <code>const copy = { ...original };</code> and then push a new item onto <code>copy.scores</code> (an array). What happens to <code>original.scores</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Spread copies the top level only. What does the copy's scores property point to?">A) Nothing — spread makes a completely separate copy</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Spread makes a SHALLOW copy: both objects share the same scores array. Use structuredClone(original) when you need a deep copy.">B) It changes too, because the nested array is shared</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Pushing onto an array is allowed here — no error is thrown.">C) JavaScript throws an error</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> You want to start a new React project today. Which approach fits current best practice?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Create React App still shows up in old tutorials, but it was deprecated in 2025.">A) Run <code>create-react-app</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="You can, but you'd miss out on the build tooling every modern project uses. There's a much easier way.">B) Download React files by hand and link each one with a script tag</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Vite (npm create vite@latest) or a framework like Next.js is the standard starting point now that Create React App is deprecated.">C) Use Vite (<code>npm create vite@latest</code>) or a framework like Next.js</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> You add a <code>debugger;</code> line to your code and reload, but nothing pauses. What's the most likely reason?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="debugger is a normal JavaScript statement supported by every browser.">A) <code>debugger</code> only works in Node.js</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The browser ignores debugger statements unless DevTools is open. Open DevTools (F12), then reload the page.">B) DevTools wasn't open, so the browser ignored it</button>
+                            <button class="quiz-option" data-correct="false" data-hint="There's no special setting in your code — think about what needs to be open in the browser.">C) You need to add <code>"use debug"</code> at the top of the file</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Journal -->
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Look back at the whole course. Which JavaScript skill felt impossible at the start but makes sense to you now? Pick one project from the "Project Ideas" table (or your own idea) and write down which lessons' skills it would use and the very first step you'd take to build it. What's one topic you're still unsure about and want to revisit before moving on?</em></p>
+                </div>
+            </section>
+
             <!-- Summary -->
             <section id="summary" class="lesson-section">
                 <h2>Course Summary &amp; Final Thoughts</h2>
@@ -669,12 +769,12 @@ greet("Ray", "thirty"); // ❌ Error: Argument of type 'string'
                     <h3>🎉 What You've Accomplished</h3>
                     <p>Look back at how far you've come across 22 lessons and 6 modules:</p>
                     <ul>
-                        <li><strong>Module 1: Foundations</strong> — You went from "what is JavaScript?" to writing variables, expressions, and running code in the console</li>
+                        <li><strong>Module 1: JavaScript Foundations</strong> — You went from "what is JavaScript?" to writing variables, expressions, and running code in the console</li>
                         <li><strong>Module 2: Control Flow &amp; Functions</strong> — You learned to make decisions, repeat actions, and organize code into reusable functions</li>
                         <li><strong>Module 3: Working with Data</strong> — You mastered arrays, objects, powerful array methods, and string manipulation</li>
                         <li><strong>Module 4: The DOM</strong> — You connected JavaScript to the page — selecting, modifying, creating, and removing elements dynamically</li>
-                        <li><strong>Module 5: Interactive Pages</strong> — You built real features: validated forms, timers, persistent storage, and live API data</li>
-                        <li><strong>Module 6: Capstone</strong> — You combined everything into a complete application and learned professional practices</li>
+                        <li><strong>Module 5: Building Interactive Pages</strong> — You built real features: validated forms, timers, persistent storage, and live API data</li>
+                        <li><strong>Module 6: Capstone &amp; Next Steps</strong> — You combined everything into a complete application and learned professional practices</li>
                     </ul>
                     <p>That's not just theory — you built working software. You're a JavaScript developer now.</p>
                 </div>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickNote — after Step 3</title>
+  <link rel="icon" href="data:,">
+    <style>
+        * { box-sizing: border-box; margin: 0; }
+        body { font-family: system-ui, sans-serif; background: #f1f5f9; color: #1e293b; min-height: 100vh; }
+
+        .app { max-width: 800px; margin: 0 auto; padding: 1rem; }
+
+        /* Header */
+        .app-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .app-header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .quote { font-style: italic; color: #64748b; font-size: 0.9rem; max-width: 500px; margin: 0 auto; line-height: 1.5; }
+
+        /* Toolbar */
+        .toolbar { display: flex; gap: 0.5rem; padding: 1rem 0; flex-wrap: wrap; }
+        .toolbar input, .toolbar select {
+            padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1;
+            border-radius: 6px; font-size: 0.9rem; background: white;
+        }
+        .toolbar input { flex: 1; min-width: 150px; }
+        .toolbar input:focus, .toolbar select:focus { outline: none; border-color: #6366f1; }
+        #new-note-btn {
+            padding: 0.5rem 1.2rem; background: #6366f1; color: white;
+            border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; white-space: nowrap;
+        }
+        #new-note-btn:hover { background: #4f46e5; }
+
+        /* Form */
+        .note-form-container { max-height: 0; overflow: hidden; visibility: hidden; transition: max-height 0.4s ease, visibility 0.4s; background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .note-form-container.visible { max-height: 500px; padding: 1.5rem; visibility: visible; transition: max-height 0.4s ease, visibility 0s; }
+        .form-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+        .form-row input { flex: 1; }
+        #note-form input, #note-form select, #note-form textarea {
+            width: 100%; padding: 0.5rem 0.75rem; border: 2px solid #e2e8f0;
+            border-radius: 6px; font-size: 0.95rem; font-family: inherit;
+        }
+        #note-form textarea { resize: vertical; margin-bottom: 0.75rem; min-height: 80px; }
+        #note-form input:focus, #note-form select:focus, #note-form textarea:focus { outline: none; border-color: #6366f1; }
+        .input-error { border-color: #ef4444 !important; background: #fef2f2; }
+        .field-error { color: #ef4444; font-size: 0.8rem; display: block; margin-top: 0.2rem; }
+        .form-actions { display: flex; gap: 0.5rem; align-items: center; }
+        .form-actions button { padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 0.9rem; cursor: pointer; }
+        #save-btn { background: #6366f1; color: white; border: none; }
+        #save-btn:hover { background: #4f46e5; }
+        #cancel-btn { background: white; color: #64748b; border: 1px solid #cbd5e1; }
+        #cancel-btn:hover { border-color: #94a3b8; }
+        .save-status { opacity: 0; transition: opacity 0.3s; color: #15803d; font-size: 0.9rem; align-self: center; }
+        .save-status.visible { opacity: 1; }
+
+        /* Notes Grid */
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; padding: 0.5rem 0 2rem; }
+        .note-card {
+            background: white; border-radius: 10px; padding: 1.25rem;
+            border-left: 4px solid #6366f1;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            display: flex; flex-direction: column; gap: 0.5rem;
+            animation: fadeSlideIn 0.3s ease; position: relative;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
+        }
+        .note-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+        .note-card.removing { opacity: 0; transform: scale(0.95); }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .note-badge { font-size: 0.75rem; text-transform: capitalize; color: #64748b; }
+        .note-title { font-size: 1.05rem; color: #1e293b; }
+        .note-body { font-size: 0.85rem; color: #64748b; line-height: 1.5; flex: 1; }
+        .note-time { font-size: 0.75rem; color: #94a3b8; }
+        .note-actions { display: flex; gap: 0.25rem; }
+        .note-actions button { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 0.2rem 0.4rem; border-radius: 4px; opacity: 0.5; transition: opacity 0.2s; }
+        .note-actions button:hover { opacity: 1; background: #f1f5f9; }
+
+        /* Empty State */
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: #94a3b8; }
+
+        /* Footer */
+        .app-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #e2e8f0; }
+        .shortcut-hint { display: flex; gap: 0.25rem; align-items: center; }
+        kbd { background: #e2e8f0; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.75rem; font-family: inherit; }
+
+        @media (max-width: 500px) {
+            .toolbar { flex-direction: column; }
+            .form-row { flex-direction: column; }
+            .notes-grid { grid-template-columns: 1fr; }
+            .shortcut-hint { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <h1>📝 QuickNote</h1>
+            <p class="quote" id="quote">Loading inspiration...</p>
+        </header>
+
+        <div class="toolbar">
+            <input type="text" id="search-input" placeholder="Search notes...">
+            <select id="filter-category">
+                <option value="all">All Categories</option>
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="ideas">Ideas</option>
+            </select>
+            <button id="new-note-btn">+ New Note</button>
+            <span class="save-status" id="save-status" role="status"></span>
+        </div>
+
+        <div class="note-form-container" id="note-form-container">
+            <form id="note-form" novalidate>
+                <input type="hidden" id="note-id">
+                <div class="form-row">
+                    <input type="text" id="note-title" name="title" placeholder="Note title">
+                    <select id="note-category" name="category">
+                        <option value="personal">Personal</option>
+                        <option value="work">Work</option>
+                        <option value="ideas">Ideas</option>
+                    </select>
+                </div>
+                <textarea id="note-body" name="body" rows="4" placeholder="Write your note..."></textarea>
+                <div class="form-actions">
+                    <button type="submit" id="save-btn">Save Note</button>
+                    <button type="button" id="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="notes-grid" id="notes-grid"></div>
+
+        <footer class="app-footer">
+            <span id="note-count">0 notes</span>
+            <span class="shortcut-hint"><kbd>N</kbd> New note · <kbd>/</kbd> Search · <kbd>Esc</kbd> Close</span>
+        </footer>
+    </div>
+
+    <script>
+    // QuickNote · CHECKPOINT — Steps 2–3 complete. Carry on from the first TODO below.
+    // Work top to bottom; keep the Console open (F12) and reload after each TODO.
+    // === DATA LAYER === (Step 2)
+    const STORAGE_KEY = "quicknote_notes";
+
+    function loadNotes() {
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) { return []; }
+    }
+
+    function saveNotes(data) {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+        catch (e) { console.error("Save failed:", e); }
+    }
+
+    let notes = loadNotes();
+
+    function createNote(title, body, category) {
+        const now = new Date().toISOString();
+        notes.unshift({ id: Date.now(), title: title.trim(), body: body.trim(), category, createdAt: now, updatedAt: now });
+        saveNotes(notes);
+    }
+
+    function updateNote(id, title, body, category) {
+        const note = notes.find(n => n.id === id);
+        if (!note) return;
+        Object.assign(note, { title: title.trim(), body: body.trim(), category, updatedAt: new Date().toISOString() });
+        saveNotes(notes);
+    }
+
+    function deleteNote(id) {
+        notes = notes.filter(n => n.id !== id);
+        saveNotes(notes);
+    }
+
+    function getNotes(search = "", category = "all") {
+        return notes.filter(n => {
+            const catOk = category === "all" || n.category === category;
+            const searchOk = !search || n.title.toLowerCase().includes(search.toLowerCase()) || n.body.toLowerCase().includes(search.toLowerCase());
+            return catOk && searchOk;
+        });
+    }
+
+    // === DOM REFERENCES === (done for you)
+    const notesGrid = document.querySelector("#notes-grid");
+    const noteCount = document.querySelector("#note-count");
+    const quoteEl = document.querySelector("#quote");
+    const noteForm = document.querySelector("#note-form");
+    const formContainer = document.querySelector("#note-form-container");
+    const noteIdInput = document.querySelector("#note-id");
+    const titleInput = document.querySelector("#note-title");
+    const bodyInput = document.querySelector("#note-body");
+    const categorySelect = document.querySelector("#note-category");
+    const saveBtn = document.querySelector("#save-btn");
+    const cancelBtn = document.querySelector("#cancel-btn");
+    const newNoteBtn = document.querySelector("#new-note-btn");
+    const saveStatus = document.querySelector("#save-status");
+    const searchInput = document.querySelector("#search-input");
+    const filterCategory = document.querySelector("#filter-category");
+
+    const categoryColors = { work: "#3b82f6", personal: "#22c55e", ideas: "#f59e0b" };
+    const categoryEmojis = { work: "💼", personal: "🏠", ideas: "💡" };
+
+    // === RENDERING === (Step 3)
+    function formatDate(iso) {
+        const diff = Date.now() - new Date(iso).getTime();
+        const mins = Math.floor(diff / 60000);
+        if (mins < 1) return "Just now";
+        if (mins < 60) return mins + "m ago";
+        const hrs = Math.floor(diff / 3600000);
+        if (hrs < 24) return hrs + "h ago";
+        const days = Math.floor(diff / 86400000);
+        if (days < 7) return days + "d ago";
+        return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    }
+
+    function renderNotes(search = "", category = "all") {
+        const filtered = getNotes(search, category);
+        notesGrid.innerHTML = "";
+        if (filtered.length === 0) {
+            notesGrid.innerHTML = '<div class="empty-state"><p>' +
+                (notes.length === 0 ? 'No notes yet. Click <strong>+ New Note</strong> to get started!' : 'No notes match your search.') +
+                '</p></div>';
+            noteCount.textContent = "0 notes";
+            return;
+        }
+        const frag = document.createDocumentFragment();
+        filtered.forEach(note => {
+            const card = document.createElement("article");
+            card.classList.add("note-card");
+            card.dataset.id = note.id;
+            card.style.borderLeftColor = categoryColors[note.category] || "#6366f1";
+
+            const badge = document.createElement("span");
+            badge.classList.add("note-badge");
+            badge.textContent = (categoryEmojis[note.category] || "") + " " + note.category;
+
+            const title = document.createElement("h3");
+            title.classList.add("note-title");
+            title.textContent = note.title;
+
+            const body = document.createElement("p");
+            body.classList.add("note-body");
+            body.textContent = note.body.length > 120 ? note.body.substring(0, 120) + "..." : note.body;
+
+            const time = document.createElement("time");
+            time.classList.add("note-time");
+            time.textContent = formatDate(note.updatedAt);
+
+            const actions = document.createElement("div");
+            actions.classList.add("note-actions");
+            const editBtn = document.createElement("button");
+            editBtn.classList.add("edit-btn");
+            editBtn.title = "Edit note";
+            editBtn.textContent = "✏️";
+            const delBtn = document.createElement("button");
+            delBtn.classList.add("delete-btn");
+            delBtn.title = "Delete note";
+            delBtn.textContent = "🗑️";
+            actions.append(editBtn, delBtn);
+
+            card.append(badge, title, body, time, actions);
+            frag.append(card);
+        });
+        notesGrid.append(frag);
+        noteCount.textContent = filtered.length + " note" + (filtered.length !== 1 ? "s" : "");
+    }
+
+    // === FORM === (Step 4)
+    // TODO 4a: showForm(editNote = null) — add .visible to formContainer. Editing? fill the hidden
+    //          #note-id, title, body and category and set the button to "Update Note". New note?
+    //          noteForm.reset(), clear #note-id, button text "Save Note". Finally focus the title.
+    // TODO 4b: hideForm() — remove .visible, reset the form, clear #note-id, clearFormErrors().
+    // TODO 4c: showFieldError(input, msg) — add .input-error to the input and put msg in a
+    //          span.field-error (role="alert") placed right AFTER that input (reuse it if the next
+    //          sibling already is one).
+    // TODO 4d: clearFormErrors() — remove every .field-error and every .input-error class.
+    // TODO 4e: validateForm() — title required and under 100 characters; body required.
+    //          Show BOTH messages when both fields are empty. Return true/false.
+    // TODO 4f: showSaveStatus(msg) — show msg in #save-status (.visible), hide it after 2 seconds;
+    //          clearTimeout the previous timer first so quick repeat saves restart the clock.
+    // TODO 4g: submit listener — preventDefault; if invalid, focus the first .input-error and stop.
+    //          #note-id empty -> createNote + "Note saved!"; has a value -> updateNote(Number(id)) +
+    //          "Note updated!". Then hideForm() and renderNotes(searchInput.value, filterCategory.value).
+    // TODO 4h: "+ New Note" click -> showForm(); Cancel click -> hideForm.
+    // === SEARCH & FILTER === (Step 5)
+    // TODO 5a: debounce(fn, delay) — return a function that clears the previous timer and
+    //          starts a new setTimeout that calls fn(...args) after delay ms.
+    // TODO 5b: applyFilters() — renderNotes(searchInput.value, filterCategory.value).
+    // TODO 5c: searchInput "input" -> debounce(applyFilters, 300);
+    //          filterCategory "change" -> applyFilters (no debounce needed).
+    // === NOTE ACTIONS (delegation) === (Step 7)
+    // TODO 7a: ONE click listener on notesGrid (event delegation — the cards are rebuilt on
+    //          every render). Find the card with event.target.closest(".note-card"); read its id
+    //          with Number(card.dataset.id).
+    //          - .edit-btn   -> find the note and showForm(note)
+    //          - .delete-btn -> confirm("Delete this note?"); if this note is open in the form,
+    //            hideForm() first; add .removing to the card, then after 300ms deleteNote(id) and
+    //            renderNotes(searchInput.value, filterCategory.value).
+    // === KEYBOARD SHORTCUTS === (Step 7)
+    // TODO 7b: keydown listener on document.
+    //          - Escape -> hideForm() (works even while typing), then return
+    //          - ignore the rest while typing: event.target.closest("input, textarea, select"),
+    //            or when Ctrl / Cmd (meta) / Alt is held
+    //          - "n" or "N" -> preventDefault() + showForm()   (NOT Ctrl+N — Chrome keeps that one)
+    //          - "/"        -> preventDefault() + focus the search box
+    // === API QUOTE === (Step 6)
+    // TODO 6a: async fetchQuote() — await fetch("https://dummyjson.com/quotes/random");
+    //          throw if !res.ok; parse the JSON; show "quote" — author in quoteEl with textContent.
+    //          catch: show the fallback '"The best way to predict the future is to create it."'
+    //          (the app must keep working offline).
+    // Then uncomment fetchQuote() in INIT.
+    // CHECKPOINT: DevTools > Network > Offline, reload — the fallback quote appears, no crash.
+    // === INIT === (Steps 3 + 6)
+    renderNotes();
+    // fetchQuote();    // TODO 6b: uncomment after Step 6
+    </script>
+</body>
+</html>

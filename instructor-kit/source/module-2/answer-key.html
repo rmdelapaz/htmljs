@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Answer Key — Module 2</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+<style>pre.code,code.inline{font-variant-ligatures:none} /* show => and === as typed */</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">answers &amp; solutions · not for students</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Instructor Kit · Answer Key</div>
+    <h1>Module 2 — Answers &amp; Solutions</h1>
+    <p class="sub">Correct quiz answers with the "why," plus a reference solution for each hands-on exercise. Use for grading and for reteaching missed items.</p>
+    <div class="meta-row"><span class="chip">Lessons <b>05–08</b></span><span class="chip"><b>20</b> quiz items</span><span class="chip"><b>4</b> exercises</span></div>
+  </header>
+
+  <div class="note"><div class="t">Numbering matches the workbook</div><p>This key covers every question in each lesson's quiz. The participant workbook's self-check uses a 3-question subset per lesson, labelled with the lesson's own question numbers (e.g. Q1 · Q4 · Q5), so a student's "Q4" is always this key's Q4.</p></div>
+
+  <!-- L05 -->
+  <div class="sec"><h2>L05 · Conditionals</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">What does this code output?</div>
+<pre class="code"><span class="k">let</span> x = <span class="s">5</span>;
+<span class="k">if</span> (x &gt; <span class="s">10</span>) {
+    console.log(<span class="s">"A"</span>);
+} <span class="k">else if</span> (x &gt; <span class="s">3</span>) {
+    console.log(<span class="s">"B"</span>);
+} <span class="k">else if</span> (x &gt; <span class="s">1</span>) {
+    console.log(<span class="s">"C"</span>);
+} <span class="k">else</span> {
+    console.log(<span class="s">"D"</span>);
+}</pre>
+    <div class="opts"><div class="opt correct">B) B</div></div><div class="why"><b>Why:</b> 5 &gt; 10 is false, but 5 &gt; 3 is true, so "B" prints. The chain stops at the first true condition, so x &gt; 1 is never checked.</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">What happens if you forget <code class="inline">break</code> in a <code class="inline">switch</code> case?</div><div class="opts"><div class="opt correct">B) Execution falls through to the next case</div></div><div class="why"><b>Why:</b> without <code class="inline">break</code>, the next case's code runs too, whether or not it matches. No error, no jump to <code class="inline">default</code>.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">What does <code class="inline">let result = 10 &gt; 5 ? "yes" : "no";</code> assign to <code class="inline">result</code>?</div><div class="opts"><div class="opt correct">A) "yes"</div></div><div class="why"><b>Why:</b> the condition is true, so the ternary returns its first value. It returns one of its two values, never a boolean.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">What does this code output?</div>
+<pre class="code"><span class="k">let</span> input = <span class="s">"5"</span>;
+<span class="k">switch</span> (input) {
+    <span class="k">case</span> <span class="s">5</span>:
+        console.log(<span class="s">"number five"</span>);
+        <span class="k">break</span>;
+    <span class="k">default</span>:
+        console.log(<span class="s">"no match"</span>);
+}</pre>
+    <div class="opts"><div class="opt correct">C) no match</div></div><div class="why"><b>Why:</b> <code class="inline">switch</code> compares with strict equality (<code class="inline">===</code>); the string <code class="inline">"5"</code> is not <code class="inline">===</code> the number <code class="inline">5</code>, so <code class="inline">default</code> runs. Convert first with <code class="inline">Number(input)</code>.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">A shopping cart stores <code class="inline">let quantity = 0;</code> and zero is a perfectly valid quantity. Why is <code class="inline">if (quantity) { ... }</code> a risky way to check that a quantity was entered?</div><div class="opts"><div class="opt correct">D) 0 is falsy, so a valid 0 would be treated as "missing"</div></div><div class="why"><b>Why:</b> <code class="inline">0</code> is on the falsy list. When zero is legitimate, check explicitly, e.g. <code class="inline">quantity !== undefined</code>.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Grade Calculator</div><p>Look for: an invalid-score check first (<code class="inline">score &lt; 0 || score &gt; 100</code>) wrapping the rest in <code class="inline">else</code>; an <code class="inline">else if</code> chain from <code class="inline">&gt;= 90</code> down storing <code class="inline">letterGrade</code>; a <code class="inline">switch</code> on <code class="inline">letterGrade</code> with a <code class="inline">break</code> in every case; <code class="inline">const status = score &gt;= 60 ? "Pass" : "Fail"</code>; output <em>"Alex scored 78 (C) — Solid effort, keep improving!"</em> and <em>"Status: Pass"</em>. Test with 95 (A), 60 (D, Pass), 59 (F, Fail), −5 and 105 (Invalid score). Reference: <code class="inline">labs/module-2/l05-conditionals/solution/</code>.</p></div>
+
+  <!-- L06 -->
+  <div class="sec"><h2>L06 · Loops</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">How many times does this loop run?</div>
+<pre class="code"><span class="k">for</span> (<span class="k">let</span> i = <span class="s">0</span>; i &lt; <span class="s">3</span>; i++) {
+    console.log(i);
+}</pre>
+    <div class="opts"><div class="opt correct">B) 3</div></div><div class="why"><b>Why:</b> i takes 0, 1, 2; at 3 the condition <code class="inline">i &lt; 3</code> is false and the loop exits.</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">Which loop should you use to iterate over an array's values?</div><div class="opts"><div class="opt correct">B) for...of</div></div><div class="why"><b>Why:</b> <code class="inline">for...of</code> hands you each value directly. <code class="inline">for...in</code> gives string keys and belongs to objects.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">What does <code class="inline">continue</code> do inside a loop?</div><div class="opts"><div class="opt correct">B) Skips to the next iteration</div></div><div class="why"><b>Why:</b> the rest of the current pass is skipped and the loop carries on. <code class="inline">break</code> is the one that exits.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">What is the key difference between <code class="inline">while</code> and <code class="inline">do...while</code>?</div><div class="opts"><div class="opt correct">D) do...while always runs its body at least once</div></div><div class="why"><b>Why:</b> <code class="inline">do...while</code> checks its condition <em>after</em> each pass; <code class="inline">while</code> checks before, so it may run zero times.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">What goes wrong with this loop?</div>
+<pre class="code"><span class="k">const</span> items = [<span class="s">"a"</span>, <span class="s">"b"</span>, <span class="s">"c"</span>];
+<span class="k">for</span> (<span class="k">let</span> i = <span class="s">0</span>; i &lt;= items.length; i++) {
+    console.log(items[i]);
+}</pre>
+    <div class="opts"><div class="opt correct">B) It runs one extra time and logs undefined</div></div><div class="why"><b>Why:</b> off-by-one. The last index is 2 but <code class="inline">&lt;=</code> lets i reach 3, and <code class="inline">items[3]</code> is <code class="inline">undefined</code> (no error). Use <code class="inline">&lt; items.length</code>.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Star Rating &amp; Search Filter</div><p>Look for: <code class="inline">starRating</code> looping <code class="inline">i = 1; i &lt;= 5</code> and appending <code class="inline">i &lt;= rating ? "★" : "☆"</code>, then returning the string (1 → ★☆☆☆☆, 3 → ★★★☆☆, 5 → ★★★★★); a <code class="inline">for...of</code> over <code class="inline">products</code> with <code class="inline">product.toLowerCase().includes(searchTerm.toLowerCase())</code>; a <code class="inline">let matchCount</code> declared outside the loop; output of the three Wireless products and <em>"3 results found."</em> Reference: <code class="inline">labs/module-2/l06-loops/solution/</code>.</p></div>
+
+  <!-- L07 -->
+  <div class="sec"><h2>L07 · Functions</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">What does a function return if it has no <code class="inline">return</code> statement?</div><div class="opts"><div class="opt correct">B) undefined</div></div><div class="why"><b>Why:</b> every call produces a value; with no <code class="inline">return</code>, that value is <code class="inline">undefined</code>. No error.</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">Which can be called before it's defined in the code?</div><div class="opts"><div class="opt correct">A) Function declaration</div></div><div class="why"><b>Why:</b> declarations are fully hoisted (name + body). <code class="inline">const</code> expressions and arrows are in the TDZ until their line runs.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">What is the output of <code class="inline">const fn = n =&gt; n * 3; console.log(fn(4));</code>?</div><div class="opts"><div class="opt correct">B) 12</div></div><div class="why"><b>Why:</b> a one-expression arrow returns its expression implicitly: 4 × 3.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">What does this code log?</div>
+<pre class="code"><span class="k">function</span> greet(name = <span class="s">"friend"</span>) {
+    <span class="k">return</span> <span class="s">`Hi, ${name}!`</span>;
+}
+console.log(greet());</pre>
+    <div class="opts"><div class="opt correct">C) "Hi, friend!"</div></div><div class="why"><b>Why:</b> no argument means <code class="inline">name</code> would be <code class="inline">undefined</code>, so the default <code class="inline">"friend"</code> kicks in.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">Which arrow function correctly returns an object?</div><div class="opts"><div class="opt correct">D) <code class="inline">const make = n =&gt; ({ name: n });</code></div></div><div class="why"><b>Why:</b> without the parentheses, the braces are read as a function body, so the function returns <code class="inline">undefined</code>. Wrapping in <code class="inline">( )</code> makes them an object literal.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Mini Utility Library</div><p>Look for: <code class="inline">capitalize</code> as a <b>declaration</b> using <code class="inline">str[0].toUpperCase() + str.slice(1).toLowerCase()</code> (with an empty-string guard); <code class="inline">clamp</code> as a <b>function expression</b> (<code class="inline">Math.max(min, Math.min(max, value))</code>); <code class="inline">pluralize</code> as an <b>arrow</b> with <code class="inline">plural = singular + "s"</code>; <code class="inline">temperatureConverter</code> returning <em>"32°F = 0.0°C"</em>, <em>"100°C = 212.0°F"</em>, and <em>"Invalid unit"</em> for anything else. Every helper must <code class="inline">return</code>, not log. Reference: <code class="inline">labs/module-2/l07-functions/solution/</code>.</p></div>
+
+  <!-- L08 -->
+  <div class="sec"><h2>L08 · Scope &amp; Hoisting</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">What is the output?</div>
+<pre class="code">console.log(x);
+<span class="k">var</span> x = <span class="s">10</span>;</pre>
+    <div class="opts"><div class="opt correct">B) undefined</div></div><div class="why"><b>Why:</b> the <code class="inline">var</code> declaration is hoisted and initialized to <code class="inline">undefined</code>; the assignment of 10 stays on its own line.</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">Which keyword creates a block-scoped variable?</div><div class="opts"><div class="opt correct">B) let</div></div><div class="why"><b>Why:</b> <code class="inline">let</code> and <code class="inline">const</code> stay inside their <code class="inline">{ }</code>; <code class="inline">var</code> is function-scoped and leaks out of blocks.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">What is a closure?</div><div class="opts"><div class="opt correct">C) A function that remembers variables from its outer scope</div></div><div class="why"><b>Why:</b> the inner function keeps access to its outer variables even after the outer function has finished — the basis of the private <code class="inline">count</code> in <code class="inline">createCounter</code>.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">What happens when this code runs?</div>
+<pre class="code">console.log(total);
+<span class="k">let</span> total = <span class="s">50</span>;</pre>
+    <div class="opts"><div class="opt correct">B) ReferenceError: Cannot access 'total' before initialization</div></div><div class="why"><b>Why:</b> <code class="inline">let</code> is hoisted but not initialized; the line is inside the Temporal Dead Zone.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">What does this code log?</div>
+<pre class="code"><span class="k">const</span> color = <span class="s">"blue"</span>;
+<span class="k">function</span> paint() {
+    <span class="k">const</span> color = <span class="s">"red"</span>;
+}
+paint();
+console.log(color);</pre>
+    <div class="opts"><div class="opt correct">D) "blue"</div></div><div class="why"><b>Why:</b> the inner <code class="inline">color</code> is a separate, function-scoped variable that shadows the global only inside <code class="inline">paint()</code>. No redeclaration error: they live in different scopes.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Scope Detective &amp; Score Tracker</div><p>Part 1 answers: <b>1</b> "block a" · <b>2</b> "global b" · <b>3</b> "function a" · <b>4</b> "function c" · <b>5</b> "function d" (<code class="inline">var</code> ignores the block) · <b>6</b> "global a" · <b>7</b> "global b" · <b>8</b> <code class="inline">ReferenceError</code> (<code class="inline">c</code> only exists inside <code class="inline">test()</code>). Part 2, look for: <code class="inline">let score = 0</code> <em>inside</em> <code class="inline">createScoreTracker</code>; a returned object with <code class="inline">addPoints</code>, <code class="inline">penalty</code> using <code class="inline">Math.max(0, score - points)</code>, <code class="inline">getScore</code> returning <code class="inline">score</code>, and <code class="inline">reset</code>. The usage sequence shows 30, then 0 after <code class="inline">reset()</code>; <code class="inline">tracker.score</code> is <code class="inline">undefined</code>. Reference: <code class="inline">labs/module-2/l08-scope-closures/solution/</code>.</p></div>
+
+  <div class="foot">
+    <div class="who"><span class="bio">Instructor Kit · confidential — do not distribute to students</span></div>
+    <div class="ver">Answer Key · Module 2 · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Answer Key — Module 3</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">answers &amp; solutions · not for students</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Instructor Kit · Answer Key</div>
+    <h1>Module 3 — Answers &amp; Solutions</h1>
+    <p class="sub">Correct quiz answers with the "why," plus a reference solution for each hands-on exercise. Use for grading and for reteaching missed items.</p>
+    <div class="meta-row"><span class="chip">Lessons <b>9–12</b></span><span class="chip"><b>17</b> quiz items</span><span class="chip"><b>4</b> exercises</span></div>
+  </header>
+
+  <div class="note"><div class="t">Numbering matches the workbook</div><p>This key covers every question in each lesson's quiz (four each, five in L12). The participant workbook's self-check uses a 3-question subset per lesson, labelled with the lesson's own question numbers (e.g. Q1 · Q3 · Q4), so a student's "Q4" is always this key's Q4.</p></div>
+
+  <!-- L09 -->
+  <div class="sec"><h2>L09 · Arrays</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">What is the index of the first element in a JavaScript array?</div><div class="opts"><div class="opt correct">A) 0</div></div><div class="why"><b>Why:</b> arrays are zero-indexed, so the first element is <code class="inline">arr[0]</code> and the last is <code class="inline">arr[arr.length - 1]</code>.</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">Which method adds an element to the END of an array?</div><div class="opts"><div class="opt correct">B) push()</div></div><div class="why"><b>Why:</b> <code class="inline">push</code> adds to the end and returns the new length. <code class="inline">unshift</code> adds to the start; <code class="inline">pop</code> removes from the end.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">What does <code class="inline">splice()</code> do?</div><div class="opts"><div class="opt correct">C) Removes, inserts, or replaces elements at any position</div></div><div class="why"><b>Why:</b> <code class="inline">splice(start, deleteCount, ...items)</code> edits the original array in place. Copying part of an array (A) is <code class="inline">slice</code>.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">What does <code class="inline">["a","b","c"].includes("b")</code> return?</div><div class="opts"><div class="opt correct">B) true</div></div><div class="why"><b>Why:</b> <code class="inline">includes</code> answers yes/no with a boolean. <code class="inline">indexOf("b")</code> would return the position, 1.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — To-Do List Manager</div><p>Look for: <code class="inline">addTodo</code> uses <code class="inline">push</code> and returns the list; <code class="inline">removeTodo</code> uses <code class="inline">indexOf</code>, checks for <code class="inline">-1</code> (logging <code class="inline">Task not found: …</code>), then <code class="inline">splice(index, 1)</code>; <code class="inline">insertTodoAt</code> uses <code class="inline">splice(index, 0, task)</code>; <code class="inline">listTodos</code> checks <code class="inline">length === 0</code> first and numbers from 1 with <code class="inline">forEach((task, i) =&gt; …)</code>; <code class="inline">completeTodo</code> uses <code class="inline">shift</code>, logs <code class="inline">Completed: …</code>, and handles the empty list. Final list after the tests: <b>1. Finish homework · 2. Call dentist · 3. Read a book</b>. Reference: <code class="inline">labs/module-3/l09-arrays/solution/</code>.</p></div>
+
+  <!-- L10 -->
+  <div class="sec"><h2>L10 · Objects</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">Which notation must you use when the key is stored in a variable?</div><div class="opts"><div class="opt correct">B) Bracket notation</div></div><div class="why"><b>Why:</b> bracket notation evaluates what's inside the brackets, so <code class="inline">obj[field]</code> uses the value stored in <code class="inline">field</code>. <code class="inline">obj.field</code> looks for a key literally named "field".</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">What does <code class="inline">Object.keys({ a: 1, b: 2, c: 3 })</code> return?</div><div class="opts"><div class="opt correct">B) [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</div></div><div class="why"><b>Why:</b> <code class="inline">Object.keys</code> returns the property names. Values (A) come from <code class="inline">Object.values</code>; pairs (C) from <code class="inline">Object.entries</code>.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">Why shouldn't you use arrow functions as object methods that use <code class="inline">this</code>?</div><div class="opts"><div class="opt correct">B) Arrow functions don't have their own this</div></div><div class="why"><b>Why:</b> arrow functions inherit <code class="inline">this</code> from the surrounding scope, so inside an arrow "method" <code class="inline">this</code> isn't the object. Use the shorthand <code class="inline">greet() { }</code> syntax.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">What does <code class="inline">{ x: 1 } === { x: 1 }</code> evaluate to?</div><div class="opts"><div class="opt correct">B) false</div></div><div class="why"><b>Why:</b> objects are compared by reference. These are two separate objects in memory, so they're not equal even with identical contents.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Contact Book</div><p>Look for: <code class="inline">addContact</code> checks for a duplicate name with <code class="inline">find</code> before <code class="inline">push</code> and returns <code class="inline">true</code>/<code class="inline">false</code>; <code class="inline">findContact</code> returns <code class="inline">contact || null</code>; <code class="inline">updateContact</code> reuses <code class="inline">findContact</code> and applies <code class="inline">Object.assign(contact, updates)</code> (or spreads the updates in); <code class="inline">displayContact</code> prints <b>Name: Alice | Phone: 555-9999 | Email: alice@example.com | Group: friend</b> after the update; <code class="inline">listByGroup(contacts, "family")</code> → <b>["Bob", "Dave"]</b>. A <code class="inline">for...of</code> + <code class="inline">push</code> version of <code class="inline">listByGroup</code> is full credit, since filter/map come in L11. Reference: <code class="inline">labs/module-3/l10-objects/solution/</code>.</p></div>
+
+  <!-- L11 -->
+  <div class="sec"><h2>L11 · Array Methods</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">What does <code class="inline">map()</code> return?</div><div class="opts"><div class="opt correct">B) A new array with the same number of elements</div></div><div class="why"><b>Why:</b> map transforms each element and always returns a new array of the same length. Fewer items is filter; one value is reduce.</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">What does <code class="inline">[1,2,3].filter(n =&gt; n &gt; 1)</code> return?</div><div class="opts"><div class="opt correct">C) [2, 3]</div></div><div class="why"><b>Why:</b> filter keeps elements whose callback returns true: 2 &gt; 1 and 3 &gt; 1 pass; 1 &gt; 1 is false.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">What is the second argument to <code class="inline">reduce()</code>?</div><div class="opts"><div class="opt correct">B) The initial value of the accumulator</div></div><div class="why"><b>Why:</b> <code class="inline">reduce(callback, initialValue)</code>. The initial value is the accumulator's starting point. Always pass one, or an empty array throws a TypeError.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">Which method modifies the original array?</div><div class="opts"><div class="opt correct">C) sort()</div></div><div class="why"><b>Why:</b> <code class="inline">sort</code> reorders the array in place. map, filter, and reduce return new values and leave the original alone. Use <code class="inline">toSorted()</code> or <code class="inline">[...arr].sort()</code> to keep the original.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Product Catalog Pipeline</div><p>Look for: no <code class="inline">for</code>/<code class="inline">while</code> loops. Expected results: (1) 8 names via <code class="inline">map</code>; (2) <b>6</b> in-stock products via <code class="inline">filter</code>; (3) <b>[Mousepad XL, Wireless Mouse, Mechanical Keyboard]</b> via filter → sort <code class="inline">(a, b) =&gt; a.price - b.price</code>; (4) <b>"374.94"</b> via filter → <code class="inline">reduce(…, 0)</code> → <code class="inline">toFixed(2)</code> (raw value 374.94000000000005); (5) <code class="inline">every(p =&gt; p.rating &gt;= 4.0)</code> → <b>true</b>; (6) six lines, cheapest first, from "Mousepad XL — $11.99 (was $14.99)" to "Headphones — $119.99 (was $149.99)". Check that nobody sorted <code class="inline">products</code> itself before filtering. Reference: <code class="inline">labs/module-3/l11-array-methods/solution/</code>.</p></div>
+
+  <!-- L12 -->
+  <div class="sec"><h2>L12 · Strings &amp; Template Literals</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">Are JavaScript strings mutable or immutable?</div><div class="opts"><div class="opt correct">B) Immutable — methods always return new strings</div></div><div class="why"><b>Why:</b> every string method returns a new string; the original never changes. <code class="inline">str[0] = "X"</code> does nothing (or throws in strict mode).</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">What does <code class="inline">"hello world".split(" ")</code> return?</div><div class="opts"><div class="opt correct">B) [&quot;hello&quot;, &quot;world&quot;]</div></div><div class="why"><b>Why:</b> split breaks the string at every space and returns an array of the pieces.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">How do you check if a string ends with &quot;.pdf&quot;?</div><div class="opts"><div class="opt correct">B) <code class="inline">str.endsWith(&quot;.pdf&quot;)</code></div></div><div class="why"><b>Why:</b> <code class="inline">endsWith</code> checks the end of the string, which is perfect for file extensions. <code class="inline">includes</code> would also match <code class="inline">"my.pdf.txt"</code>.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">What does <code class="inline">"Hello, World!".slice(-6)</code> return?</div><div class="opts"><div class="opt correct">D) &quot;World!&quot;</div></div><div class="why"><b>Why:</b> a negative start counts from the end: the last 6 characters are <code class="inline">"World!"</code>.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">What does <code class="inline">"7".padStart(3, "0")</code> return?</div><div class="opts"><div class="opt correct">A) &quot;007&quot;</div></div><div class="why"><b>Why:</b> padStart adds characters to the <em>start</em> until the string reaches length 3: <code class="inline">"007"</code>. The result is still a string.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Text Formatting Utility</div><p>Look for: <code class="inline">truncate</code> returns the string untouched when it fits, else <code class="inline">slice(0, maxLength - 3) + "..."</code> (<code class="inline">"Hello..."</code> is 8 characters); <code class="inline">slugify</code> chains <code class="inline">trim → toLowerCase → replace</code> (strip specials, spaces → hyphens, collapse hyphens) for <b>"my-blog-post-1"</b>; <code class="inline">countWords</code> trims, returns 0 for an empty string, and splits on <code class="inline">/\s+/</code> → <b>3</b> for <code class="inline">"  lots   of   spaces "</code>; <code class="inline">initials</code> splits, maps each word to its first letter, joins, uppercases → <b>"RDLP"</b>; <code class="inline">maskEmail</code> splits on <code class="inline">"@"</code> and uses <code class="inline">repeat</code> → <b>"r**@example.com"</b>. Regex use is expected for slugify/countWords; don't mark students down for asking about it. Reference: <code class="inline">labs/module-3/l12-strings/solution/</code>.</p></div>
+
+  <div class="foot">
+    <div class="who"><span class="bio">Instructor Kit · confidential — do not distribute to students</span></div>
+    <div class="ver">Answer Key · Module 3 · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

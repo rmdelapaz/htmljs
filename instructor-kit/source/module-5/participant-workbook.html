@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workbook — Module 5</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Student workbook —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">write in it · bring it to every session</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Front-End JavaScript Workbook · Module 5</div>
+    <h1>Building Interactive Pages</h1>
+    <p class="sub">Your working notebook for the four lessons where you build real features. Follow along, do the exercises in the space provided, and check yourself with the quizzes. By the end of the module you'll have four working mini-apps.</p>
+    <div class="meta-row">
+      <span class="chip">Lessons <b>17–20</b></span>
+      <span class="chip"><b>4</b> lessons</span>
+      <span class="chip">Name: ____________________</span>
+    </div>
+  </header>
+
+  <div class="note">
+    <div class="t">How to use this workbook</div>
+    <p>Each lesson has <b>Key Ideas</b> (the reference to keep), a <b>Worked Example</b> (read it), <b>Your Turn</b> (do it and write your code in the boxes), a <b>Self-Check</b> quiz, and <b>Notes</b>. Use the lined boxes for real code and answers. Self-check questions come from the lesson quizzes and keep the lesson's question numbers, so a set may read Q1 · Q3 · Q4. After each lesson, answer the <b>Journal</b> prompt. It takes five minutes and helps the learning stick.</p>
+  </div>
+
+  <!-- PROJECT TRACKER -->
+  <div class="sec"><h2>Module Project Tracker</h2><span class="rule"></span></div>
+  <p style="font-size:.92rem;color:var(--ink-2)">This module has <b>four mini-apps</b>, one per lesson. Tick each one when it works:</p>
+  <ul class="tick lab">
+    <li>☐ <b>L17</b>: registration form that validates as you go and won't submit bad data</li>
+    <li>☐ <b>L18</b>: Pomodoro timer with start / pause / reset, presets, and an animated ring</li>
+    <li>☐ <b>L19</b>: to-do list that is still there after you refresh the page</li>
+    <li>☐ <b>L20</b>: GitHub user search with loading, error, and profile states</li>
+  </ul>
+
+  <!-- ===== L17 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L17</span><h3>Forms &amp; Validation</h3><span class="dur">55 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Read what users type with <code class="inline">.value</code> (and <code class="inline">.checked</code> for checkboxes)</li>
+          <li>Stop the page reload with <code class="inline">event.preventDefault()</code></li>
+          <li>Check required, length, format (regex), and matching fields</li>
+          <li>Validate on <code class="inline">blur</code>, then give live feedback on <code class="inline">input</code></li>
+          <li>Explain why the server must check the data again</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas</div>
+        <ul class="tick">
+          <li><code class="inline">.value</code> is <b>always a string</b>, even for number inputs. Convert with <code class="inline">Number()</code>.</li>
+          <li>Listen for <code class="inline">submit</code> on the <b>form</b>, and call <code class="inline">preventDefault()</code> on the first line.</li>
+          <li><b>Touched fields:</b> validate when the user leaves a field (<code class="inline">blur</code>), then re-check on every keystroke (<code class="inline">input</code>), but only after that first blur.</li>
+          <li>Show errors as <b>text plus color</b>, with <code class="inline">role="alert"</code> so screen readers announce them.</li>
+          <li>Client-side validation is for <b>user experience</b>. Anyone can bypass it, so the <b>server always validates again</b>.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code">form.addEventListener(<span class="s">"submit"</span>, (event) =&gt; {
+  event.<span class="k">preventDefault</span>();                 <span class="c">// no reload</span>
+  <span class="k">const</span> email = form.elements.email.value.trim();
+  <span class="k">if</span> (!<span class="s">/^[^\s@]+@[^\s@]+\.[^\s@]+$/</span>.test(email)) {
+    showError(form.elements.email, <span class="s">"Please enter a valid email"</span>);
+    form.elements.email.focus();
+    <span class="k">return</span>;
+  }
+  console.log(<span class="s">"Valid. Send it to the server, which checks again."</span>);
+});</pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Registration Form with Real-Time Validation</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Complete TODOs 1–5: the <code class="inline">showError</code>/<code class="inline">showSuccess</code> helpers, four validators, a 0–5 password strength meter, blur-then-input wiring, and the submit handler. Then test it: submit it empty, type a weak password, and enter a confirm password that doesn't match. Write your <code class="inline">validateConfirm</code> function here first:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q2</div><div class="qt">What does <code class="inline">event.preventDefault()</code> do in a submit handler?</div>
+          <div class="opts"><div class="opt">A) Stops the event from bubbling up to parent elements</div><div class="opt">B) Clears all the form fields</div><div class="opt">C) Stops the browser from reloading the page or navigating away</div><div class="opt">D) Removes the event listener after it fires once</div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">When is the <code class="inline">blur</code> event useful for form validation?</div>
+          <div class="opts"><div class="opt">A) When you want to validate on every keystroke</div><div class="opt">B) When you want to validate after the user finishes with a field and moves on</div><div class="opt">C) When the form is submitted</div><div class="opt">D) When the user first clicks into a field</div></div></div>
+        <div class="q"><div class="qn">Q5</div><div class="qt">Why is client-side validation not sufficient on its own?</div>
+          <div class="opts"><div class="opt">A) It doesn't work in most browsers</div><div class="opt">B) It's too slow for real-time feedback</div><div class="opt">C) Users can bypass it through DevTools, disabling JS, or direct API calls</div><div class="opt">D) JavaScript can't handle regular expressions for patterns</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Pick a form on a site you use (or the contact form on your own site). List each field and the rule you'd check for it, and decide for each one: HTML attribute, custom JavaScript, or both? In your own words, why must the server check the data again even after your JavaScript approves it? What part of validation are you still unsure about?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L18 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L18</span><h3>Timers &amp; Animation</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Run code later with <code class="inline">setTimeout</code> and cancel it with <code class="inline">clearTimeout</code></li>
+          <li>Repeat code with <code class="inline">setInterval</code> and stop it with <code class="inline">clearInterval</code></li>
+          <li>Tell <b>debounce</b> (wait for a pause) from <b>throttle</b> (at most once per window)</li>
+          <li>Explain why <code class="inline">setTimeout(fn, 0)</code> doesn't run "right now"</li>
+          <li>Animate with <code class="inline">requestAnimationFrame</code> or by toggling a CSS class</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas — the event loop</div>
+        <ul class="tick">
+          <li>Pass the function, don't call it: <code class="inline">setTimeout(show, 1000)</code>, <b>not</b> <code class="inline">setTimeout(show(), 1000)</code>.</li>
+          <li>Save the <b>ID</b> a timer returns. You need it to cancel the timer.</li>
+          <li>JavaScript does one thing at a time. <b>Sync code runs first</b>, then <b>all promise callbacks</b> (microtasks), then <b>one timer or click</b> (task).</li>
+          <li>A timer's delay is a <b>minimum</b>. For accurate countdowns, calculate from <code class="inline">Date.now()</code> instead of counting ticks.</li>
+          <li>For simple motion, CSS does the animating. JS just adds or removes a class.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 480 262" role="img" aria-label="Event loop: the call stack runs synchronous code first, then every waiting microtask such as promise callbacks, then one task such as a timer.">
+            <defs><marker id="wb-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#45536a"/></marker></defs>
+            <rect x="14" y="30" width="160" height="186" rx="8" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="94" y="52" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1d4ed8" letter-spacing="1">CALL STACK</text>
+            <text x="94" y="72" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="12" fill="#45536a">one thing at a time</text>
+            <rect x="30" y="92" width="128" height="30" rx="4" fill="#ffffff" stroke="#1d4ed8"/>
+            <text x="94" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">log("A")</text>
+            <rect x="30" y="130" width="128" height="30" rx="4" fill="#ffffff" stroke="#1d4ed8"/>
+            <text x="94" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">log("D")</text>
+            <text x="94" y="190" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="12" font-weight="600" fill="#1d4ed8">① sync code first</text>
+            <rect x="262" y="30" width="204" height="78" rx="8" fill="#f1e8fd" stroke="#7c3aed" stroke-width="2"/>
+            <text x="364" y="52" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#6d28d9" letter-spacing="1">MICROTASK QUEUE</text>
+            <text x="364" y="72" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="12" fill="#45536a">promise .then / after await</text>
+            <text x="364" y="94" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">log("C")</text>
+            <rect x="262" y="138" width="204" height="78" rx="8" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+            <text x="364" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#b45309" letter-spacing="1">TASK QUEUE</text>
+            <text x="364" y="180" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="12" fill="#45536a">setTimeout, setInterval, clicks</text>
+            <text x="364" y="202" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">log("B")</text>
+            <path d="M258 69 L180 69" stroke="#45536a" stroke-width="1.8" fill="none" marker-end="url(#wb-ar)"/>
+            <text x="218" y="61" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11.5" font-weight="600" fill="#6d28d9">② ALL of them</text>
+            <path d="M258 177 L180 177" stroke="#45536a" stroke-width="1.8" fill="none" marker-end="url(#wb-ar)"/>
+            <text x="218" y="169" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11.5" font-weight="600" fill="#b45309">③ ONE task</text>
+            <text x="240" y="248" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="600" fill="#16202e">Output: A · D · C · B</text>
+          </svg>
+          <figcaption>Sync code first, then every microtask, then one task, and repeat.</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">let</span> intervalId = <span class="k">null</span>;              <span class="c">// outside, so pause() can reach it</span>
+
+<span class="k">function</span> start() {
+  <span class="k">if</span> (intervalId !== <span class="k">null</span>) <span class="k">return</span>;     <span class="c">// no double intervals</span>
+  intervalId = setInterval(() =&gt; {
+    remainingSeconds--;
+    updateDisplay(remainingSeconds);
+    <span class="k">if</span> (remainingSeconds &lt;= <span class="s">0</span>) pause();
+  }, <span class="s">1000</span>);
+}
+<span class="k">function</span> pause() { clearInterval(intervalId); intervalId = <span class="k">null</span>; }</pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Pomodoro Timer with Animated Progress</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Complete TODOs 1–8: DOM references, state, <code class="inline">updateDisplay()</code> (MM:SS with <code class="inline">padStart</code>, and the ring's <code class="inline">stroke-dashoffset = CIRCUMFERENCE × (1 − remaining / total)</code>), start / pause / reset, the presets, and the bonus colors (red under 30 s, green at 0). Write the MM:SS formatting line and the ring formula here:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q2</div><div class="qt">What will this code output?</div>
+          <pre class="code">console.log(<span class="s">"A"</span>);
+setTimeout(() =&gt; console.log(<span class="s">"B"</span>), <span class="s">0</span>);
+console.log(<span class="s">"C"</span>);</pre>
+          <div class="opts"><div class="opt">A) A, B, C</div><div class="opt">B) A, C, B</div><div class="opt">C) B, A, C</div><div class="opt">D) A, B, C (but B might be delayed)</div></div></div>
+        <div class="q"><div class="qn">Q3</div><div class="qt">What's the difference between <code class="inline">setInterval</code> and recursive <code class="inline">setTimeout</code>?</div>
+          <div class="opts"><div class="opt">A) setInterval can repeat; setTimeout cannot</div><div class="opt">B) setTimeout can be canceled; setInterval cannot</div><div class="opt">C) setInterval fires every N ms regardless of how long the work takes; recursive setTimeout waits for completion first</div><div class="opt">D) There's no practical difference</div></div></div>
+        <div class="q"><div class="qn">Q5</div><div class="qt">What is debouncing?</div>
+          <div class="opts"><div class="opt">A) Running a function at most once per time interval</div><div class="opt">B) Canceling all pending timers at once</div><div class="opt">C) Running a function immediately without delay on each event</div><div class="opt">D) Delaying a function until events stop firing, resetting the timer on each new event</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Explain to a friend, in your own words, why <code class="inline">setTimeout(fn, 0)</code> doesn't run "right now." Then pick one feature for your own site — a search box, a scroll effect, a toast message, or a countdown — and decide which tool fits best: debounce, throttle, <code class="inline">requestAnimationFrame</code>, or a CSS transition. Why that one? What about the event loop still feels fuzzy?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L19 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L19</span><h3>Local Storage</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Save, read, and delete data with <code class="inline">setItem</code>, <code class="inline">getItem</code>, <code class="inline">removeItem</code>, <code class="inline">clear</code></li>
+          <li>Store arrays and objects with <code class="inline">JSON.stringify</code> and read them back with <code class="inline">JSON.parse</code></li>
+          <li>Choose <code class="inline">localStorage</code> or <code class="inline">sessionStorage</code></li>
+          <li>Keep an app's state saved: load → render → change → save → render</li>
+          <li>Name what must <b>never</b> go in storage</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas — everything is a string</div>
+        <ul class="tick">
+          <li>Storage holds <b>strings only</b>. Saving an object directly stores <code class="inline">"[object Object]"</code>.</li>
+          <li><code class="inline">getItem</code> on a missing key returns <b><code class="inline">null</code></b>, so give it a fallback: <code class="inline">stored ? JSON.parse(stored) : []</code>.</li>
+          <li>Wrap <code class="inline">JSON.parse</code> in <b>try/catch</b>, because corrupted data throws.</li>
+          <li><code class="inline">localStorage</code> lasts until it's deleted and is shared by tabs. <code class="inline">sessionStorage</code> is per tab and ends when the tab closes.</li>
+          <li>Any script on the page can read storage. <b>Never</b> store passwords or tokens there.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 480 196" role="img" aria-label="JSON round trip: an array is turned into a string with JSON.stringify and saved with setItem; later getItem returns the string and JSON.parse turns it back into an array.">
+            <defs><marker id="wb-ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#45536a"/></marker></defs>
+            <text x="12" y="22" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#6f7c8e" letter-spacing="1">SAVE</text>
+            <rect x="12" y="32" width="120" height="46" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="72" y="52" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1d4ed8">[{…}, {…}]</text>
+            <text x="72" y="69" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#45536a">array in memory</text>
+            <path d="M132 55 L178 55" stroke="#45536a" stroke-width="1.8" marker-end="url(#wb-ar3)"/>
+            <text x="155" y="46" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#16202e">stringify</text>
+            <rect x="182" y="32" width="136" height="46" rx="6" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+            <text x="250" y="52" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#b45309">'[{"id":1,…}]'</text>
+            <text x="250" y="69" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#7a3f06">a JSON string</text>
+            <path d="M318 55 L362 55" stroke="#45536a" stroke-width="1.8" marker-end="url(#wb-ar3)"/>
+            <text x="340" y="46" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#16202e">setItem</text>
+            <rect x="366" y="32" width="104" height="132" rx="8" fill="#d7efe9" stroke="#0f766e" stroke-width="2"/>
+            <text x="418" y="92" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#0f766e">localStorage</text>
+            <text x="418" y="110" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#0f766e">"todos"</text>
+            <text x="12" y="112" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#6f7c8e" letter-spacing="1">LOAD</text>
+            <rect x="12" y="122" width="120" height="46" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="72" y="142" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1d4ed8">[{…}, {…}]</text>
+            <text x="72" y="159" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#45536a">array again</text>
+            <path d="M178 145 L136 145" stroke="#45536a" stroke-width="1.8" marker-end="url(#wb-ar3)"/>
+            <text x="157" y="136" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#16202e">parse</text>
+            <rect x="182" y="122" width="136" height="46" rx="6" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+            <text x="250" y="142" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#b45309">'[{"id":1,…}]'</text>
+            <text x="250" y="159" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#7a3f06">or null on first visit</text>
+            <path d="M362 145 L322 145" stroke="#45536a" stroke-width="1.8" marker-end="url(#wb-ar3)"/>
+            <text x="342" y="136" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#16202e">getItem</text>
+            <text x="240" y="190" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11.5" fill="#45536a">Strings go in and strings come out. JSON turns them into data.</text>
+          </svg>
+          <figcaption>The JSON round trip: stringify to save, parse to load.</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">function</span> loadTodos() {
+  <span class="k">try</span> {
+    <span class="k">const</span> stored = localStorage.getItem(<span class="s">"todos"</span>);
+    <span class="k">return</span> stored ? JSON.parse(stored) : [];
+  } <span class="k">catch</span> (error) {
+    <span class="k">return</span> [];                     <span class="c">// corrupted? start fresh</span>
+  }
+}
+<span class="k">function</span> saveTodos(todos) {
+  localStorage.setItem(<span class="s">"todos"</span>, JSON.stringify(todos));
+}</pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Persistent To-Do List</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Complete TODOs 1–7: load/save, <code class="inline">render</code>, <code class="inline">addTodo</code>, <code class="inline">toggleTodo</code>/<code class="inline">deleteTodo</code>, <code class="inline">updateCount</code>, one <b>delegated</b> click listener on the list, and the first render. Test it by adding two tasks, ticking one, and refreshing. Both should still be there. Sketch your delegated listener (remember that <code class="inline">dataset.id</code> is a string):</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">What does <code class="inline">localStorage.getItem("key")</code> return if the key doesn't exist?</div>
+          <div class="opts"><div class="opt">A) <code class="inline">undefined</code></div><div class="opt">B) <code class="inline">null</code></div><div class="opt">C) An empty string <code class="inline">""</code></div><div class="opt">D) It throws an error</div></div></div>
+        <div class="q"><div class="qn">Q3</div><div class="qt">What is the correct way to store an array in Local Storage?</div>
+          <div class="opts"><div class="opt">A) <code class="inline">localStorage.setItem("data", JSON.stringify(myArray))</code></div><div class="opt">B) <code class="inline">localStorage.setItem("data", myArray)</code></div><div class="opt">C) <code class="inline">localStorage.setItem("data", myArray.toString())</code></div><div class="opt">D) <code class="inline">localStorage.storeArray("data", myArray)</code></div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">How does <code class="inline">sessionStorage</code> differ from <code class="inline">localStorage</code>?</div>
+          <div class="opts"><div class="opt">A) sessionStorage has different methods and a smaller size limit</div><div class="opt">B) sessionStorage sends data to the server; localStorage doesn't</div><div class="opt">C) sessionStorage data is cleared when the tab is closed; localStorage persists until deleted</div><div class="opt">D) sessionStorage is shared across all browser windows; localStorage isn't</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Pick one thing on a site you've built (or want to build) that should be remembered between visits — a theme choice, a half-typed message, a list. Would you use <code class="inline">localStorage</code> or <code class="inline">sessionStorage</code>, and why? In your own words, explain why you have to <code class="inline">JSON.stringify</code> it before saving, and name one thing you'd never put in storage. What are you still unsure about?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L20 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L20</span><h3>Working with APIs &amp; Fetch</h3><span class="dur">60 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Explain what an API, an endpoint, and JSON are</li>
+          <li>Describe a Promise's three states: pending, fulfilled, rejected</li>
+          <li>Fetch data with <code class="inline">fetch()</code> + <code class="inline">await</code>, and check <code class="inline">response.ok</code></li>
+          <li>Handle errors with try/catch and friendly messages</li>
+          <li>Show loading, data, and error states safely</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas — the fetch lifecycle</div>
+        <ul class="tick">
+          <li><code class="inline">fetch()</code> gives you a <b>Promise</b> right away, and the Response arrives later. <code class="inline">await</code> waits for it.</li>
+          <li>A <b>404 or 500 does not land in catch.</b> fetch only rejects when the <em>network</em> fails. Check <code class="inline">response.ok</code> / <code class="inline">response.status</code> yourself.</li>
+          <li><code class="inline">response.json()</code> is <b>also</b> a Promise, so it needs <code class="inline">await</code> too.</li>
+          <li>Every request has three UI states: <b>loading</b>, <b>data</b>, <b>error</b>.</li>
+          <li>API text (names, bios) was typed by other people. Put it on the page with <code class="inline">textContent</code>.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 500 214" role="img" aria-label="Fetch lifecycle: fetch returns a promise for a Response; if response.ok, await response.json and show the data; if not ok, check the status and show an error; if the network fails, the promise rejects and catch shows an error.">
+            <defs><marker id="wb-ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#45536a"/></marker></defs>
+            <rect x="8" y="20" width="108" height="46" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="62" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="600" fill="#1d4ed8">fetch(url)</text>
+            <path d="M116 43 L146 43" stroke="#45536a" stroke-width="1.8" marker-end="url(#wb-ar2)"/>
+            <text x="131" y="34" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#45536a">await</text>
+            <rect x="150" y="20" width="100" height="46" rx="6" fill="#ffffff" stroke="#6f7c8e" stroke-width="1.5"/>
+            <text x="200" y="40" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">Response</text>
+            <text x="200" y="56" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#45536a">status, ok</text>
+            <path d="M250 43 L280 43" stroke="#45536a" stroke-width="1.8" marker-end="url(#wb-ar2)"/>
+            <polygon points="330,14 382,43 330,72 278,43" fill="#f1e8fd" stroke="#7c3aed" stroke-width="2"/>
+            <text x="330" y="47" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="600" fill="#6d28d9">ok?</text>
+            <path d="M382 43 L404 43" stroke="#45536a" stroke-width="1.8" marker-end="url(#wb-ar2)"/>
+            <text x="392" y="34" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" font-weight="600" fill="#0f766e">yes</text>
+            <rect x="408" y="20" width="86" height="46" rx="6" fill="#d7efe9" stroke="#0f766e" stroke-width="2"/>
+            <text x="451" y="40" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#0f766e">.json()</text>
+            <text x="451" y="56" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#0f766e">→ showUser</text>
+            <path d="M330 72 L330 108" stroke="#45536a" stroke-width="1.8" marker-end="url(#wb-ar2)"/>
+            <text x="342" y="94" font-family="'Source Sans 3',sans-serif" font-size="11" font-weight="600" fill="#b45309">no</text>
+            <rect x="250" y="112" width="244" height="46" rx="6" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+            <text x="372" y="132" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#b45309">404 · 403/429 · 5xx</text>
+            <text x="372" y="148" text-anchor="middle" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#7a3f06">resolves normally → YOU check status</text>
+            <path d="M62 66 L62 164" stroke="#45536a" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#wb-ar2)"/>
+            <text x="70" y="118" font-family="'Source Sans 3',sans-serif" font-size="11" fill="#45536a">network fails</text>
+            <rect x="8" y="168" width="220" height="40" rx="6" fill="#fdecec" stroke="#b91c1c" stroke-width="2"/>
+            <text x="118" y="192" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#b91c1c">rejects → catch (TypeError)</text>
+          </svg>
+          <figcaption>Only a network failure lands in catch. HTTP errors resolve, so check response.ok.</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">async function</span> fetchUser(id) {
+  <span class="k">try</span> {
+    <span class="k">const</span> response = <span class="k">await</span> fetch(
+      <span class="s">`https://jsonplaceholder.typicode.com/users/${id}`</span>
+    );
+    <span class="k">if</span> (!response.ok) {
+      <span class="k">throw new</span> Error(<span class="s">`Server error: ${response.status}`</span>);
+    }
+    <span class="k">return await</span> response.json();
+  } <span class="k">catch</span> (error) {
+    console.error(<span class="s">"Failed to fetch user:"</span>, error.message);
+    <span class="k">return null</span>;
+  }
+}</pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — GitHub User Search</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Complete TODOs 1–7: <code class="inline">showLoading</code>, <code class="inline">showError</code>, <code class="inline">showUser</code> (all text with <code class="inline">textContent</code>), and <code class="inline">async searchUser</code> with separate branches for <b>404</b>, <b>403/429</b> (rate limit), other errors, and network failures. <b>Heads-up:</b> without logging in, GitHub allows about 60 requests an hour <em>per IP address</em>, and your whole classroom may share one. Work in pairs, don't turn on search-as-you-type, and if you get a 403, fetch <code class="inline">mock-user.json</code> instead. Sketch your <code class="inline">searchUser</code> branches here:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">What does <code class="inline">fetch()</code> return?</div>
+          <div class="opts"><div class="opt">A) The JSON data from the server</div><div class="opt">B) A Promise that resolves to a Response object</div><div class="opt">C) An XMLHttpRequest object</div><div class="opt">D) A string containing the response body</div></div></div>
+        <div class="q"><div class="qn">Q2</div><div class="qt">What happens when <code class="inline">fetch()</code> gets a 404 response?</div>
+          <div class="opts"><div class="opt">A) The Promise resolves normally with <code class="inline">response.ok</code> set to <code class="inline">false</code></div><div class="opt">B) The Promise rejects and .catch() runs</div><div class="opt">C) It throws an exception automatically</div><div class="opt">D) It returns <code class="inline">null</code></div></div></div>
+        <div class="q"><div class="qn">Q5</div><div class="qt">What are the three UI states every fetch operation should handle?</div>
+          <div class="opts"><div class="opt">A) Start, finish, and retry</div><div class="opt">B) Pending, resolved, and rejected</div><div class="opt">C) GET, POST, and DELETE</div><div class="opt">D) Loading, data (success), and error</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>In your own words, explain why <code class="inline">fetch()</code> gives you a Promise instead of the data right away, and why a 404 doesn't land in your <code class="inline">catch</code> block. Then name a free API you'd like to use on your own site and sketch what its loading, data, and error states would look like. What part of async code still feels fuzzy?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <div class="note">
+    <div class="t">You finished Module 5 🎉</div>
+    <p>You can now validate forms as people type, schedule and animate with timers, save app state so it survives a refresh, and pull live data from an API while handling every possible outcome. In Module 6 you'll combine all of it in a capstone project of your own.</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Front-End JavaScript: Make Your Web Pages Come Alive</span>
+    </div>
+    <div class="ver">Workbook · Module 5 · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

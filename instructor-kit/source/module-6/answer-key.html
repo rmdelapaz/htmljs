@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Answer Key — Module 6</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">answers &amp; solutions · not for students</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Instructor Kit · Answer Key</div>
+    <h1>Module 6 — Answers &amp; Solutions</h1>
+    <p class="sub">Correct quiz answers with the "why," plus reference notes for the QuickNote capstone and the Snack Budget bug hunt. All quizzes are from the course lessons.</p>
+    <div class="meta-row"><span class="chip">Lessons <b>21–22</b></span><span class="chip"><b>10</b> quiz items</span><span class="chip"><b>2</b> labs</span></div>
+  </header>
+
+  <div class="note"><div class="t">Numbering matches the workbook</div><p>This key covers every question in each lesson's quiz. The participant workbook's self-check uses a 3-question subset per lesson, labelled with the lesson's own question numbers (e.g. Q1 · Q2 · Q4), so a student's "Q4" is always this key's Q4.</p></div>
+
+  <!-- L21 -->
+  <div class="sec"><h2>L21 · Building a Complete Project</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">QuickNote uses one form for both creating and editing notes. How does the submit handler know which one to do?</div><div class="opts"><div class="opt correct">B) It checks whether the hidden <code class="inline">note-id</code> input has a value</div></div><div class="why"><b>Why:</b> The hidden note-id input is empty for a new note and holds the note's ID when editing, so one if/else picks createNote() or updateNote().</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">Why does <code class="inline">renderNotes()</code> put the note's title and body on the page with <code class="inline">textContent</code> instead of <code class="inline">innerHTML</code>?</div><div class="opts"><div class="opt correct">C) So anything the user typed is shown as plain text and never run as HTML or script</div></div><div class="why"><b>Why:</b> textContent always treats the text as plain text, so anything a user types — even something that looks like an HTML tag or script — is displayed, never run.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">What does wrapping the search handler in <code class="inline">debounce(applyFilters, 300)</code> accomplish?</div><div class="opts"><div class="opt correct">A) The notes re-render only after the user stops typing for 300ms, not on every keystroke</div></div><div class="why"><b>Why:</b> Each keystroke restarts a 300ms timer, so the notes are only filtered and re-rendered once the user pauses typing.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">Why does QuickNote attach ONE click listener to <code class="inline">#notes-grid</code> instead of a listener on every edit and delete button?</div><div class="opts"><div class="opt correct">D) The cards are rebuilt on every render, so one listener on the parent (event delegation) handles every card, old or new</div></div><div class="why"><b>Why:</b> This is event delegation. renderNotes() throws away and rebuilds every card, so listeners on individual buttons would be lost. One listener on the parent catches clicks from all current and future cards.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">What happens in QuickNote if the quote API is down or the user is offline?</div><div class="opts"><div class="opt correct">B) A fallback quote is shown and the rest of the app keeps working</div></div><div class="why"><b>Why:</b> The try/catch in fetchQuote() catches the failure, shows a built-in fallback quote, and everything else keeps working. That's graceful degradation.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Build QuickNote</div>
+    <p>Reference: <code class="inline">labs/module-6/l21-quicknote/solution/quicknote.html</code>, the lesson's complete source code, unchanged. Catch-up files after Steps 3–6: <code class="inline">labs/module-6/l21-quicknote/checkpoints/</code>. Look for:</p>
+    <ul class="tick" style="margin-top:.4rem">
+      <li><b>Data layer with no DOM code:</b> <code class="inline">loadNotes</code> in try/catch returning <code class="inline">[]</code>; <code class="inline">saveNotes</code> after every change; <code class="inline">createNote</code> uses <code class="inline">Date.now()</code> ids, trims text, <code class="inline">unshift</code>s; <code class="inline">getNotes</code> matches category <em>and</em> lowercase search.</li>
+      <li><b>Rendering:</b> clear → empty state → cards built in a <code class="inline">DocumentFragment</code>, appended once; title and body set with <code class="inline">textContent</code>; count reads "1 note" / "2 notes".</li>
+      <li><b>Form:</b> hidden <code class="inline">#note-id</code> decides create vs update (<code class="inline">Number()</code> on the id); both error messages appear on an empty save, each right after its field; errors cleared before re-validating; status message restarts its 2-second timer with <code class="inline">clearTimeout</code>.</li>
+      <li><b>Search &amp; filter:</b> <code class="inline">input</code> → <code class="inline">debounce(applyFilters, 300)</code>; <code class="inline">change</code> → <code class="inline">applyFilters</code>.</li>
+      <li><b>Quote:</b> <code class="inline">res.ok</code> checked; the <code class="inline">catch</code> shows the fallback quote, so the app still works offline.</li>
+      <li><b>Polish:</b> one delegated listener on <code class="inline">#notes-grid</code>; deleting the note open in the form calls <code class="inline">hideForm()</code>; <kbd>N</kbd> and <kbd>/</kbd> ignored while typing or with Ctrl/Cmd/Alt; <kbd>Esc</kbd> always closes.</li>
+    </ul>
+    <p style="margin-top:.4rem">Extensions (the 8 stretch challenges) are described with hints in <code class="inline">labs/module-6/l21-quicknote/README.md</code>; there is no single reference solution. Grade them against the same test checklist plus the new feature.</p>
+  </div>
+
+  <!-- L22 -->
+  <div class="sec"><h2>L22 · Next Steps &amp; Best Practices</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">The console shows <code class="inline">Cannot read properties of null (reading 'textContent')</code>. What's the most likely cause?</div><div class="opts"><div class="opt correct">C) <code class="inline">querySelector</code> didn't find the element, so it returned <code class="inline">null</code></div></div><div class="why"><b>Why:</b> querySelector returns null when nothing matches — usually a typo in the selector, or the script ran before the element existed. Reading .textContent on null throws this error.</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">A player's score is <code class="inline">0</code>. What does <code class="inline">const shown = player.score ?? 10;</code> set <code class="inline">shown</code> to?</div><div class="opts"><div class="opt correct">A) <code class="inline">0</code></div></div><div class="why"><b>Why:</b> ?? only falls back when the left side is null or undefined. 0 is a real value, so it's kept. (With || you'd get 10, because 0 is falsy.)</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">You copy an object with <code class="inline">const copy = { ...original };</code> and then push a new item onto <code class="inline">copy.scores</code> (an array). What happens to <code class="inline">original.scores</code>?</div><div class="opts"><div class="opt correct">B) It changes too, because the nested array is shared</div></div><div class="why"><b>Why:</b> Spread makes a SHALLOW copy: both objects share the same scores array. Use structuredClone(original) when you need a deep copy.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">You want to start a new React project today. Which approach fits current best practice?</div><div class="opts"><div class="opt correct">C) Use Vite (<code class="inline">npm create vite@latest</code>) or a framework like Next.js</div></div><div class="why"><b>Why:</b> Vite (npm create vite@latest) or a framework like Next.js is the standard starting point now that Create React App is deprecated.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">You add a <code class="inline">debugger;</code> line to your code and reload, but nothing pauses. What's the most likely reason?</div><div class="opts"><div class="opt correct">B) DevTools wasn't open, so the browser ignored it</div></div><div class="why"><b>Why:</b> The browser ignores debugger statements unless DevTools is open. Open DevTools (F12), then reload the page.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Bug Hunt: Snack Budget</div>
+    <p>The lesson has no build exercise; this lab practices its error table and pitfalls. Fixed version: <code class="inline">labs/module-6/l22-debugging/solution/</code> (each fix marked <code class="inline">// FIX n</code> in <code class="inline">script.js</code>). The bugs, in the order the Console reveals them:</p>
+    <table class="timing">
+      <thead><tr><th>#</th><th>Symptom</th><th>Cause → fix</th></tr></thead>
+      <tbody>
+        <tr><td class="t">1</td><td><code class="inline">SyntaxError: Unexpected token '{'</code> — nothing runs</td><td>Missing comma after the first object in <code class="inline">seedItems</code>, on the line <em>before</em> the one reported → add the comma.</td></tr>
+        <tr><td class="t">2</td><td><code class="inline">Cannot read properties of undefined (reading 'weekly')</code></td><td>First visit: no saved settings, so <code class="inline">settings.limits</code> is undefined → <code class="inline">settings.limits?.weekly ?? 20</code>.</td></tr>
+        <tr><td class="t">3</td><td><code class="inline">Cannot read properties of null (reading 'replaceChildren')</code></td><td>Selector typo <code class="inline">"#item-lsit"</code> → <code class="inline">"#item-list"</code>.</td></tr>
+        <tr><td class="t">4</td><td><code class="inline">ReferenceError: formatprice is not defined</code></td><td>Case-sensitive name → <code class="inline">formatPrice</code>.</td></tr>
+        <tr><td class="t">5</td><td><code class="inline">TypeError: items.length is not a function</code></td><td><code class="inline">length</code> is a property → <code class="inline">items.length</code>.</td></tr>
+        <tr><td class="t">6</td><td>No error: <b>Bought</b> works on the first click, then never again</td><td>The delegated listener is added inside <code class="inline">render()</code>, so each render stacks another copy and an even number of toggles cancels out → move <code class="inline">listEl.addEventListener(...)</code> out of <code class="inline">render()</code> so it runs once.</td></tr>
+        <tr><td class="t">7</td><td>Clicking <b>Load sample items</b>: <code class="inline">Cannot read properties of undefined (reading 'forEach')</code></td><td>Async trap: <code class="inline">samples</code> is used before <code class="inline">fetch</code> finishes → make the handler <code class="inline">async</code>, <code class="inline">await fetch(...)</code> and <code class="inline">await response.json()</code>, check <code class="inline">response.ok</code>, and catch errors.</td></tr>
+      </tbody>
+    </table>
+    <p>Look for: a clean Console; Bought/Undo toggling every time with Spent/Left updating; three sample items added; deletes and reloads working. Accept any correct fix. For bug 2, <code class="inline">settings.limits &amp;&amp; settings.limits.weekly</code> plus a default is fine; for bug 7, <code class="inline">.then()</code> with the dependent code moved inside it is fine. A <code class="inline">setTimeout</code> "fix" for bug 7 is <em>not</em>: it only hides the race. Follow-on projects (the workbook menu) are self-directed and have no key.</p>
+  </div>
+
+  <div class="foot">
+    <div class="who"><span class="bio">Instructor Kit · confidential — do not distribute to students</span></div>
+    <div class="ver">Answer Key · Module 6 · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Understand JavaScript scope — block scope, function scope, global scope, the scope chain, hoisting rules, and an introduction to closures.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 8: Scope &amp; Hoisting - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -81,6 +87,7 @@
                         <li><a href="#hoisting" class="toc-link">Hoisting in Detail</a></li>
                         <li><a href="#closures" class="toc-link">Introduction to Closures</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -248,7 +255,7 @@ console.log(j);  // 3 — var leaked out of the loop!
 
                 <div class="card card-danger">
                     <h4>❌ The Classic var Loop Bug</h4>
-                    <p>This is one of the most famous JavaScript gotchas. With <code>var</code>, delayed callbacks all share the same variable.</p>
+                    <p>This is one of the most famous JavaScript gotchas. With <code>var</code>, delayed callbacks all share the same variable. (<code>setTimeout</code> runs a function after a delay; you'll use it properly in Lesson 18.)</p>
                     <pre><code class="language-javascript">
 // ❌ Bug with var
 for (var i = 0; i &lt; 3; i++) {
@@ -351,21 +358,21 @@ console.log(color);  // "blue" — global is unchanged
             <!-- Section 6 -->
             <section id="hoisting" class="lesson-section">
                 <h2>Hoisting in Detail</h2>
-                <p><strong>Hoisting</strong> is JavaScript's behavior of moving declarations to the top of their scope <em>before</em> code execution. But different declarations are hoisted differently.</p>
+                <p><strong>Hoisting</strong> describes how JavaScript handles declarations: before running the code in a scope, it registers every declaration in it, so it behaves <em>as if</em> the declarations had been moved to the top. (Nothing is literally moved in your file.) But different declarations are hoisted differently.</p>
 
                 <h3>var Hoisting</h3>
                 <p><code>var</code> declarations are hoisted and initialized to <code>undefined</code>. This means you can reference a <code>var</code> before its declaration — you'll get <code>undefined</code> instead of an error.</p>
 
                 <pre><code class="language-javascript">
-console.log(name);  // undefined (not an error!)
-var name = "Ray";
-console.log(name);  // "Ray"
+console.log(nickname);  // undefined (not an error!)
+var nickname = "Ray";
+console.log(nickname);  // "Ray"
 
 // JavaScript sees it as:
-// var name;           // Declaration hoisted, initialized to undefined
-// console.log(name);  // undefined
-// name = "Ray";       // Assignment stays in place
-// console.log(name);  // "Ray"
+// var nickname;           // Declaration hoisted, initialized to undefined
+// console.log(nickname);  // undefined
+// nickname = "Ray";       // Assignment stays in place
+// console.log(nickname);  // "Ray"
                 </code></pre>
 
                 <h3>let and const Hoisting (Temporal Dead Zone)</h3>
@@ -396,7 +403,9 @@ function sayHello() {
 }
 
 // Function EXPRESSIONS are NOT fully hoisted
-// greet();  // ❌ TypeError: greet is not a function
+// greet();  // ❌ ReferenceError: Cannot access 'greet' before initialization
+//           // (with var greet = function..., it'd be a TypeError:
+//           //  greet is not a function, because greet is undefined)
 
 const greet = function() {
     console.log("Hi!");
@@ -617,7 +626,7 @@ console.log(tracker.getScore());  // 0
 var x = 10;</code></pre>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="The assignment (= 10) is not hoisted — only the declaration (var x) is.">A) 10</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="var declarations are hoisted and initialized to undefined. The assignment x = 10 happens later, so console.log sees undefined.">B) undefined</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! var declarations are hoisted and initialized to undefined. The assignment x = 10 happens later, so console.log sees undefined.">B) undefined</button>
                             <button class="quiz-option" data-correct="false" data-hint="var is hoisted, so no error occurs. You'd get an error with let or const instead.">C) ReferenceError</button>
                             <button class="quiz-option" data-correct="false" data-hint="null is a specific assigned value — var initializes to undefined, not null.">D) null</button>
                         </div>
@@ -628,7 +637,7 @@ var x = 10;</code></pre>
                         <p><strong>Question 2:</strong> Which keyword creates a block-scoped variable?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="var is function-scoped — it ignores block boundaries like if/else and loops.">A) var</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="Both let and const are block-scoped — they respect curly brace boundaries.">B) let</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Both let and const are block-scoped — they respect curly brace boundaries.">B) let</button>
                             <button class="quiz-option" data-correct="false" data-hint="function creates function scope, not block scope.">C) function</button>
                             <button class="quiz-option" data-correct="false" data-hint="global isn't a JavaScript keyword — you create global variables by declaring outside any function/block.">D) global</button>
                         </div>
@@ -640,11 +649,56 @@ var x = 10;</code></pre>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="That describes syntax, not closures. Closures are about variable access.">A) A function inside curly braces</button>
                             <button class="quiz-option" data-correct="false" data-hint="That's the scope chain. Closures specifically involve functions remembering outer scope.">B) A variable that can be accessed globally</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="A closure is formed when a function retains access to variables from its enclosing scope, even after that scope has finished executing.">C) A function that remembers variables from its outer scope</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! A closure is formed when a function retains access to variables from its enclosing scope, even after that scope has finished executing.">C) A function that remembers variables from its outer scope</button>
                             <button class="quiz-option" data-correct="false" data-hint="That describes an IIFE (Immediately Invoked Function Expression), which can create closures but isn't a closure itself.">D) A way to call a function immediately</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> What happens when this code runs?</p>
+                        <pre><code class="language-javascript">console.log(total);
+let total = 50;</code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="That&#39;s what var would do. let behaves differently before its declaration line.">A) It logs undefined</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! let is hoisted but not initialized. Until its declaration line runs, total is in the Temporal Dead Zone, so reading it throws a ReferenceError.">B) ReferenceError: Cannot access &#39;total&#39; before initialization</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The assignment hasn&#39;t happened yet when console.log runs.">C) It logs 50</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Nothing turns an uninitialized variable into null. Think about the Temporal Dead Zone.">D) It logs null</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> What does this code log?</p>
+                        <pre><code class="language-javascript">const color = "blue";
+function paint() {
+    const color = "red";
+}
+paint();
+console.log(color);</code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The color inside paint() is a brand-new variable that shadows the global one. It doesn&#39;t change the global.">A) "red"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Declaring a new const inside a function is allowed. It&#39;s a different scope, so there&#39;s no conflict.">B) An error: color was already declared</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The global color was set to &quot;blue&quot; on the first line and never changed.">C) undefined</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The inner color only shadows the global one inside paint(). Outside the function, console.log finds the global color, which is still &quot;blue&quot;.">D) "blue"</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Journal -->
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Without looking back, explain in your own words why <code>var</code> leaks out of an <code>if</code> block but <code>let</code> doesn&#39;t, and what the Temporal Dead Zone protects you from. Then describe a closure as if you were explaining the counter example to a friend. Which part of this lesson do you expect to re-read?</em></p>
                 </div>
             </section>
 
@@ -659,7 +713,7 @@ var x = 10;</code></pre>
                         <li><strong>Function scope</strong>: variables inside a function — private to that function</li>
                         <li><strong>Block scope</strong>: <code>let</code>/<code>const</code> inside <code>{ }</code> — private to that block. <code>var</code> ignores blocks!</li>
                         <li><strong>Scope chain</strong>: JavaScript looks outward through nested scopes to find variables</li>
-                        <li><strong>Hoisting</strong>: declarations move to the top of their scope. <code>var</code> gets <code>undefined</code>; <code>let</code>/<code>const</code> enter the TDZ</li>
+                        <li><strong>Hoisting</strong>: declarations are set up before the code in their scope runs. <code>var</code> gets <code>undefined</code>; <code>let</code>/<code>const</code> stay in the TDZ until their line runs</li>
                         <li><strong>Closures</strong>: inner functions remember their outer scope's variables, enabling data privacy and powerful patterns</li>
                         <li><strong>Always use <code>let</code>/<code>const</code></strong> — avoid <code>var</code> to prevent scope leaks</li>
                     </ul>

@@ -4,13 +4,13 @@
     "subtitle": "Make Your Web Pages Come Alive",
     "description": "Learn JavaScript from the ground up and bring interactivity to the HTML & CSS skills you already have. By the end of this course, you'll build dynamic, interactive web pages using vanilla JavaScript.",
     "author": {
-      "name": "Ray De La Paz",
+      "name": "Ray de la Paz",
       "email": "contact via website",
       "website": "https://rays-home.netlify.app/",
       "bio": "Technical trainer, full-stack developer, and course developer with 30+ years of experience."
     },
     "version": "1.0.0",
-    "lastUpdated": "2026-04-16",
+    "lastUpdated": "2026-09-26",
     "language": "en",
     "difficulty": "beginner",
     "estimatedHours": 30,

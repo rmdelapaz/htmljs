@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slides — Module 6</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg:#0b1220; --bg2:#111c30; --ink:#eaf1fb; --ink2:#9fb2cd;
+    --accent:#5b9dff; --accent2:#3b82f6; --lab:#34d3bd; --warn:#fbbf24;
+    --line:#22314c; --code:#0a1526;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--ink);
+    font-family:"Source Sans 3",system-ui,sans-serif;overflow:hidden}
+  .deck{height:100%;width:100%;position:relative}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:6vh 8vw;gap:20px}
+  .slide.on{display:flex}
+  .mono{font-family:"JetBrains Mono",monospace}
+  h1,h2,h3{font-family:"Archivo",sans-serif;line-height:1.1;text-wrap:balance}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:clamp(.7rem,1.4vw,.95rem);font-weight:600;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+  .slide h1{font-size:clamp(2rem,6vw,4rem);font-weight:800;letter-spacing:-.02em}
+  .slide h2{font-size:clamp(1.5rem,4.2vw,2.8rem);font-weight:800;letter-spacing:-.01em}
+  .slide p.lead{font-size:clamp(1.05rem,2.4vw,1.5rem);color:var(--ink2);max-width:24ch}
+  ul{list-style:none;display:flex;flex-direction:column;gap:14px;margin-top:6px}
+  ul li{position:relative;padding-left:34px;font-size:clamp(1.05rem,2.3vw,1.6rem)}
+  ul li::before{content:"";position:absolute;left:0;top:.55em;width:12px;height:12px;border-radius:3px;
+    background:var(--accent);transform:rotate(45deg)}
+  ul.lab li::before{background:var(--lab)}
+  code.k{font-family:"JetBrains Mono",monospace;color:#a9c7ff;font-size:.92em}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:22px 26px;
+    font-family:"JetBrains Mono",monospace;font-size:clamp(.85rem,1.9vw,1.35rem);line-height:1.55;
+    overflow:auto;max-width:100%}
+  pre .k{color:#7dd3fc} pre .s{color:#86efac} pre .c{color:#7183a3;font-style:italic}
+  .tag{display:inline-flex;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;
+    font-size:clamp(.7rem,1.4vw,.95rem);color:var(--ink2)}
+  .tag .pill{background:var(--accent2);color:#fff;font-weight:700;border-radius:999px;padding:3px 12px;letter-spacing:.06em}
+  .tag .pill.lab{background:var(--lab);color:#062b26}
+  .tag .pill.warn{background:var(--warn);color:#3a2a05}
+  .section{background:linear-gradient(135deg,#12213c,#0b1220)}
+  .section .big{font-size:clamp(3rem,12vw,8rem);font-family:"Archivo";font-weight:800;color:var(--accent2);line-height:.9}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}
+  @media (max-width:760px){ .two{grid-template-columns:1fr} }
+  /* JS lines run longer than CSS: give code the wider column */
+  .two{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
+  pre{font-size:clamp(.72rem,1.4vw,1.12rem)}
+  @media (max-width:760px){ .two{grid-template-columns:1fr} }
+  kbd{font-family:"JetBrains Mono",monospace;border:1px solid var(--line);border-radius:4px;padding:0 .3em;font-size:.85em;color:#a9c7ff}
+  /* chrome */
+  .bar{position:fixed;left:0;top:0;height:4px;background:var(--accent2);width:0;transition:width .25s;z-index:5}
+  .count{position:fixed;right:16px;bottom:12px;font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--ink2);z-index:5}
+  .nav{position:fixed;inset:auto 0 0 0;display:flex;justify-content:space-between;pointer-events:none;z-index:4}
+  .nav button{pointer-events:auto;background:transparent;border:none;color:transparent;width:22vw;height:100vh;cursor:pointer}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+code,pre,.mono{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="deck" id="deck">
+
+  <section class="slide on section">
+    <div class="eyebrow">Front-End JavaScript · Instructor Kit</div>
+    <h1>Module 6<br>Capstone &amp; Next Steps</h1>
+    <p class="lead">Build a complete app. Then learn how the pros keep going.</p>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">The finale · Day 5 PM</div>
+    <h2>Two lessons to finish strong</h2>
+    <ul>
+      <li><b>L21</b> Building a Complete Project — QuickNote, start to finish</li>
+      <li><b>L22</b> Next Steps &amp; Best Practices — debug, organize, keep growing</li>
+    </ul>
+    <div class="tag"><span class="pill lab">GOAL</span> Everyone leaves with a working app and a next project.</div>
+  </section>
+
+  <!-- L21 -->
+  <section class="slide section"><div class="big">L21</div><h2>Building a Complete Project</h2><p class="lead">Every skill from Modules 1–5, in one app.</p></section>
+
+  <section class="slide">
+    <div class="eyebrow">Plan before you code</div>
+    <h2>One loop runs the whole app</h2>
+    <div class="two">
+      <pre><span class="c">// user action → update state</span>
+<span class="c">//             → save → re-render</span>
+{
+  id: <span class="s">1713300000000</span>,  <span class="c">// Date.now()</span>
+  title: <span class="s">"Learn JavaScript"</span>,
+  body: <span class="s">"Finish the course..."</span>,
+  category: <span class="s">"personal"</span>,
+  createdAt: <span class="s">"2026-04-16T10:00…"</span>,
+  updatedAt: <span class="s">"2026-04-16T10:30…"</span>
+}</pre>
+      <ul><li>Create · edit · delete, validated</li><li>Categories, debounced search</li><li>Saved in <code class="k">localStorage</code></li><li>Quote from an API, shortcuts</li></ul>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Steps 2–3 · data, then DOM</div>
+    <h2>Data layer + render</h2>
+    <div class="two">
+      <pre><span class="k">function</span> createNote(title, body, category) {
+  <span class="k">const</span> now = <span class="k">new</span> Date().toISOString();
+  notes.unshift({ id: Date.now(),
+    title: title.trim(), body: body.trim(),
+    category, createdAt: now, updatedAt: now });
+  saveNotes(notes);
+}
+<span class="c">// render: clear → build cards → append once</span>
+title.textContent = note.title;</pre>
+      <ul><li>CRUD functions never touch the DOM</li><li><code class="k">renderNotes()</code> rebuilds from state</li><li><code class="k">DocumentFragment</code> batches inserts</li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> User text goes in with <code class="k">textContent</code>, never <code class="k">innerHTML</code>.</div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Step 4 · one form, two modes</div>
+    <h2>Create or edit?</h2>
+    <div class="two">
+      <pre><span class="k">const</span> editId = noteIdInput.value;
+<span class="k">if</span> (editId) {
+  updateNote(Number(editId), …);
+  showSaveStatus(<span class="s">"Note updated!"</span>);
+} <span class="k">else</span> {
+  createNote(…);
+  showSaveStatus(<span class="s">"Note saved!"</span>);
+}
+hideForm();
+renderNotes(searchInput.value,
+            filterCategory.value);</pre>
+      <ul><li>Hidden <code class="k">#note-id</code>: empty = new</li><li>Validate both fields, show both errors</li><li>Status fades after 2s (<code class="k">clearTimeout</code> first)</li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> Input values are strings — <code class="k">Number()</code> the id before comparing.</div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Steps 5–6 · search, filter, fetch</div>
+    <h2>Debounce &amp; degrade gracefully</h2>
+    <div class="two">
+      <pre>searchInput.addEventListener(<span class="s">"input"</span>,
+  debounce(applyFilters, <span class="s">300</span>));
+filterCategory.addEventListener(<span class="s">"change"</span>,
+  applyFilters);
+
+<span class="k">try</span> {
+  <span class="k">const</span> res = <span class="k">await</span> fetch(
+    <span class="s">"https://dummyjson.com/quotes/random"</span>);
+  <span class="k">if</span> (!res.ok)
+    <span class="k">throw new</span> Error(<span class="s">"HTTP "</span> + res.status);
+} <span class="k">catch</span> (err) { <span class="c">/* fallback quote */</span> }</pre>
+      <ul><li>Search waits for a 300ms pause</li><li>The filter is instant</li><li>API down? Fallback quote, app keeps working</li></ul>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Step 7 · polish</div>
+    <h2>Delegation &amp; shortcuts</h2>
+    <div class="two">
+      <pre>notesGrid.addEventListener(<span class="s">"click"</span>, (e) =&gt; {
+  <span class="k">const</span> card = e.target.closest(<span class="s">".note-card"</span>);
+  <span class="k">if</span> (!card) <span class="k">return</span>;
+  <span class="c">// .edit-btn → showForm(note)</span>
+  <span class="c">// .delete-btn → confirm, fade, delete</span>
+});
+<span class="c">// keydown: Esc closes; N and / only</span>
+<span class="c">// when not typing in a field</span></pre>
+      <ul><li>One listener survives every re-render</li><li>Deleting the open note closes the form</li><li><kbd>N</kbd> new · <kbd>/</kbd> search · <kbd>Esc</kbd> close</li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> Not Ctrl+N: Chrome keeps it for "new window" and never sends it to the page.</div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Lab · guided build</div>
+    <h2>Build QuickNote</h2>
+    <ul class="lab">
+      <li>Start: <code class="k">l21-quicknote/starter/quicknote.html</code></li>
+      <li>Pass each checkpoint before the next step</li>
+      <li>Behind? Grab the file in <code class="k">checkpoints/</code></li>
+      <li>Done? Pick a stretch: dark mode, pin notes, word count…</li>
+    </ul>
+    <div class="tag"><span class="pill lab">TEST</span> Add · edit · delete · search · filter · reload · offline · shortcuts</div>
+  </section>
+
+  <!-- L22 -->
+  <section class="slide section"><div class="big">L22</div><h2>Next Steps &amp; Best Practices</h2><p class="lead">Pros still write bugs. They just find them faster.</p></section>
+
+  <section class="slide">
+    <div class="eyebrow">Read the error message</div>
+    <h2>What · where · why</h2>
+    <div class="two">
+      <pre><span class="c">// Uncaught TypeError: Cannot read</span>
+<span class="c">//   properties of null (reading 'textContent')</span>
+<span class="c">//   at renderUser (app.js:45:23)</span>
+
+<span class="c">// WHAT:  .textContent on null</span>
+<span class="c">// WHERE: app.js line 45, renderUser</span>
+<span class="c">// WHY:   querySelector found nothing</span></pre>
+      <ul><li><code class="k">null</code> → check the selector</li><li><code class="k">not a function</code> / <code class="k">not defined</code> → spelling, scope</li><li><code class="k">Unexpected token</code> → the line <b>before</b></li><li><code class="k">undefined</code> → log the data's shape</li></ul>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Debug with a loop, not with luck</div>
+    <h2>Hypothesis → test → fix</h2>
+    <div class="two">
+      <pre>console.table(notes);
+console.time(<span class="s">"fetch"</span>);
+<span class="k">await</span> fetch(<span class="s">"/api/data"</span>);
+console.timeEnd(<span class="s">"fetch"</span>);
+
+<span class="k">function</span> processOrder(order) {
+  <span class="k">const</span> total = calculateTotal(order.items);
+  <span class="k">debugger</span>;  <span class="c">// pauses here</span>
+}</pre>
+      <ul><li>Read → reproduce → hypothesis → test → fix → verify</li><li>Breakpoints: click a line number in Sources</li><li>Stuck? Explain it to a rubber duck</li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> <code class="k">debugger</code> is ignored unless DevTools is open — open it, then reload.</div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Lab · 15 minutes</div>
+    <h2>Bug Hunt: Snack Budget</h2>
+    <ul class="lab">
+      <li>Open <code class="k">l22-debugging/starter/</code> with Live Server</li>
+      <li><b>Seven</b> bugs: five crash, two are silent</li>
+      <li>Fix one, save, reload — log each on the worksheet</li>
+      <li>Change code only after you have a hypothesis</li>
+    </ul>
+    <div class="tag"><span class="pill lab">DONE</span> Clean Console · Bought toggles every time · samples load</div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Common pitfalls · modern syntax</div>
+    <h2>Traps worth knowing</h2>
+    <div class="two">
+      <pre><span class="k">const</span> a = user.score || <span class="s">10</span>;  <span class="c">// 0 → 10 (!)</span>
+<span class="k">const</span> b = user.score ?? <span class="s">10</span>;  <span class="c">// 0 kept</span>
+<span class="k">const</span> city = user?.address?.city;
+
+<span class="k">const</span> copy = { ...original };  <span class="c">// shallow</span>
+copy.scores.push(<span class="s">100</span>);  <span class="c">// original changes too</span>
+<span class="k">const</span> deep = structuredClone(original);</pre>
+      <ul><li>Check <code class="k">querySelector</code> for <code class="k">null</code></li><li><code class="k">fetch</code> isn't done on the next line</li><li><code class="k">===</code>, not <code class="k">==</code></li><li>Add delegated listeners <b>once</b></li></ul>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Organize · then explore</div>
+    <h2>Where to go next</h2>
+    <ul>
+      <li>Organize by concern; small, well-named functions; modules (<code class="k">type="module"</code>)</li>
+      <li>Order: more JS projects → Git → npm &amp; Vite → a framework → TypeScript → testing</li>
+      <li>New project? <code class="k">npm create vite@latest</code> — not create-react-app</li>
+      <li>80/20: build more than you watch; deploy everything</li>
+    </ul>
+    <div class="tag"><span class="pill lab">PICK</span> Choose a follow-on project from the workbook menu.</div>
+  </section>
+
+  <!-- recap -->
+  <section class="slide section">
+    <div class="eyebrow">You can now…</div>
+    <h2>Build it, debug it, grow it</h2>
+    <ul class="lab">
+      <li>Plan and build a complete app with vanilla JavaScript</li>
+      <li>Store data, fetch from an API, and fail gracefully</li>
+      <li>Read errors and debug with a hypothesis</li>
+      <li>Organize code and choose what to learn next</li>
+    </ul>
+  </section>
+
+  <!-- course complete -->
+  <section class="slide section">
+    <div class="eyebrow">🎉 Course complete</div>
+    <h2>You're a JavaScript developer</h2>
+    <ul class="lab">
+      <li>Foundations → control flow &amp; functions → data</li>
+      <li>The DOM → interactive pages → a complete app</li>
+      <li>22 lessons, 6 modules, real working software</li>
+    </ul>
+    <p class="lead" style="margin-top:10px">Keep building. Congratulations!</p>
+  </section>
+
+</div>
+
+<div class="count" id="count">1 / 17</div>
+<div class="nav"><button id="prev" aria-label="Previous slide"></button><button id="next" aria-label="Next slide"></button></div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const bar=document.getElementById('bar'), count=document.getElementById('count');
+  let i=0;
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+    bar.style.width=((i+1)/slides.length*100)+'%';
+    count.textContent=(i+1)+' / '+slides.length;
+  }
+  document.getElementById('next').onclick=()=>show(i+1);
+  document.getElementById('prev').onclick=()=>show(i-1);
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ') {e.preventDefault();show(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp') {e.preventDefault();show(i-1);}
+    else if(e.key==='Home') show(0);
+    else if(e.key==='End') show(slides.length-1);
+  });
+  show(0);
+</script>
+</body>
+</html>

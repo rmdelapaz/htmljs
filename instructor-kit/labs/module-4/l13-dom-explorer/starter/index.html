@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM Explorer Practice Page</title>
+  <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site-header">
+        <strong>Front-End JavaScript</strong>
+        <nav aria-label="Main">
+            <ul>
+                <li><a href="#what-is-dom">The DOM</a></li>
+                <li><a href="#tree">The Tree</a></li>
+                <li><a href="#devtools">DevTools</a></li>
+            </ul>
+        </nav>
+    </header>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Module 4</a></li>
+            <li aria-current="page">DOM Explorer</li>
+        </ol>
+    </nav>
+    <main id="main-content">
+        <div class="container">
+            <header>
+                <h1>🌳 DOM Explorer</h1>
+                <p>A small practice page. Open DevTools (F12), click the <b>Console</b> tab, and work through the worksheet in <code>README.md</code>.</p>
+            </header>
+
+            <section id="what-is-dom" class="lesson-section">
+                <h2>What Is the DOM?</h2>
+                <p>The browser reads this HTML and builds a <strong>tree of objects</strong> in memory. That tree is the DOM.</p>
+            </section>
+
+            <section id="tree" class="lesson-section">
+                <h2>The Tree</h2>
+                <p>Every element has a parent, and may have children and siblings.</p>
+                <ul id="family">
+                    <li>Parent</li>
+                    <li>Child</li>
+                    <li>Sibling</li>
+                </ul>
+            </section>
+
+            <section id="devtools" class="lesson-section">
+                <h2>DevTools</h2>
+                <p>Read more at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction">MDN — Introduction to the DOM</a>.</p>
+            </section>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

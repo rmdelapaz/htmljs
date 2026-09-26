@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Master JavaScript operators — arithmetic, assignment, comparison, logical, and the tricky world of type coercion.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 4: Operators &amp; Expressions - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -81,6 +87,7 @@
                         <li><a href="#string-operators" class="toc-link">String Operators</a></li>
                         <li><a href="#precedence" class="toc-link">Operator Precedence</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -89,8 +96,8 @@
             <!-- Section 1 -->
             <section id="intro" class="lesson-section">
                 <h2>Introduction</h2>
-                <p>Variables store data, but <strong>operators</strong> enable you to transform and evaluate that data—performing arithmetic, comparing values, and combining logical conditions to build expressions. An <strong>expression</strong> is any code that evaluates to a value: <code>2 + 3</code> is an expression producing <code>5</code>.</p>
-                <p>This lesson covers the operators foundational to your JavaScript development.</p>
+                <p>Variables let you store data. <strong>Operators</strong> let you actually <em>do</em> something with it: add up a shopping cart, check whether a password is long enough, or decide if a visitor gets a discount. Put values and operators together and you get an <strong>expression</strong> — any piece of code that works out to a value. <code>2 + 3</code> is an expression that produces <code>5</code>.</p>
+                <p>By the end of this lesson you'll use these building blocks to make a working tip calculator — and you'll be ready to teach your code to make decisions in Module 2.</p>
             </section>
 
             <!-- Section 2 -->
@@ -219,7 +226,7 @@ console.log(true === 1);   // false (different types)
 console.log(5 == "5");     // true  (JS converts "5" to 5, then compares)
 console.log(true == 1);    // true  (JS converts true to 1)
 console.log(null == undefined);  // true (special case)
-console.log("" == 0);      // true  (both are "falsy")
+console.log("" == 0);      // true  (JS converts "" to the number 0)
                 </code></pre>
 
                 <div class="card card-danger">
@@ -228,7 +235,7 @@ console.log("" == 0);      // true  (both are "falsy")
                 </div>
 
                 <pre><code class="language-javascript">
-// Why == is dangerous — these are all true!
+// Why == is dangerous — most of these are surprising!
 console.log("" == 0);           // true
 console.log("0" == 0);          // true
 console.log("" == "0");         // false (both strings, no coercion)
@@ -260,7 +267,7 @@ console.log(false === "0");     // false
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td><code>&&</code></td><td>AND</td><td>Both must be true</td><td><code>true && true</code></td><td><code>true</code></td></tr>
+                            <tr><td><code>&amp;&amp;</code></td><td>AND</td><td>Both must be true</td><td><code>true && true</code></td><td><code>true</code></td></tr>
                             <tr><td><code>||</code></td><td>OR</td><td>At least one must be true</td><td><code>false || true</code></td><td><code>true</code></td></tr>
                             <tr><td><code>!</code></td><td>NOT</td><td>Flips the value</td><td><code>!true</code></td><td><code>false</code></td></tr>
                         </tbody>
@@ -294,6 +301,11 @@ console.log(`Gets discount: ${getsDiscount}`);   // true
 console.log(`Can checkout: ${canCheckout}`);       // true
                 </code></pre>
 
+                <div class="card card-info">
+                    <h4>💡 Short-Circuiting</h4>
+                    <p><code>&amp;&amp;</code> and <code>||</code> stop as soon as they know the answer. With <code>&amp;&amp;</code>, if the left side is false, the right side is never even checked. With <code>||</code>, if the left side is true, the right side is skipped. Also, with non-boolean values they return one of the original values rather than <code>true</code>/<code>false</code>: <code>"Ray" || "Guest"</code> gives <code>"Ray"</code>, and <code>"" || "Guest"</code> gives <code>"Guest"</code>. You'll use that trick for default values in Module 2.</p>
+                </div>
+
                 <div class="mermaid">
                     graph TD
                     A["age >= 21?"] -->|Yes| B["hasID?"]
@@ -309,10 +321,11 @@ console.log(`Can checkout: ${canCheckout}`);       // true
 
                 <pre><code class="language-javascript">
 // Falsy values (these all evaluate to false):
-// false, 0, -0, "", null, undefined, NaN
+// false, 0, -0, 0n (BigInt zero), "", null, undefined, NaN
 
 // Everything else is truthy:
-// true, any number (except 0), any non-empty string, objects, arrays
+// true, any number (except 0 and NaN), any non-empty string, objects, arrays
+// (even empty ones: [] and {} are truthy!)
 
 console.log(Boolean(0));          // false
 console.log(Boolean(""));         // false
@@ -434,7 +447,7 @@ console.log(total2);  // 103 (same result, but intention is clear)
 
                     <details>
                         <summary>💡 Hint</summary>
-                        <p>Use <code>.toFixed(2)</code> on numbers to format them to two decimal places: <code>perPerson.toFixed(2)</code> gives you <code>"34.20"</code> instead of <code>34.2</code>.</p>
+                        <p>Use <code>.toFixed(2)</code> on numbers to format them to two decimal places: <code>perPerson.toFixed(2)</code> gives you the string <code>"34.20"</code> instead of <code>34.199999999999996</code>. (That long number isn't a bug in your code — computers store decimals in binary, so tiny rounding errors are normal. Always format money with <code>.toFixed(2)</code> when you display it.)</p>
                     </details>
 
                     <details>
@@ -467,7 +480,7 @@ console.log(`Expensive? ${isExpensive}`);  // true
                         <p><strong>Question 1:</strong> What does <code>10 % 3</code> return?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="That would be 10 / 3 (division), not 10 % 3 (modulo).">A) 3.33</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="The modulo operator returns the remainder: 10 ÷ 3 = 3 remainder 1.">B) 1</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The modulo operator returns the remainder: 10 ÷ 3 = 3 remainder 1.">B) 1</button>
                             <button class="quiz-option" data-correct="false" data-hint="3 is the quotient (how many times 3 goes into 10), not the remainder.">C) 3</button>
                             <button class="quiz-option" data-correct="false" data-hint="10 % 3 gives the remainder of division, which is always less than the divisor.">D) 30</button>
                         </div>
@@ -477,7 +490,7 @@ console.log(`Expensive? ${isExpensive}`);  // true
                     <div class="quiz-question">
                         <p><strong>Question 2:</strong> What does <code>5 === "5"</code> return?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="true" data-explanation="Strict equality (===) checks both value AND type. 5 is a number and '5' is a string — different types, so false.">A) false</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Strict equality (===) checks both value AND type. 5 is a number and '5' is a string — different types, so false.">A) false</button>
                             <button class="quiz-option" data-correct="false" data-hint="That would be true with == (loose equality), but === is strict — it checks types too.">B) true</button>
                             <button class="quiz-option" data-correct="false" data-hint="This is a valid comparison — JavaScript will return a boolean.">C) Error</button>
                             <button class="quiz-option" data-correct="false" data-hint="Comparisons always return booleans, not undefined.">D) undefined</button>
@@ -489,12 +502,52 @@ console.log(`Expensive? ${isExpensive}`);  // true
                         <p><strong>Question 3:</strong> What is the result of <code>true && false || true</code>?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="&& has higher precedence than ||. Evaluate && first, then ||.">A) false</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="&& is evaluated first: true && false = false. Then false || true = true.">B) true</button>
-                            <button class="quiz-option" data-correct="false" data-hint="Logical operations always return a definite boolean result.">C) undefined</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! &amp;&amp; is evaluated first: true && false = false. Then false || true = true.">B) true</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Every value here is a boolean, so the result is a boolean too. Work out true &amp;&amp; false first.">C) undefined</button>
                             <button class="quiz-option" data-correct="false" data-hint="This is valid JavaScript — no error will occur.">D) Error</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> After this code runs, what is the value of <code>points</code>?</p>
+                        <pre><code class="language-javascript">let points = 10;
+points += 5;
+points *= 2;</code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Don't forget the last line — points *= 2 doubles the current value.">A) 15</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Each line runs in order. First add 5, THEN double the result.">B) 20</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! points += 5 makes it 15, then points *= 2 doubles it to 30. Shorthand operators always use the variable's current value.">C) 30</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The operations happen in order from top to bottom: 10 + 5 first, then × 2.">D) 25</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> Which of these values is <strong>truthy</strong>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The number zero is one of the falsy values.">A) <code>0</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="An empty string is falsy.">B) <code>""</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="NaN (Not a Number) is on the falsy list.">C) <code>NaN</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! &quot;0&quot; is a non-empty string (it contains one character), so it's truthy — even though the number 0 is falsy.">D) <code>"0"</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Before running them, predict what <code>"5" + 3</code>, <code>"5" - 3</code>, <code>5 == "5"</code>, and <code>5 === "5"</code> will give you, and write down why. Then check your predictions in the console. Which one surprised you? In your own words, explain why this course tells you to always use <code>===</code>. Finally, think of a rule on your own site you could write with <code>&amp;&amp;</code> or <code>||</code> (for example, "show the banner if it's the weekend OR a holiday") — what's still confusing about combining conditions?</em></p>
                 </div>
             </section>
 
@@ -509,7 +562,7 @@ console.log(`Expensive? ${isExpensive}`);  // true
                         <li><strong>Assignment shorthand</strong>: <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code> for cleaner updates</li>
                         <li><strong>Always use <code>===</code></strong> (strict equality) and <code>!==</code> instead of <code>==</code> and <code>!=</code></li>
                         <li><strong>Logical operators</strong>: <code>&&</code> (AND), <code>||</code> (OR), <code>!</code> (NOT) combine conditions</li>
-                        <li><strong>Truthy/falsy</strong>: <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code> are falsy; everything else is truthy</li>
+                        <li><strong>Truthy/falsy</strong>: <code>false</code>, <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code> are falsy; everything else is truthy</li>
                         <li><strong>Use parentheses</strong> to make operator precedence clear and intentional</li>
                     </ul>
                 </div>

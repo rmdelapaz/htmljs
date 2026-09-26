@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Card Editor</title>
+  <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Profile Card Editor</h1>
+
+    <div class="profile-card" id="card"
+         data-user-id="101" data-role="developer">
+        <h2 id="name">Jane Doe</h2>
+        <p id="bio">Full-stack developer who loves JavaScript.</p>
+        <p id="location">📍 Austin, TX</p>
+        <a id="website" href="https://example.com">Visit Website</a>
+    </div>
+
+    <!-- Used in task 9 and the bonus. The listeners are provided in script.js. -->
+    <div class="controls">
+        <button type="button" id="toggle-dark">Toggle dark mode</button>
+        <button type="button" id="load-sample" class="secondary">Load sample profile (bonus)</button>
+    </div>
+
+    <h2>What your script did</h2>
+    <ol class="log" id="log"></ol>
+
+    <script src="script.js"></script>
+</body>
+</html>

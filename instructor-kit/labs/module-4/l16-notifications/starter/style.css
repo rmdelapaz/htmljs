@@ -1,0 +1,48 @@
+/* Notification System — styles from the lesson. Changes for accessibility:
+   darker button/toast colors (AA contrast with white text), a visible focus
+   ring, and no slide-in animation for people who prefer reduced motion. */
+body { font-family: sans-serif; padding: 2rem; background: #f1f5f9; color: #1e293b; }
+.controls { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.controls button {
+    padding: 0.5rem 1rem; border: none; border-radius: 6px;
+    color: white; cursor: pointer; font-size: 0.9rem;
+}
+.btn-success { background: #15803d; }
+.btn-warning { background: #b45309; }
+.btn-error { background: #b91c1c; }
+.btn-info { background: #1d4ed8; }
+.btn-clear { background: #475569; }
+#notification-area {
+    position: fixed; top: 1rem; right: 1rem;
+    width: min(320px, calc(100vw - 2rem)); display: flex; flex-direction: column; gap: 0.5rem;
+    z-index: 1000;
+}
+.notification {
+    padding: 1rem; border-radius: 8px; color: white;
+    display: flex; justify-content: space-between; align-items: start;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease;
+}
+.notification.success { background: #15803d; }
+.notification.warning { background: #f59e0b; color: #1e293b; }
+.notification.error { background: #b91c1c; }
+.notification.info { background: #1d4ed8; }
+.notification .close-btn {
+    background: none; border: none; color: inherit;
+    font-size: 1.2rem; cursor: pointer; padding: 0; margin-left: 0.5rem;
+    opacity: 0.8;
+}
+.notification .close-btn:hover { opacity: 1; }
+.notification-text { flex: 1; }
+.counter { color: #475569; }
+.hint { font-size: .9rem; color: #475569; }
+kbd { border: 1px solid #94a3b8; border-radius: 4px; padding: 0 .3rem; font-size: .85em; }
+button:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+.notification .close-btn:focus-visible { outline-color: currentColor; opacity: 1; }
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .notification { animation: none; }
+}

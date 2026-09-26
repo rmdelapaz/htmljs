@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:,">
+    <title>GitHub User Search</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="app">
+        <h1>🔍 GitHub User Search</h1>
+        <div class="search-bar">
+            <label for="search-input" class="visually-hidden">GitHub username</label>
+            <input type="text" id="search-input" placeholder="Enter a GitHub username..."
+                   autocomplete="off" spellcheck="false">
+            <button type="button" id="search-btn">Search</button>
+        </div>
+        <div id="result" aria-live="polite">
+            <p class="status-message">Search for a GitHub user to see their profile.</p>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

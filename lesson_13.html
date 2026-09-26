@@ -5,21 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Understand the Document Object Model (DOM) — what it is, how browsers build the document tree, and how to explore it with DevTools.">
     <meta name="keywords" content="javascript, dom, document object model, document tree, devtools">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 13: Introduction to the DOM - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -82,6 +88,7 @@
                         <li><a href="#devtools" class="toc-link">Exploring with DevTools</a></li>
                         <li><a href="#html-vs-dom" class="toc-link">HTML Source vs. Live DOM</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -111,7 +118,7 @@
             <!-- Section 2 -->
             <section id="document-tree" class="lesson-section">
                 <h2>The Document Tree</h2>
-                <p>The DOM is structured as a <strong>tree</strong>, just like a family tree. Every piece of the page — elements, text, attributes — is a <strong>node</strong> in this tree.</p>
+                <p>The DOM is structured as a <strong>tree</strong>, just like a family tree. Every piece of the page — elements, the text inside them, even HTML comments — is a <strong>node</strong> in this tree. (Attributes like <code>class</code> and <code>id</code> belong to their element rather than hanging off the tree as separate branches.)</p>
 
                 <p>Consider this simple HTML:</p>
                 <pre><code class="language-html">
@@ -157,6 +164,8 @@
                     style T4 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
                     style T5 fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
                 </div>
+
+                <p>To keep the picture readable, the diagram leaves out one detail: the line breaks and indentation between tags become <strong>whitespace-only text nodes</strong> in the real tree. You'll see why that matters in the "Element vs. Node Properties" box below.</p>
 
                 <p>Key relationships in this tree:</p>
                 <ul>
@@ -268,7 +277,7 @@ console.log(textNode.nodeName);  // "#text"
                 <pre><code class="language-javascript">
 const item = document.querySelector("li");
 const list = item.parentElement;    // The &lt;ul&gt; or &lt;ol&gt; containing this &lt;li&gt;
-const body = list.parentElement;    // Keeps going up the tree
+const grandparent = list.parentElement; // Keeps going up the tree
                 </code></pre>
 
                 <h3>Children</h3>
@@ -310,7 +319,7 @@ console.log(second.nextElementSibling);      // The &lt;li&gt; after this one
 
                 <div class="card card-warning">
                     <h4>⚠️ Element vs. Node Properties</h4>
-                    <p>There are two sets of traversal properties. The <strong>Element</strong> versions (recommended) skip text nodes and comments. The <strong>Node</strong> versions include everything.</p>
+                    <p>There are two sets of traversal properties. The <strong>Element</strong> versions (recommended) skip text nodes and comments. The <strong>Node</strong> versions include everything — so <code>list.firstChild</code> is often just the whitespace text node between <code>&lt;ul&gt;</code> and the first <code>&lt;li&gt;</code>, not the <code>&lt;li&gt;</code> you expected.</p>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -408,7 +417,7 @@ document.body.appendChild(newParagraph);
                 <div class="card card-info">
                     <h4>💡 View Source vs. Inspect</h4>
                     <ul>
-                        <li><strong>View Source</strong> (<kbd>Ctrl/Cmd + U</kbd>): Shows the original HTML file from the server — static, never changes.</li>
+                        <li><strong>View Source</strong> (<kbd>Ctrl + U</kbd>; <kbd>Cmd + Option + U</kbd> on Mac): Shows the original HTML exactly as the server sent it — JavaScript changes never show up here.</li>
                         <li><strong>Inspect / Elements Panel</strong>: Shows the live DOM — reflects JavaScript changes, browser corrections, and user interactions.</li>
                     </ul>
                 </div>
@@ -480,7 +489,7 @@ document.documentElement  // &lt;html&gt;
                         <p><strong>Question 1:</strong> What is the DOM?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="The HTML file is the source code. The DOM is what the browser creates from it.">A) The HTML file on the server</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="The DOM is a tree of objects that the browser creates from HTML. JavaScript interacts with this tree, not the HTML file directly.">B) An in-memory tree of objects representing the page</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The DOM is a tree of objects that the browser creates from HTML. JavaScript interacts with this tree, not the HTML file directly.">B) An in-memory tree of objects representing the page</button>
                             <button class="quiz-option" data-correct="false" data-hint="CSS handles styling. The DOM represents the page structure that JavaScript can interact with.">C) A CSS styling system</button>
                             <button class="quiz-option" data-correct="false" data-hint="JavaScript is a programming language. The DOM is a browser API that JavaScript uses to interact with the page.">D) A JavaScript library</button>
                         </div>
@@ -491,7 +500,7 @@ document.documentElement  // &lt;html&gt;
                         <p><strong>Question 2:</strong> Which object is the entry point to the DOM?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="window is the global browser object. The DOM lives inside window.document.">A) window</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="document represents the page and provides methods like querySelector() and createElement() to interact with the DOM.">B) document</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! document represents the page and provides methods like querySelector() and createElement() to interact with the DOM.">B) document</button>
                             <button class="quiz-option" data-correct="false" data-hint="body is one element inside the document — it's not the entry point to the whole DOM.">C) body</button>
                             <button class="quiz-option" data-correct="false" data-hint="html is the root element, but you access it through document.documentElement.">D) html</button>
                         </div>
@@ -502,12 +511,49 @@ document.documentElement  // &lt;html&gt;
                         <p><strong>Question 3:</strong> What does <code>element.parentElement</code> return?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="children returns child elements. parentElement goes UP the tree, not down.">A) All child elements</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="parentElement returns the element that contains this element — one level up in the DOM tree.">B) The element that contains this element</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! parentElement returns the element that contains this element — one level up in the DOM tree.">B) The element that contains this element</button>
                             <button class="quiz-option" data-correct="false" data-hint="nextElementSibling returns the next sibling. parentElement returns the container above.">C) The next element in the page</button>
                             <button class="quiz-option" data-correct="false" data-hint="document is the root of the entire DOM. parentElement returns just the immediate parent.">D) The document object</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> Your JavaScript adds a new <code>&lt;p&gt;</code> to the page. Where will you see it?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="View Source shows the HTML exactly as the server sent it. JavaScript changes the DOM, not the file.">A) In View Source (Ctrl + U)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="JavaScript running in the browser can't edit the HTML file on disk or on the server.">B) In your HTML file in VS Code</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The Elements panel shows the live DOM, so it includes anything JavaScript added. The HTML file and View Source stay unchanged.">C) In the DevTools Elements panel</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It will show up somewhere — think about which tool shows the live DOM rather than the original file.">D) Nowhere — it only exists in memory</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> For a <code>&lt;ul&gt;</code> written on several indented lines, why might <code>list.firstChild</code> not be the first <code>&lt;li&gt;</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="firstChild works on any node. Think about what sits between the opening &lt;ul&gt; tag and the first &lt;li&gt;.">A) firstChild only works on the document</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Comments are nodes too, but there's no comment here. What else is between the tags?">B) Because it returns the last child instead</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The list has children — the question is which kind of node comes first.">C) Because lists have no children</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The line break and indentation become a whitespace text node, and firstChild includes text nodes. Use firstElementChild to skip straight to the first &lt;li&gt;.">D) The whitespace before the first &lt;li&gt; is a text node, and firstChild includes text nodes</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Open one of your own pages from the HTML &amp; CSS course, then sketch its DOM tree from <code>document</code> down to one paragraph. Explain in your own words why a change you make in the console shows up in the Elements panel but not in View Source. What about parents, children, and siblings (or element vs. node properties) are you still unsure about?</em></p>
                 </div>
             </section>
 

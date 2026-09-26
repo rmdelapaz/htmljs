@@ -4,26 +4,56 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    initThemeToggle();
+    initThemeToggle();        // must run first — sets data-theme
+    // initProgressIndicator();
     initSmoothScrolling();
     initCodeCopyButtons();
     initInteractiveTOC();
     initSearchFunctionality();
     initKeyboardShortcuts();
+    // initLessonProgress();
     initQuizInteractivity();
+    initJournal();            // 📓 autosaved in-page learning journal
     initMobileMenu();
     initAccessibilityFeatures();
     initPrintStyles();
     initAnalytics();
-
-    // Centralized Mermaid init
-    setTimeout(initMermaid, 100);
 });
 
-/* ... */
+/* ===========================
+   Theme Toggle (Light / Dark)
+   =========================== */
 
-function initMermaid() {
-    const theme = document.documentElement.getAttribute('data-theme') || 'light';
+function initThemeToggle() {
+    const toggle = document.getElementById('theme-toggle');
+
+    // Determine initial theme
+    const saved = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = saved || (prefersDark ? 'dark' : 'light');
+
+    applyTheme(theme);
+
+    if (toggle) {
+        toggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'light' ? 'dark' : 'light';
+            applyTheme(next);
+            localStorage.setItem('theme', next);
+        });
+    }
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+
+    // Update all toggle buttons (in case there are multiple)
+    document.querySelectorAll('#theme-toggle').forEach(btn => {
+        btn.textContent = theme === 'light' ? '🌙' : '☀️';
+        btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+    });
+
+    // Re-initialize Mermaid if available
     reinitMermaid(theme);
 }
 
@@ -40,7 +70,9 @@ function reinitMermaid(theme) {
             : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
     });
 
-    document.querySelectorAll('.mermaid').forEach(el => {
+    // Re-render all diagrams
+    document.querySelectorAll('.mermaid').forEach((el, i) => {
+        // Preserve the original source
         if (!el.dataset.src) {
             // Raw <br> in authored markup becomes a <br> DOM node that textContent drops,
             // collapsing multi-line labels. Restore it as the literal "<br/>" Mermaid renders.
@@ -49,19 +81,20 @@ function reinitMermaid(theme) {
             el.dataset.src = tmp.textContent.trim();
         }
         el.removeAttribute('data-processed');
-        el.innerHTML = el.dataset.src;
+        // Render straight from the source STRING. Assigning innerHTML = src would re-parse
+        // the source as HTML, turning label content like <<abstract>> (classDiagram
+        // stereotypes), <T> generics, or <form>/<table> tags into phantom elements and
+        // corrupting the diagram. Passing the string to mermaid.render() lets Mermaid's own
+        // parser handle <br/>, <<...>>, <tag>, etc.
+        mermaid.render('mmd-' + Date.now() + '-' + i, el.dataset.src)
+            .then(({ svg }) => { el.innerHTML = svg; })
+            .catch(() => {});
     });
-
-    try { mermaid.run(); } catch (_) { }
 }
-
-/* ===========================
-   Progress Indicator
-   =========================== */
 
 /*
 function initProgressIndicator() {
-    const bar = document.querySelector('.progress-bar');
+    const bar = document.querySelector('.progress-indicator .progress-bar');
     if (!bar) return;
 
     const update = () => {
@@ -127,6 +160,7 @@ function initInteractiveTOC() {
         });
     }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
 
+    // Observe sections that TOC links point to
     tocLinks.forEach(link => {
         const id = link.getAttribute('href')?.slice(1);
         const section = id && document.getElementById(id);
@@ -259,11 +293,13 @@ function initLessonProgress() {
 
     if (page === 'index') updateProgressIndicators(progress);
 
+    // Save scroll on leave
     window.addEventListener('beforeunload', () => {
         progress[page].scrollPosition = window.scrollY;
         localStorage.setItem('lessonProgress', JSON.stringify(progress));
     });
 
+    // Restore scroll
     const saved = progress[page]?.scrollPosition;
     if (saved > 0) setTimeout(() => window.scrollTo(0, saved), 100);
 }
@@ -310,12 +346,96 @@ function initQuizInteractivity() {
                 const ok = opt.dataset.correct === 'true';
                 opt.classList.add(ok ? 'correct' : 'incorrect');
                 if (feedback) {
-                    feedback.textContent = ok ? ('Correct! ' + (opt.dataset.explanation || '')) : ('Try again. ' + (opt.dataset.hint || ''));
+                    // Most explanations already open with "Correct!" — don't say it twice.
+                    const exp = opt.dataset.explanation || '';
+                    feedback.textContent = ok ? (/^correct\b/i.test(exp) ? exp : 'Correct! ' + exp) : ('Try again. ' + (opt.dataset.hint || ''));
                     feedback.className = 'quiz-feedback ' + (ok ? 'correct' : 'incorrect');
                 }
             });
         });
     });
+}
+
+/* ===========================
+   Learning Journal (in-page, autosaved)
+   ---------------------------
+   Turns a lesson's static #journal prompt into an autosaving text area kept
+   in localStorage per lesson, plus a one-click Markdown export of every
+   entry. Per-device only; never leaves the browser.
+   =========================== */
+
+function initJournal() {
+    const section = document.getElementById('journal');
+    if (!section) return;
+    const host = section.querySelector('.card') || section;
+
+    const page = (location.pathname.split('/').pop() || 'index').replace('.html', '');
+    const key = 'htmljsJournal:' + page;
+    const fmt = ts => { try { return new Date(ts).toLocaleString(); } catch (_) { return ''; } };
+
+    const wrap = document.createElement('div');
+    wrap.className = 'journal-editor';
+    wrap.innerHTML = `
+        <label class="journal-label" for="journal-text">✍️ Your journal entry <span class="journal-note">(saved on this device only)</span></label>
+        <textarea id="journal-text" class="journal-textarea" rows="7"
+            placeholder="Key concepts · what clicked · questions or confusion · ideas to try · how you feel about your progress"></textarea>
+        <div class="journal-meta">
+            <span class="journal-status" aria-live="polite"></span>
+            <button type="button" class="journal-export">⬇ Export all my entries</button>
+        </div>`;
+    host.appendChild(wrap);
+
+    const ta = wrap.querySelector('.journal-textarea');
+    const status = wrap.querySelector('.journal-status');
+
+    try {
+        const saved = JSON.parse(localStorage.getItem(key) || 'null');
+        if (saved && saved.text) {
+            ta.value = saved.text;
+            status.textContent = 'Last saved ' + fmt(saved.ts);
+        }
+    } catch (_) { /* storage blocked or corrupt — start blank */ }
+
+    const save = debounce(() => {
+        try {
+            localStorage.setItem(key, JSON.stringify({ text: ta.value, ts: Date.now() }));
+            status.textContent = 'Saved ✓ ' + fmt(Date.now());
+        } catch (_) {
+            status.textContent = '⚠️ Could not save (browser storage is blocked). Copy your entry somewhere safe.';
+        }
+    }, 500);
+
+    ta.addEventListener('input', () => { status.textContent = 'Saving…'; save(); });
+    wrap.querySelector('.journal-export').addEventListener('click', exportJournal);
+}
+
+function exportJournal() {
+    const entries = [];
+    try {
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (!k || k.indexOf('htmljsJournal:') !== 0) continue;
+            try {
+                const v = JSON.parse(localStorage.getItem(k));
+                if (v && v.text && v.text.trim()) entries.push({ page: k.slice('htmljsJournal:'.length), text: v.text, ts: v.ts });
+            } catch (_) { /* skip unreadable entry */ }
+        }
+    } catch (_) { /* storage blocked */ }
+    entries.sort((a, b) => a.page.localeCompare(b.page));
+
+    const md = entries.length
+        ? '# My Front-End JavaScript Learning Journal\n\n' + entries.map(e =>
+            `## ${e.page}\n_saved ${new Date(e.ts).toLocaleString()}_\n\n${e.text}\n`).join('\n---\n\n')
+        : 'No journal entries saved yet.';
+
+    const url = URL.createObjectURL(new Blob([md], { type: 'text/markdown' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'my-javascript-journal.md';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 /* ===========================
@@ -356,6 +476,7 @@ function initAccessibilityFeatures() {
         });
     }
 
+    // Keyboard vs mouse focus ring
     document.addEventListener('keydown', e => { if (e.key === 'Tab') document.body.classList.add('keyboard-nav'); });
     document.addEventListener('mousedown', () => document.body.classList.remove('keyboard-nav'));
 }
@@ -399,4 +520,5 @@ function throttle(fn, ms) {
     };
 }
 
-window.courseEnhancements = { debounce, throttle, applyTheme, reinitMermaid, updateProgressIndicators };
+// Expose for other scripts
+window.courseEnhancements = { debounce, throttle, applyTheme, reinitMermaid };

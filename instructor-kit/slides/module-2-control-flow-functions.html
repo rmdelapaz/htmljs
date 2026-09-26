@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slides — Module 2</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg:#0b1220; --bg2:#111c30; --ink:#eaf1fb; --ink2:#9fb2cd;
+    --accent:#5b9dff; --accent2:#3b82f6; --lab:#34d3bd; --warn:#fbbf24;
+    --line:#22314c; --code:#0a1526;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--ink);
+    font-family:"Source Sans 3",system-ui,sans-serif;overflow:hidden}
+  .deck{height:100%;width:100%;position:relative}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:6vh 8vw;gap:20px}
+  .slide.on{display:flex}
+  .mono{font-family:"JetBrains Mono",monospace}
+  h1,h2,h3{font-family:"Archivo",sans-serif;line-height:1.1;text-wrap:balance}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:clamp(.7rem,1.4vw,.95rem);font-weight:600;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+  .slide h1{font-size:clamp(2rem,6vw,4rem);font-weight:800;letter-spacing:-.02em}
+  .slide h2{font-size:clamp(1.5rem,4.2vw,2.8rem);font-weight:800;letter-spacing:-.01em}
+  .slide p.lead{font-size:clamp(1.05rem,2.4vw,1.5rem);color:var(--ink2);max-width:24ch}
+  ul{list-style:none;display:flex;flex-direction:column;gap:14px;margin-top:6px}
+  ul li{position:relative;padding-left:34px;font-size:clamp(1.05rem,2.3vw,1.6rem)}
+  ul li::before{content:"";position:absolute;left:0;top:.55em;width:12px;height:12px;border-radius:3px;
+    background:var(--accent);transform:rotate(45deg)}
+  ul.lab li::before{background:var(--lab)}
+  code.k{font-family:"JetBrains Mono",monospace;color:#a9c7ff;font-size:.92em}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:22px 26px;
+    font-family:"JetBrains Mono",monospace;font-size:clamp(.85rem,1.9vw,1.35rem);line-height:1.55;
+    overflow:auto;max-width:100%}
+  pre .k{color:#7dd3fc} pre .s{color:#86efac} pre .c{color:#7183a3;font-style:italic}
+  .tag{display:inline-flex;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;
+    font-size:clamp(.7rem,1.4vw,.95rem);color:var(--ink2)}
+  .tag .pill{background:var(--accent2);color:#fff;font-weight:700;border-radius:999px;padding:3px 12px;letter-spacing:.06em}
+  .tag .pill.lab{background:var(--lab);color:#062b26}
+  .tag .pill.warn{background:var(--warn);color:#3a2a05}
+  .section{background:linear-gradient(135deg,#12213c,#0b1220)}
+  .section .big{font-size:clamp(3rem,12vw,8rem);font-family:"Archivo";font-weight:800;color:var(--accent2);line-height:.9}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}
+  @media (max-width:760px){ .two{grid-template-columns:1fr} }
+  /* chrome */
+  .bar{position:fixed;left:0;top:0;height:4px;background:var(--accent2);width:0;transition:width .25s;z-index:5}
+  .count{position:fixed;right:16px;bottom:12px;font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--ink2);z-index:5}
+  .nav{position:fixed;inset:auto 0 0 0;display:flex;justify-content:space-between;pointer-events:none;z-index:4}
+  .nav button{pointer-events:auto;background:transparent;border:none;color:transparent;width:22vw;height:100vh;cursor:pointer}
+  pre,code{font-variant-ligatures:none}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 title -->
+  <section class="slide on section">
+    <div class="eyebrow">Front-End JavaScript · Instructor Kit</div>
+    <h1>Module 2<br>Control Flow &amp; Functions</h1>
+    <p class="lead">Four lessons that teach your code to decide, repeat, and organize itself.</p>
+  </section>
+
+  <!-- 2 agenda -->
+  <section class="slide">
+    <div class="eyebrow">What we'll cover</div>
+    <h2>The arc of this module</h2>
+    <ul>
+      <li><b>L05</b> Conditionals — if, switch, ternary</li>
+      <li><b>L06</b> Loops — for, while, for...of, for...in</li>
+      <li><b>L07</b> Functions — declarations, expressions, arrows</li>
+      <li><b>L08</b> Scope &amp; Hoisting — who can see what, and closures</li>
+    </ul>
+  </section>
+
+  <!-- L05 -->
+  <section class="slide section"><div class="big">L05</div><h2>Conditionals</h2><p class="lead">Run different code depending on what's true.</p></section>
+  <section class="slide">
+    <div class="eyebrow">First true condition wins</div>
+    <h2>if / else if / else</h2>
+    <div class="two">
+      <pre><span class="k">if</span> (score &gt;= <span class="s">90</span>) {
+  letter = <span class="s">"A"</span>;
+} <span class="k">else if</span> (score &gt;= <span class="s">80</span>) {
+  letter = <span class="s">"B"</span>;
+} <span class="k">else</span> {
+  letter = <span class="s">"F"</span>;
+}</pre>
+      <ul><li>Check the <b>highest</b> range first</li><li>Always use <b>braces</b>, even for one line</li><li>Guard clauses: handle problems <b>first</b></li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> <code class="k">if (quantity)</code> treats a valid <code class="k">0</code> as missing — 0 is falsy.</div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">One value, many options · or just two</div>
+    <h2>switch &amp; the ternary</h2>
+    <div class="two">
+      <pre><span class="k">switch</span> (letter) {
+  <span class="k">case</span> <span class="s">"A"</span>:
+    message = <span class="s">"Excellent work!"</span>;
+    <span class="k">break</span>;
+  <span class="k">default</span>:
+    message = <span class="s">"Keep going"</span>;
+}
+<span class="k">const</span> status =
+  score &gt;= <span class="s">60</span> ? <span class="s">"Pass"</span> : <span class="s">"Fail"</span>;</pre>
+      <ul><li>Forget <code class="k">break</code> → it <b>falls through</b></li><li><code class="k">default</code> is the switch's <code class="k">else</code></li><li>Ternary: short choices only, never nested</li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> <code class="k">switch</code> uses <code class="k">===</code>: <code class="k">"5"</code> never matches <code class="k">case 5</code>.</div>
+  </section>
+
+  <!-- L06 -->
+  <section class="slide section"><div class="big">L06</div><h2>Loops</h2><p class="lead">Write it once. Let JavaScript repeat it.</p></section>
+  <section class="slide">
+    <div class="eyebrow">Start · check · update</div>
+    <h2>for and for...of</h2>
+    <div class="two">
+      <pre><span class="k">for</span> (<span class="k">let</span> i = <span class="s">1</span>; i &lt;= <span class="s">5</span>; i++) {
+  stars += i &lt;= rating ? <span class="s">"★"</span> : <span class="s">"☆"</span>;
+}
+
+<span class="k">for</span> (<span class="k">const</span> item <span class="k">of</span> products) {
+  <span class="k">const</span> name = item.toLowerCase();
+  <span class="k">if</span> (name.includes(term)) count++;
+}</pre>
+      <ul><li><code class="k">for</code> — known count</li><li><code class="k">while</code> — until a condition changes</li><li><code class="k">for...of</code> values · <code class="k">for...in</code> object keys</li><li><code class="k">break</code> exits · <code class="k">continue</code> skips</li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> <code class="k">i &lt;= arr.length</code> runs one extra time → <code class="k">undefined</code>.</div>
+  </section>
+
+  <!-- L07 -->
+  <section class="slide section"><div class="big">L07</div><h2>Functions</h2><p class="lead">A recipe: define once, call it any time.</p></section>
+  <section class="slide">
+    <div class="eyebrow">Three ways to write one</div>
+    <h2>Declaration, expression, arrow</h2>
+    <div class="two">
+      <pre><span class="c">// declaration — hoisted</span>
+<span class="k">function</span> capitalize(str) {
+  <span class="k">return</span> str[<span class="s">0</span>].toUpperCase() +
+    str.slice(<span class="s">1</span>).toLowerCase();
+}
+<span class="c">// expression</span>
+<span class="k">const</span> double = <span class="k">function</span>(n) {
+  <span class="k">return</span> n * <span class="s">2</span>;
+};
+<span class="c">// arrow + default parameter</span>
+<span class="k">const</span> pluralize =
+  (n, one, many = one + <span class="s">"s"</span>) =&gt;
+    <span class="s">`${n} ${n === 1 ? one : many}`</span>;</pre>
+      <ul><li><code class="k">return</code> hands a value back — none gives <code class="k">undefined</code></li><li>Defaults fill missing arguments</li><li>Return an object: <code class="k">n =&gt; ({ name: n })</code></li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> A <code class="k">const</code> function called before its line → <code class="k">ReferenceError</code>, not TypeError.</div>
+  </section>
+
+  <!-- L08 -->
+  <section class="slide section"><div class="big">L08</div><h2>Scope &amp; Hoisting</h2><p class="lead">Can I use this variable here?</p></section>
+  <section class="slide">
+    <div class="eyebrow">Blocks, the chain &amp; the TDZ</div>
+    <h2>Who can see what</h2>
+    <div class="two">
+      <pre><span class="k">if</span> (<span class="k">true</span>) {
+  <span class="k">var</span> leaked = <span class="s">"escaped"</span>;
+  <span class="k">let</span> kept = <span class="s">"stayed"</span>;
+}
+console.log(leaked); <span class="c">// "escaped"</span>
+
+console.log(nickname); <span class="c">// undefined</span>
+<span class="k">var</span> nickname = <span class="s">"Ray"</span>;
+<span class="c">// ReferenceError (TDZ):</span>
+console.log(age);
+<span class="k">let</span> age = <span class="s">25</span>;</pre>
+      <ul><li><code class="k">let</code>/<code class="k">const</code>: block · <code class="k">var</code>: function</li><li>Lookups go <b>outward</b>, never inward</li><li>Use <code class="k">let</code>/<code class="k">const</code>; skip <code class="k">var</code></li></ul>
+    </div>
+    <div class="tag"><span class="pill warn">WATCH</span> Don't demo with <code class="k">var name</code> — it collides with <code class="k">window.name</code>.</div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">A function with a memory</div>
+    <h2>Closures</h2>
+    <div class="two">
+      <pre><span class="k">function</span> createScoreTracker() {
+  <span class="k">let</span> score = <span class="s">0</span>;
+  <span class="k">return</span> {
+    addPoints(p) { score += p; },
+    penalty(p) {
+      score -= p;
+      <span class="k">if</span> (score &lt; <span class="s">0</span>) score = <span class="s">0</span>;
+    },
+    getScore() { <span class="k">return</span> score; },
+    reset() { score = <span class="s">0</span>; }
+  };
+}</pre>
+      <ul class="lab"><li><code class="k">score</code> survives after the function returns</li><li>Only the returned methods can touch it</li><li>Each call makes a <b>new</b>, separate tracker</li></ul>
+    </div>
+  </section>
+
+  <!-- close -->
+  <section class="slide section">
+    <div class="eyebrow">You can now…</div>
+    <h2>Decide, repeat, package &amp; scope</h2>
+    <ul class="lab">
+      <li>Branch with if, switch, and the ternary</li>
+      <li>Repeat work with the right loop</li>
+      <li>Write functions that take inputs and return results</li>
+      <li>Predict scope and hoisting; build a closure</li>
+    </ul>
+    <p class="lead" style="margin-top:10px">Next: Module 3 — Working with Data: arrays, objects &amp; strings.</p>
+  </section>
+
+</div>
+
+<div class="count" id="count">1 / 13</div>
+<div class="nav"><button id="prev" aria-label="Previous slide"></button><button id="next" aria-label="Next slide"></button></div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const bar=document.getElementById('bar'), count=document.getElementById('count');
+  let i=0;
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+    bar.style.width=((i+1)/slides.length*100)+'%';
+    count.textContent=(i+1)+' / '+slides.length;
+  }
+  document.getElementById('next').onclick=()=>show(i+1);
+  document.getElementById('prev').onclick=()=>show(i-1);
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ') {e.preventDefault();show(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp') {e.preventDefault();show(i-1);}
+    else if(e.key==='Home') show(0);
+    else if(e.key==='End') show(slides.length-1);
+  });
+  show(0);
+</script>
+</body>
+</html>

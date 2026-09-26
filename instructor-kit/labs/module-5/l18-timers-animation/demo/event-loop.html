@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:,">
+    <title>Event Loop Demo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; }
+        body { font-family: system-ui, sans-serif; background: #f8fafc; color: #1e293b; padding: 2rem; line-height: 1.5; }
+        main { max-width: 640px; margin: 0 auto; }
+        h1 { font-size: 1.5rem; margin-bottom: .5rem; }
+        p { margin-bottom: 1rem; color: #334155; }
+        pre { background: #0f172a; color: #e2e8f0; padding: 1rem 1.25rem; border-radius: 10px; font-size: .95rem; overflow-x: auto; margin-bottom: 1rem; }
+        .row { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        button { padding: .6rem 1.1rem; font-size: 1rem; border-radius: 8px; border: 2px solid #4f46e5; background: #4f46e5; color: #fff; cursor: pointer; }
+        button.secondary { background: #fff; color: #3730a3; }
+        button:focus-visible { outline: 3px solid #1e1b4b; outline-offset: 2px; }
+        ol#output { list-style: none; padding: 0; display: flex; gap: .5rem; flex-wrap: wrap; min-height: 3rem; }
+        ol#output li { font-family: ui-monospace, monospace; font-size: 1.1rem; padding: .4rem .8rem; border-radius: 8px; background: #fff; border: 2px solid #cbd5e1; }
+        li.sync { border-color: #1d4ed8 !important; }
+        li.micro { border-color: #7c3aed !important; }
+        li.task { border-color: #b45309 !important; }
+        .key { font-size: .9rem; color: #475569; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Event loop: who runs first?</h1>
+    <p>Ask the room to predict the order <strong>before</strong> you click. Then click and read the output left to right. The same lines are logged to the console.</p>
+<pre>console.log("A");
+setTimeout(() =&gt; console.log("B"), 0);         // task queue
+Promise.resolve().then(() =&gt; console.log("C")); // microtask queue
+console.log("D");</pre>
+    <div class="row">
+        <button type="button" id="run">Run it</button>
+        <button type="button" id="run-quiz" class="secondary">Run quiz Q6 (timer / promise / sync)</button>
+        <button type="button" id="clear" class="secondary">Clear</button>
+    </div>
+    <ol id="output" aria-live="polite" aria-label="Output order"></ol>
+    <p class="key">Border colors: <strong style="color:#1d4ed8">blue = synchronous</strong> · <strong style="color:#7c3aed">purple = microtask (promise)</strong> · <strong style="color:#b45309">amber = task (timer)</strong></p>
+</main>
+<script>
+const output = document.querySelector("#output");
+
+function log(text, kind) {
+    console.log(text);
+    const li = document.createElement("li");
+    li.textContent = text;
+    li.className = kind;
+    output.append(li);
+}
+
+document.querySelector("#run").addEventListener("click", () => {
+    output.innerHTML = "";
+    log("A", "sync");
+    setTimeout(() => log("B", "task"), 0);
+    Promise.resolve().then(() => log("C", "micro"));
+    log("D", "sync");
+    // Result: A, D, C, B
+});
+
+document.querySelector("#run-quiz").addEventListener("click", () => {
+    output.innerHTML = "";
+    setTimeout(() => log("timer", "task"), 0);
+    Promise.resolve().then(() => log("promise", "micro"));
+    log("sync", "sync");
+    // Result: sync, promise, timer
+});
+
+document.querySelector("#clear").addEventListener("click", () => {
+    output.innerHTML = "";
+});
+</script>
+</body>
+</html>

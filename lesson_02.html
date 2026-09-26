@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Learn how to link JavaScript to HTML pages using the script tag, use the browser console, and write your first console.log statements.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 2: Linking Scripts &amp; the Console - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -80,6 +86,7 @@
                         <li><a href="#console-methods" class="toc-link">Console Methods</a></li>
                         <li><a href="#comments" class="toc-link">JavaScript Comments</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -115,7 +122,7 @@
 &lt;/html&gt;
                 </code></pre>
 
-                <p>When the browser reaches the <code>&lt;script&gt;</code> tag, it pauses rendering, executes the JavaScript code inside, and then continues. The message <code>"Hello from JavaScript!"</code> appears in the browser's console (not on the page itself).</p>
+                <p>When the browser reaches the <code>&lt;script&gt;</code> tag, it pauses parsing the HTML, runs the JavaScript code inside, and then carries on with the rest of the page. The message <code>"Hello from JavaScript!"</code> appears in the browser's console (not on the page itself).</p>
 
                 <div class="card card-warning">
                     <h4>⚠️ When to Use Inline Scripts</h4>
@@ -188,9 +195,9 @@ console.log("The script is linked and running.");
 
                 <div class="mermaid">
                     graph TD
-                    A["Option 1: Script in &lt;head&gt;<br/>(blocks page rendering)"] --> D["❌ Elements don't exist yet"]
-                    B["Option 2: Script before &lt;/body&gt;<br/>(safe — HTML is parsed first)"] --> E["✅ All elements exist"]
-                    C["Option 3: Script in &lt;head&gt; with defer<br/>(modern best practice)"] --> F["✅ Downloads in parallel,<br/>runs after HTML is parsed"]
+                    A["Option 1: Script in ⟨head⟩<br/>(blocks page rendering)"] --> D["❌ Elements don't exist yet"]
+                    B["Option 2: Script before ⟨/body⟩<br/>(safe — HTML is parsed first)"] --> E["✅ All elements exist"]
+                    C["Option 3: Script in ⟨head⟩ with defer<br/>(modern best practice)"] --> F["✅ Downloads in parallel,<br/>runs after HTML is parsed"]
                     style A fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#1e293b
                     style B fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
                     style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
@@ -223,7 +230,7 @@ console.log("The script is linked and running.");
     &lt;script src="app.js" defer&gt;&lt;/script&gt;
 &lt;/head&gt;
                 </code></pre>
-                <p>The <code>defer</code> attribute tells the browser: <strong>"Download this script in the background, but don't run it until the HTML is fully parsed."</strong> This gives you the best of both worlds — the script is in the <code>&lt;head&gt;</code> (clean structure) but runs after the page is ready.</p>
+                <p>The <code>defer</code> attribute tells the browser: <strong>"Download this script in the background, but don't run it until the HTML is fully parsed."</strong> This gives you the best of both worlds — the script is in the <code>&lt;head&gt;</code> (clean structure) but runs after the page is ready. Deferred scripts also run in the order they appear in the HTML. Note that <code>defer</code> only works on external scripts (ones with a <code>src</code>); on an inline script it's ignored.</p>
 
                 <div class="card card-info">
                     <h4>💡 Our Approach in This Course</h4>
@@ -363,7 +370,7 @@ console.log("This runs"); // Comments can go after code too
 let age = 25; // set age to 25
 
 // ✅ Good comment — explains WHY
-let age = 25; // Default age for demo accounts (per product spec)
+let demoAge = 25; // Default age for demo accounts (per product spec)
                 </code></pre>
             </section>
 
@@ -422,7 +429,7 @@ console.table(["HTML", "CSS", "JavaScript"]);
                     </code></pre>
 
                     <ol start="5">
-                        <li>Open <code>index.html</code> in your browser (using Live Server or double-click)</li>
+                        <li>Open <code>index.html</code> in your browser (using Live Server, or just double-click the file)</li>
                         <li>Open the Console (<kbd>F12</kbd> → Console tab)</li>
                         <li>Verify you see all the messages</li>
                     </ol>
@@ -447,7 +454,7 @@ console.table(["HTML", "CSS", "JavaScript"]);
                             <button class="quiz-option" data-correct="false" data-hint="This works but can cause issues if the script tries to access elements that haven't loaded yet.">
                                 A) Inside the &lt;head&gt; (without defer)
                             </button>
-                            <button class="quiz-option" data-correct="true" data-explanation="Placing the script just before &lt;/body&gt; ensures all HTML elements exist before the script runs.">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Placing the script just before &lt;/body&gt; ensures all HTML elements exist before the script runs.">
                                 B) Just before the closing &lt;/body&gt; tag
                             </button>
                             <button class="quiz-option" data-correct="false" data-hint="Script tags should be inside &lt;head&gt; or &lt;body&gt;, not outside them.">
@@ -463,11 +470,11 @@ console.table(["HTML", "CSS", "JavaScript"]);
                     <div class="quiz-question">
                         <p><strong>Question 2:</strong> What does <code>console.log()</code> do?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="false" data-hint="console.log() outputs to DevTools, not the visible page. Users won't see it unless they open the console.">
-                                A) Displays text on the web page
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! console.log() prints messages to the browser's Developer Tools Console — your primary debugging tool.">
+                                A) Prints a message to the browser's Developer Tools Console
                             </button>
-                            <button class="quiz-option" data-correct="true" data-explanation="console.log() prints messages to the browser's Developer Tools Console — your primary debugging tool.">
-                                B) Prints a message to the browser's Developer Tools Console
+                            <button class="quiz-option" data-correct="false" data-hint="console.log() outputs to DevTools, not the visible page. Users won't see it unless they open the console.">
+                                B) Displays text on the web page
                             </button>
                             <button class="quiz-option" data-correct="false" data-hint="console.log() outputs information — it doesn't save anything to a file.">
                                 C) Saves data to a file
@@ -485,11 +492,11 @@ console.table(["HTML", "CSS", "JavaScript"]);
                             <button class="quiz-option" data-correct="false" data-hint="defer doesn't prevent execution — it delays it until the HTML is fully parsed.">
                                 A) Prevents the script from running
                             </button>
-                            <button class="quiz-option" data-correct="true" data-explanation="defer tells the browser to download the script in the background and execute it only after the HTML document is fully parsed.">
-                                B) Downloads the script in parallel and runs it after HTML parsing completes
-                            </button>
                             <button class="quiz-option" data-correct="false" data-hint="defer doesn't make scripts run faster — it changes WHEN they run relative to the HTML.">
-                                C) Makes the script run faster
+                                B) Makes the script run faster
+                            </button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! defer tells the browser to download the script in the background and execute it only after the HTML document is fully parsed.">
+                                C) Downloads the script in parallel and runs it after HTML parsing completes
                             </button>
                             <button class="quiz-option" data-correct="false" data-hint="defer doesn't convert scripts to inline. It's an attribute for external script files.">
                                 D) Converts the script to inline
@@ -497,6 +504,62 @@ console.table(["HTML", "CSS", "JavaScript"]);
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> What happens with this code?</p>
+                        <pre><code class="language-html">&lt;script src="app.js"&gt;
+    console.log("Hi!");
+&lt;/script&gt;</code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Only one of them runs. When a script tag has a src attribute, what happens to the code between the tags?">
+                                A) Both app.js and the console.log() run
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="The browser still loads app.js normally — it's the code between the tags that gets skipped.">
+                                B) Only the console.log() runs
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="The browser doesn't throw an error here — it quietly skips something instead.">
+                                C) The browser shows a syntax error
+                            </button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! When a &lt;script&gt; has a src attribute, anything written between the tags is ignored. Use a separate &lt;script&gt; tag for inline code.">
+                                D) app.js runs, but the console.log() inside the tags is ignored
+                            </button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> Which of these is a good JavaScript comment?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Good comments explain WHY — a reason or decision the code itself can't tell you. The code already shows WHAT it does.">
+                                A) <code>// Start at 3 lives so new players aren't punished too early</code>
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="This just repeats what the code already says. Good comments explain WHY, not WHAT.">
+                                B) <code>// set lives to 3</code>
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's HTML comment syntax. JavaScript uses // for single-line comments and /* */ for multi-line ones.">
+                                C) <code>&lt;!-- lives setting --&gt;</code>
+                            </button>
+                            <button class="quiz-option" data-correct="false" data-hint="# starts a comment in languages like Python or Bash, but not in JavaScript.">
+                                D) <code># lives = 3</code>
+                            </button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Imagine a script in the <code>&lt;head&gt;</code> (without <code>defer</code>) tries to find your page's <code>&lt;h1&gt;</code>. Explain in your own words what goes wrong, and describe two different ways to fix it. Which approach will you use on your own site, and why? What's still unclear about when scripts run?</em></p>
                 </div>
             </section>
 

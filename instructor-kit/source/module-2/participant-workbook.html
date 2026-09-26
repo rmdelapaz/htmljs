@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workbook — Module 2</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+<style>pre.code,code.inline{font-variant-ligatures:none} /* show => and === as typed */</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Student workbook —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">write in it · bring it to every session</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Front-End JavaScript Workbook · Module 2</div>
+    <h1>Control Flow &amp; Functions</h1>
+    <p class="sub">Your working notebook for the four lessons that teach your programs to make decisions, repeat actions, and organize code into reusable functions. Follow along, do the exercises in the space provided, and check yourself with the quizzes.</p>
+    <div class="meta-row">
+      <span class="chip">Lessons <b>05–08</b></span>
+      <span class="chip"><b>4</b> lessons</span>
+      <span class="chip">Name: ____________________</span>
+    </div>
+  </header>
+
+  <div class="note">
+    <div class="t">How to use this workbook</div>
+    <p>Each lesson has <b>Key Ideas</b> (the reference to keep), a <b>Worked Example</b> (read it), <b>Your Turn</b> (do it — write your code in the boxes), a <b>Self-Check</b> quiz, and <b>Notes</b>. The lined boxes are for you to write real code and answers. Self-check questions come from the lesson quizzes and keep the lesson's question numbers, so a set may read Q1 · Q4 · Q5. After each lesson, answer the <b>Journal</b> prompt. It takes five minutes and makes the learning stick.</p>
+  </div>
+
+  <!-- LAB TRACKER -->
+  <div class="sec"><h2>Module Lab Tracker</h2><span class="rule"></span></div>
+  <p style="font-size:.92rem;color:var(--ink-2)">This module has <b>four short console programs</b>, one per lesson. Each lab page shows your output on the page and in the Console. Tick each lab as you finish it:</p>
+  <ul class="tick lab">
+    <li>☐ <b>L05</b> — Grade Calculator: letter grade, message, pass/fail, invalid-score check</li>
+    <li>☐ <b>L06</b> — Star Rating (★★★☆☆) + a case-insensitive search filter with a match count</li>
+    <li>☐ <b>L07</b> — Mini Utility Library: capitalize, clamp, pluralize, temperatureConverter</li>
+    <li>☐ <b>L08</b> — Scope Detective (8 predictions) + a closure-based score tracker</li>
+  </ul>
+
+  <!-- ===== L05 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L05</span><h3>Conditionals</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Write <code class="inline">if</code>, <code class="inline">else if</code>, and <code class="inline">else</code> to control program flow</li>
+          <li>Use <code class="inline">switch</code> to compare one value against many options</li>
+          <li>Pick between two values with the ternary operator (<code class="inline">? :</code>)</li>
+          <li>Use guard clauses and truthy/falsy checks for cleaner conditions</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas</div>
+        <ul class="tick">
+          <li>An <code class="inline">else if</code> chain is checked <b>top to bottom; the first true condition wins</b> and the rest are skipped. Check the highest range first.</li>
+          <li><code class="inline">switch</code> compares with <b>strict equality (<code class="inline">===</code>)</b>, so <code class="inline">"5"</code> never matches <code class="inline">case 5</code>. End each case with <code class="inline">break</code>, or it falls through.</li>
+          <li>Ternary: <code class="inline">condition ? valueIfTrue : valueIfFalse</code>. Keep it short; never nest them.</li>
+          <li><b>Guard clauses</b> handle the problem cases first, so the main logic stays flat.</li>
+          <li><code class="inline">0</code> and <code class="inline">""</code> are falsy. If 0 is a valid value, don't test it with <code class="inline">if (quantity)</code>.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 460 200" role="img" aria-label="An else-if chain: score 82 is checked against 90 (no), then 80 (yes), so Grade B runs and the rest are skipped.">
+            <rect x="10" y="20" width="90" height="40" rx="6" fill="#f4f6fa" stroke="#bcc7d6" stroke-width="1.5"/>
+            <text x="55" y="45" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">score = 82</text>
+            <line x1="100" y1="40" x2="126" y2="40" stroke="#45536a" stroke-width="2"/>
+            <polygon points="130,40 121,35 121,45" fill="#45536a"/>
+            <polygon points="185,12 240,40 185,68 130,40" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+            <text x="185" y="44" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#16202e">&gt;= 90?</text>
+            <text x="252" y="34" font-family="'JetBrains Mono',monospace" font-size="11" fill="#6f7c8e">no</text>
+            <line x1="240" y1="40" x2="276" y2="40" stroke="#45536a" stroke-width="2"/>
+            <polygon points="280,40 271,35 271,45" fill="#45536a"/>
+            <polygon points="335,12 390,40 335,68 280,40" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+            <text x="335" y="44" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#16202e">&gt;= 80?</text>
+            <line x1="390" y1="40" x2="420" y2="40" stroke="#bcc7d6" stroke-width="2" stroke-dasharray="4 3"/>
+            <text x="398" y="30" font-family="'JetBrains Mono',monospace" font-size="10" fill="#6f7c8e">skipped</text>
+            <line x1="335" y1="68" x2="335" y2="116" stroke="#0f766e" stroke-width="2"/>
+            <polygon points="335,120 330,111 340,111" fill="#0f766e"/>
+            <text x="343" y="98" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#0f766e">yes</text>
+            <rect x="275" y="122" width="120" height="40" rx="6" fill="#d7efe9" stroke="#0f766e" stroke-width="2"/>
+            <text x="335" y="147" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#0f766e">"Grade: B"</text>
+            <text x="20" y="150" font-family="'JetBrains Mono',monospace" font-size="11" fill="#45536a">&gt;= 70, &gt;= 60, else</text>
+            <text x="20" y="168" font-family="'JetBrains Mono',monospace" font-size="11" fill="#45536a">are never checked</text>
+          </svg>
+          <figcaption>An else if chain stops at the first true condition. That's why the highest range goes first.</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">const</span> score = <span class="s">85</span>;
+<span class="k">let</span> letter;
+
+<span class="k">if</span> (score &gt;= <span class="s">90</span>) {
+    letter = <span class="s">"A"</span>;
+} <span class="k">else if</span> (score &gt;= <span class="s">80</span>) {
+    letter = <span class="s">"B"</span>;
+} <span class="k">else</span> {
+    letter = <span class="s">"C or below"</span>;
+}
+
+<span class="k">const</span> result = score &gt;= <span class="s">60</span> ? <span class="s">"Pass"</span> : <span class="s">"Fail"</span>;
+console.log(<span class="s">`${score} → ${letter} (${result})`</span>);   <span class="c">// "85 → B (Pass)"</span></pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Grade Calculator</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Turn a score into a letter grade with <code class="inline">if</code> / <code class="inline">else if</code>, pick a message with a <code class="inline">switch</code> on the letter, decide pass/fail (60+) with a ternary, and print <em>"Alex scored 78 (C) — Solid effort, keep improving!"</em> and <em>"Status: Pass"</em>. Bonus: reject scores below 0 or above 100 first. Write your grade chain and your <code class="inline">switch</code> here:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">What does this code output?</div>
+<pre class="code"><span class="k">let</span> x = <span class="s">5</span>;
+<span class="k">if</span> (x &gt; <span class="s">10</span>) {
+    console.log(<span class="s">"A"</span>);
+} <span class="k">else if</span> (x &gt; <span class="s">3</span>) {
+    console.log(<span class="s">"B"</span>);
+} <span class="k">else if</span> (x &gt; <span class="s">1</span>) {
+    console.log(<span class="s">"C"</span>);
+} <span class="k">else</span> {
+    console.log(<span class="s">"D"</span>);
+}</pre>
+          <div class="opts"><div class="opt">A) A</div><div class="opt">B) B</div><div class="opt">C) C</div><div class="opt">D) D</div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">What does this code output?</div>
+<pre class="code"><span class="k">let</span> input = <span class="s">"5"</span>;
+<span class="k">switch</span> (input) {
+    <span class="k">case</span> <span class="s">5</span>:
+        console.log(<span class="s">"number five"</span>);
+        <span class="k">break</span>;
+    <span class="k">default</span>:
+        console.log(<span class="s">"no match"</span>);
+}</pre>
+          <div class="opts"><div class="opt">A) number five</div><div class="opt">B) An error</div><div class="opt">C) no match</div><div class="opt">D) Nothing prints</div></div></div>
+        <div class="q"><div class="qn">Q5</div><div class="qt">A shopping cart stores <code class="inline">let quantity = 0;</code> and zero is a perfectly valid quantity. Why is <code class="inline">if (quantity) { ... }</code> a risky way to check that a quantity was entered?</div>
+          <div class="opts"><div class="opt">A) You can't put a number inside an if condition</div><div class="opt">B) 0 is truthy, so the check always passes</div><div class="opt">C) It only works if quantity was declared with const</div><div class="opt">D) 0 is falsy, so a valid 0 would be treated as "missing"</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Think of one decision a page you'd like to build has to make (a greeting that changes with the time of day, a form that checks for a blank field, a price that changes for members). Write it out in plain English as an <code class="inline">if</code> / <code class="inline">else if</code> / <code class="inline">else</code> chain. Would a <code class="inline">switch</code> or a ternary fit it better, and why? Which of the three are you still unsure when to reach for?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L06 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L06</span><h3>Loops</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Write a <code class="inline">for</code> loop that repeats a set number of times</li>
+          <li>Use <code class="inline">while</code> and <code class="inline">do...while</code> when the count isn't known</li>
+          <li>Loop array values with <code class="inline">for...of</code> and object keys with <code class="inline">for...in</code></li>
+          <li>Control a loop with <code class="inline">break</code> and <code class="inline">continue</code>; avoid infinite loops and off-by-one errors</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas</div>
+        <ul class="tick">
+          <li><b>DRY — Don't Repeat Yourself.</b> Write the instructions once; the loop repeats them.</li>
+          <li><code class="inline">for</code> when you know how many times; <code class="inline">while</code> when a condition decides; <code class="inline">do...while</code> runs <b>at least once</b>.</li>
+          <li><code class="inline">for...of</code> → array <b>values</b>. <code class="inline">for...in</code> → object <b>keys</b> (not for arrays).</li>
+          <li><code class="inline">break</code> exits the loop; <code class="inline">continue</code> skips to the next pass.</li>
+          <li>Index loops use <code class="inline">i &lt; array.length</code> — <code class="inline">&lt;=</code> runs one extra time and reads <code class="inline">undefined</code>.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 460 190" role="img" aria-label="Anatomy of a for loop: let i = 0 runs once, then i less than 5 is checked; if true the body runs, then i++ runs and the check repeats; if false the loop exits.">
+            <rect x="10" y="70" width="96" height="40" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="58" y="95" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1d4ed8">let i = 0</text>
+            <text x="58" y="126" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#6f7c8e">once</text>
+            <line x1="106" y1="90" x2="136" y2="90" stroke="#45536a" stroke-width="2"/>
+            <polygon points="140,90 131,85 131,95" fill="#45536a"/>
+            <polygon points="195,60 250,90 195,120 140,90" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+            <text x="195" y="94" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">i &lt; 5?</text>
+            <line x1="250" y1="90" x2="286" y2="90" stroke="#0f766e" stroke-width="2"/>
+            <polygon points="290,90 281,85 281,95" fill="#0f766e"/>
+            <text x="256" y="82" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#0f766e">yes</text>
+            <rect x="290" y="70" width="80" height="40" rx="6" fill="#d7efe9" stroke="#0f766e" stroke-width="2"/>
+            <text x="330" y="95" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#0f766e">body</text>
+            <line x1="330" y1="70" x2="330" y2="30" stroke="#45536a" stroke-width="2"/>
+            <line x1="330" y1="30" x2="195" y2="30" stroke="#45536a" stroke-width="2"/>
+            <line x1="195" y1="30" x2="195" y2="56" stroke="#45536a" stroke-width="2"/>
+            <polygon points="195,60 190,51 200,51" fill="#45536a"/>
+            <rect x="228" y="18" width="50" height="22" rx="4" fill="#ffffff" stroke="#bcc7d6"/>
+            <text x="253" y="33" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#16202e">i++</text>
+            <line x1="195" y1="120" x2="195" y2="150" stroke="#45536a" stroke-width="2"/>
+            <polygon points="195,154 190,145 200,145" fill="#45536a"/>
+            <text x="203" y="140" font-family="'JetBrains Mono',monospace" font-size="11" fill="#6f7c8e">no</text>
+            <rect x="150" y="156" width="90" height="28" rx="6" fill="#f4f6fa" stroke="#bcc7d6" stroke-width="1.5"/>
+            <text x="195" y="175" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#45536a">exit loop</text>
+          </svg>
+          <figcaption>for (let i = 0; i &lt; 5; i++): start once, check before every pass, update after every pass.</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">const</span> numbers = [<span class="s">12</span>, <span class="s">35</span>, <span class="s">8</span>, <span class="s">67</span>, <span class="s">42</span>];
+
+<span class="k">for</span> (<span class="k">const</span> num <span class="k">of</span> numbers) {
+    <span class="k">if</span> (num &gt; <span class="s">50</span>) {
+        console.log(<span class="s">`Found it: ${num}`</span>);   <span class="c">// "Found it: 67"</span>
+        <span class="k">break</span>;                           <span class="c">// stop searching</span>
+    }
+}</pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Star Rating &amp; Search Filter</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Part 1: finish <code class="inline">starRating(rating)</code> so <code class="inline">starRating(3)</code> returns <code class="inline">"★★★☆☆"</code>. Part 2: show every product that contains <code class="inline">"wireless"</code> (any capitalization), then <em>"3 results found."</em> Write your two loops here:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">How many times does this loop run?</div>
+<pre class="code"><span class="k">for</span> (<span class="k">let</span> i = <span class="s">0</span>; i &lt; <span class="s">3</span>; i++) {
+    console.log(i);
+}</pre>
+          <div class="opts"><div class="opt">A) 2</div><div class="opt">B) 3</div><div class="opt">C) 4</div><div class="opt">D) 1</div></div></div>
+        <div class="q"><div class="qn">Q3</div><div class="qt">What does <code class="inline">continue</code> do inside a loop?</div>
+          <div class="opts"><div class="opt">A) Exits the loop entirely</div><div class="opt">B) Skips to the next iteration</div><div class="opt">C) Skips the code after the loop</div><div class="opt">D) Restarts the loop from the beginning</div></div></div>
+        <div class="q"><div class="qn">Q5</div><div class="qt">What goes wrong with this loop?</div>
+<pre class="code"><span class="k">const</span> items = [<span class="s">"a"</span>, <span class="s">"b"</span>, <span class="s">"c"</span>];
+<span class="k">for</span> (<span class="k">let</span> i = <span class="s">0</span>; i &lt;= items.length; i++) {
+    console.log(items[i]);
+}</pre>
+          <div class="opts"><div class="opt">A) It's an infinite loop</div><div class="opt">B) It runs one extra time and logs undefined</div><div class="opt">C) It throws an error on the last pass</div><div class="opt">D) It skips the first item</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>In your own words, explain when you'd pick <code class="inline">for</code>, <code class="inline">while</code>, <code class="inline">for...of</code>, and <code class="inline">for...in</code>. Then name one list on a page you'd like to build (products, photos, to-dos, quiz questions) and describe which loop you'd use to go through it. What still trips you up: off-by-one errors, <code class="inline">break</code> vs. <code class="inline">continue</code>, or something else?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L07 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L07</span><h3>Functions</h3><span class="dur">55 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Write a function declaration and call it (even before its line — hoisting)</li>
+          <li>Write function expressions and arrow functions</li>
+          <li>Use parameters, arguments, and default values</li>
+          <li>Return a value and use it in an expression</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas</div>
+        <ul class="tick">
+          <li>A function is a <b>recipe</b>: define it once, call it with <code class="inline">()</code> whenever you need it. <code class="inline">greet</code> is the function; <code class="inline">greet()</code> runs it.</li>
+          <li><b>Parameters</b> are the parking spots in the definition; <b>arguments</b> are the cars you pass in. A missing argument is <code class="inline">undefined</code> unless it has a default.</li>
+          <li><code class="inline">return</code> hands a value back and exits immediately. No <code class="inline">return</code> → <code class="inline">undefined</code>.</li>
+          <li>Declarations are hoisted; <code class="inline">const</code> expressions and arrows can't be called before their line.</li>
+          <li>One-expression arrows return automatically: <code class="inline">(a, b) =&gt; a + b</code>. To return an object, wrap it: <code class="inline">n =&gt; ({ name: n })</code>.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="c">// Declaration — hoisted</span>
+<span class="k">function</span> add(a, b) {
+    <span class="k">return</span> a + b;
+}
+
+<span class="c">// Expression — define before calling</span>
+<span class="k">const</span> multiply = <span class="k">function</span>(a, b) {
+    <span class="k">return</span> a * b;
+};
+
+<span class="c">// Arrow with a default parameter — implicit return</span>
+<span class="k">const</span> greet = (name = <span class="s">"stranger"</span>) =&gt; <span class="s">`Hello, ${name}!`</span>;
+
+console.log(add(<span class="s">10</span>, <span class="s">20</span>) * <span class="s">2</span>);   <span class="c">// 60</span>
+console.log(multiply(<span class="s">4</span>, <span class="s">5</span>));    <span class="c">// 20</span>
+console.log(greet());            <span class="c">// "Hello, stranger!"</span></pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Mini Utility Library</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Write <code class="inline">capitalize(str)</code> as a declaration, <code class="inline">clamp(value, min, max)</code> as an expression, <code class="inline">pluralize(count, singular, plural)</code> as an arrow with a default <code class="inline">plural</code>, and <code class="inline">temperatureConverter(value, fromUnit)</code> in any style (<code class="inline">"32°F = 0.0°C"</code>). Write each function's first line and its <code class="inline">return</code> here:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">What does a function return if it has no <code class="inline">return</code> statement?</div>
+          <div class="opts"><div class="opt">A) null</div><div class="opt">B) undefined</div><div class="opt">C) 0</div><div class="opt">D) Nothing (error)</div></div></div>
+        <div class="q"><div class="qn">Q2</div><div class="qt">Which can be called before it's defined in the code?</div>
+          <div class="opts"><div class="opt">A) Function declaration</div><div class="opt">B) Function expression</div><div class="opt">C) Arrow function</div><div class="opt">D) All of the above</div></div></div>
+        <div class="q"><div class="qn">Q5</div><div class="qt">Which arrow function correctly returns an object?</div>
+          <div class="opts"><div class="opt">A) <code class="inline">const make = n =&gt; { name: n };</code></div><div class="opt">B) <code class="inline">const make = n =&gt; return { name: n };</code></div><div class="opt">C) <code class="inline">const make = n =&gt; [name: n];</code></div><div class="opt">D) <code class="inline">const make = n =&gt; ({ name: n });</code></div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Pick one small job you found yourself repeating in Lessons 5 and 6 and describe a function that would handle it: its name, its parameters, and what it returns. Would you write it as a declaration or an arrow function, and why? What is still fuzzy for you: parameters vs. arguments, <code class="inline">return</code>, or the arrow shortcuts?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L08 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L08</span><h3>Scope &amp; Hoisting</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Tell global, function, and block scope apart</li>
+          <li>Predict where a variable can and can't be used</li>
+          <li>Explain hoisting for <code class="inline">var</code>, <code class="inline">let</code>/<code class="inline">const</code>, and functions, including the Temporal Dead Zone</li>
+          <li>Explain what a closure is and build one</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas</div>
+        <ul class="tick">
+          <li><code class="inline">let</code>/<code class="inline">const</code> are <b>block-scoped</b> (they stay inside <code class="inline">{ }</code>). <code class="inline">var</code> is <b>function-scoped</b> and leaks out of <code class="inline">if</code> blocks and loops.</li>
+          <li>The <b>scope chain</b>: JavaScript looks in the current scope, then outward, up to global. It never looks <em>inward</em>.</li>
+          <li><b>Shadowing:</b> an inner variable with the same name hides the outer one inside its scope only.</li>
+          <li><b>Hoisting:</b> <code class="inline">var</code> starts as <code class="inline">undefined</code>; <code class="inline">let</code>/<code class="inline">const</code> throw a <code class="inline">ReferenceError</code> before their line (the <b>TDZ</b>); function declarations are fully hoisted.</li>
+          <li>A <b>closure</b> is a function that remembers the variables of the scope it was made in, even after that outer function has finished.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 460 250" role="img" aria-label="The scope chain: inner scope sits inside outer scope, which sits inside global scope. Lookups travel outward only.">
+            <rect x="10" y="10" width="440" height="230" rx="8" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+            <text x="24" y="32" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#92400e" letter-spacing="1">GLOBAL</text>
+            <text x="24" y="50" font-family="'JetBrains Mono',monospace" font-size="12" fill="#45536a">globalVar</text>
+            <rect x="40" y="64" width="300" height="160" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="54" y="86" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1d4ed8" letter-spacing="1">outer()</text>
+            <text x="54" y="104" font-family="'JetBrains Mono',monospace" font-size="12" fill="#45536a">outerVar</text>
+            <rect x="70" y="118" width="240" height="90" rx="5" fill="#d7efe9" stroke="#0f766e" stroke-width="2"/>
+            <text x="84" y="140" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#0f766e" letter-spacing="1">inner()</text>
+            <text x="84" y="158" font-family="'JetBrains Mono',monospace" font-size="12" fill="#45536a">innerVar</text>
+            <text x="84" y="190" font-family="'JetBrains Mono',monospace" font-size="11" fill="#16202e">sees: inner · outer · global</text>
+            <line x1="360" y1="190" x2="360" y2="44" stroke="#16202e" stroke-width="2"/>
+            <polygon points="360,40 354,52 366,52" fill="#16202e"/>
+            <text x="372" y="112" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#16202e">lookups</text>
+            <text x="372" y="128" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#16202e">go OUT,</text>
+            <text x="372" y="144" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#16202e">never in</text>
+          </svg>
+          <figcaption>The scope chain: inner() can use outerVar and globalVar, but outer() can't see innerVar.</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">function</span> createCounter() {
+    <span class="k">let</span> count = <span class="s">0</span>;   <span class="c">// private — only the methods below can reach it</span>
+
+    <span class="k">return</span> {
+        increment() { count++; },
+        getCount() { <span class="k">return</span> count; }
+    };
+}
+
+<span class="k">const</span> counter = createCounter();
+counter.increment();
+counter.increment();
+console.log(counter.getCount());   <span class="c">// 2</span>
+console.log(counter.count);        <span class="c">// undefined — count is not a property</span></pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Scope Detective &amp; Score Tracker</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Part 1: before you run the lab, write your prediction for each of the eight outputs:</p>
+        <table class="timing">
+          <thead><tr><th>Line</th><th>My prediction</th><th>Actual</th></tr></thead>
+          <tbody>
+            <tr><td class="t">1</td><td></td><td></td></tr>
+            <tr><td class="t">2</td><td></td><td></td></tr>
+            <tr><td class="t">3</td><td></td><td></td></tr>
+            <tr><td class="t">4</td><td></td><td></td></tr>
+            <tr><td class="t">5</td><td></td><td></td></tr>
+            <tr><td class="t">6</td><td></td><td></td></tr>
+            <tr><td class="t">7</td><td></td><td></td></tr>
+            <tr><td class="t">8</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.92rem;margin:.2rem 0">Part 2: write <code class="inline">createScoreTracker()</code> with <code class="inline">addPoints</code>, <code class="inline">penalty</code> (never below 0), <code class="inline">getScore</code>, and <code class="inline">reset</code>:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">What is the output?</div>
+<pre class="code">console.log(x);
+<span class="k">var</span> x = <span class="s">10</span>;</pre>
+          <div class="opts"><div class="opt">A) 10</div><div class="opt">B) undefined</div><div class="opt">C) ReferenceError</div><div class="opt">D) null</div></div></div>
+        <div class="q"><div class="qn">Q3</div><div class="qt">What is a closure?</div>
+          <div class="opts"><div class="opt">A) A function inside curly braces</div><div class="opt">B) A variable that can be accessed globally</div><div class="opt">C) A function that remembers variables from its outer scope</div><div class="opt">D) A way to call a function immediately</div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">What happens when this code runs?</div>
+<pre class="code">console.log(total);
+<span class="k">let</span> total = <span class="s">50</span>;</pre>
+          <div class="opts"><div class="opt">A) It logs undefined</div><div class="opt">B) ReferenceError: Cannot access 'total' before initialization</div><div class="opt">C) It logs 50</div><div class="opt">D) It logs null</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Without looking back, explain in your own words why <code class="inline">var</code> leaks out of an <code class="inline">if</code> block but <code class="inline">let</code> doesn't, and what the Temporal Dead Zone protects you from. Then describe a closure as if you were explaining the counter example to a friend. Which part of this lesson do you expect to re-read?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <div class="note">
+    <div class="t">You finished Module 2 🎉</div>
+    <p>Your programs can now make decisions, repeat actions, package logic into reusable functions, and keep variables where they belong. In Module 3 you'll give them real data to work with — arrays, objects, and strings.</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Front-End JavaScript: Make Your Web Pages Come Alive</span>
+    </div>
+    <div class="ver">Workbook · Module 2 · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+/* Lesson 18 — Pomodoro Timer. Same design as the lesson's pomodoro.html,
+   plus a visible keyboard focus ring and a prefers-reduced-motion block. */
+* { box-sizing: border-box; margin: 0; }
+body {
+    font-family: system-ui, sans-serif; background: #0f172a;
+    color: #e2e8f0; display: flex; justify-content: center;
+    align-items: center; min-height: 100vh; padding: 1rem;
+}
+.timer-container { text-align: center; }
+h1 { margin-bottom: 2rem; font-size: 1.5rem; color: #94a3b8; }
+
+.timer-ring {
+    width: 280px; height: 280px; margin: 0 auto 2rem;
+    position: relative;
+}
+.timer-ring svg { transform: rotate(-90deg); }
+.timer-ring circle {
+    fill: none; stroke-width: 8;
+}
+.bg-ring { stroke: #1e293b; }
+.progress-ring {
+    stroke: #6366f1;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease;
+}
+.timer-display {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3.5rem; font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+.timer-label {
+    position: absolute; bottom: 55px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem; color: #94a3b8;
+}
+
+.controls { display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.controls button {
+    padding: 0.6rem 1.5rem; border: 2px solid #334155;
+    border-radius: 8px; background: #1e293b; color: #e2e8f0;
+    font-size: 1rem; cursor: pointer; transition: all 0.2s;
+}
+.controls button:hover { border-color: #6366f1; background: #334155; }
+.controls button.active { background: #6366f1; border-color: #6366f1; }
+
+.presets { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+.presets button {
+    padding: 0.4rem 1rem; border: 1px solid #334155; border-radius: 6px;
+    background: transparent; color: #94a3b8; cursor: pointer;
+    font-size: 0.85rem; transition: all 0.2s;
+}
+.presets button:hover { color: #e2e8f0; border-color: #6366f1; }
+.presets button.selected { background: #334155; color: #e2e8f0; border-color: #6366f1; }
+
+button:focus-visible { outline: 3px solid #a5b4fc; outline-offset: 2px; }
+
+.done-message {
+    font-size: 1.2rem; color: #22c55e; font-weight: 600; margin-top: 1.5rem;
+    opacity: 0; transition: opacity 0.5s;
+}
+.done-message.visible { opacity: 1; }
+
+/* People who ask their OS for less motion get instant changes */
+@media (prefers-reduced-motion: reduce) {
+    .progress-ring, .done-message, .controls button, .presets button { transition: none; }
+}

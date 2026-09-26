@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facilitator Guide — Module 6</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">contains answers &amp; timing · not for students</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Instructor Kit · Facilitator Guide</div>
+    <h1>Module 6 — Capstone &amp; Next Steps</h1>
+    <p class="sub">The finale. Students build QuickNote, a complete note-taking app that uses every skill from the course, then learn to debug like a professional and plan what to build next. End the course with a working app on every screen and a clear next step in every workbook.</p>
+    <div class="meta-row">
+      <span class="chip"><b>2</b> lessons</span>
+      <span class="chip"><b>~2.3 hrs</b> teaching</span>
+      <span class="chip">Lessons <b>L21–L22</b></span>
+      <span class="chip">Level <b>Intermediate</b></span>
+      <span class="chip">Maps to <b>Day 5 PM (capstone)</b></span>
+    </div>
+  </header>
+
+  <!-- HOW TO USE -->
+  <div class="sec"><h2>How to Use This Guide</h2><span class="rule"></span></div>
+  <ul class="tick">
+    <li>This is the <b>capstone</b>. L21 is one 90-minute <b>guided build</b>: you code each step live, the room mirrors you, and everyone passes a checkpoint before you move on. No step is "go build it yourself."</li>
+    <li><b>Live-code everything, and let it break.</b> A missing comma or a typo'd ID in front of the class is a free debugging lesson. Read the red error out loud, find the line, fix it. That rehearses L22 before L22 starts.</li>
+    <li><b>Nobody falls off the train.</b> Each step has a catch-up file in <code class="inline">labs/module-6/l21-quicknote/checkpoints/</code>. If a student is more than a step behind, hand them the checkpoint and let them rejoin at the next TODO. Finishing matters more than typing every line.</li>
+    <li>Blue blocks are concepts; <span style="color:var(--lab);font-weight:600">teal</span> blocks are hands-on; <span style="color:var(--warn);font-weight:600">amber</span> blocks are watch-outs.</li>
+    <li>Quiz answers here are for you. The student workbook has a 3-question subset of each lesson quiz, without answers, labelled with the lesson's question numbers; the separate <b>Answer Key</b> covers every question with matching numbers for grading.</li>
+    <li>L22 closes the whole course. Protect the last 15 minutes for the final <b>Learning Journal</b> entry and the course wrap-up. Don't let a stubborn bug eat the goodbye.</li>
+  </ul>
+
+  <div class="note warn">
+    <div class="t">Pre-flight for the capstone</div>
+    <p>QuickNote fetches a quote from <code class="inline">https://dummyjson.com/quotes/random</code>. Open it in the classroom browser before class. If the network blocks it, that's fine: the app shows its fallback quote, and you get to teach graceful degradation with a real outage. Have Chrome or Edge with DevTools on every machine, Live Server working, and the starter plus the four checkpoint files ready to share (a USB stick or a shared folder). Test <code class="inline">labs/module-6/l22-debugging/starter/</code> once through Live Server so you've seen all seven bugs yourself.</p>
+  </div>
+
+  <div class="note">
+    <div class="t">Before you start the module</div>
+    <p>Students need the Module 5 skills fresh: form validation (L17), timers and debounce (L18), <code class="inline">localStorage</code> (L19), and <code class="inline">fetch</code> with <code class="inline">async/await</code> (L20). Spend two minutes after lunch asking "what does <code class="inline">JSON.stringify</code> do? what does <code class="inline">await</code> wait for?" If anyone's setup is broken, pair them now. The capstone is no place for a first Live Server install.</p>
+  </div>
+
+  <!-- AT A GLANCE -->
+  <div class="sec"><h2>Module at a Glance</h2><span class="rule"></span></div>
+  <table class="timing">
+    <thead><tr><th>Lesson</th><th>Topic</th><th>Time</th><th>Students leave able to…</th></tr></thead>
+    <tbody>
+      <tr><td class="t">L21</td><td>Building a Complete Project</td><td class="t">90m</td><td>Plan and build a complete CRUD app with storage, search, a fetched quote and shortcuts</td></tr>
+      <tr><td class="t">L22</td><td>Next Steps &amp; Best Practices</td><td class="t">45m</td><td>Debug systematically, organize code, avoid common pitfalls, and choose what to learn next</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.9rem;color:var(--ink-2)">Suggested afternoon: L21 (90m) → break (10m) → L22 (45m) → course wrap-up (15m). If the build runs long, trim L22's ecosystem tour (step 6), never the bug hunt or the final journal.</p>
+
+  <!-- LESSON PLANS -->
+  <div class="sec"><h2>Lesson Plans</h2><span class="rule"></span></div>
+
+  <!-- L21 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L21</span><h3>Building a Complete Project</h3><span class="dur">90 min</span></div>
+    <div class="lesson-body">
+
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Plan an app before coding: feature list, data model, architecture</li>
+          <li>Separate a <b>data layer</b> (CRUD + <code class="inline">localStorage</code>) from <b>rendering</b> and <b>event handling</b></li>
+          <li>Use one form for create <em>and</em> edit, with validation and a timed status message</li>
+          <li>Add debounced search, a category filter, a fetched quote with a fallback, event delegation and keyboard shortcuts</li>
+          <li>Keep user text safe with <code class="inline">textContent</code></li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame: show the finished app (5m).</b> Open <code class="inline">solution/quicknote.html</code>. Add a note, edit it, search, filter, reload ("it's still there"), press <kbd>N</kbd>. Then say: "Every piece of this is something you already learned. Today we assemble it."</li>
+          <li><b>Plan and architecture (7m).</b> Walk the feature table (feature → skill → lesson), the note object (<code class="inline">id</code> from <code class="inline">Date.now()</code>, ISO timestamps), and the loop from the workbook diagram: <b>user action → update state → save → re-render</b>. Write the loop on the board and leave it up all afternoon.</li>
+          <li><b>Step 1: tour the starter (3m).</b> Everyone opens <code class="inline">starter/quicknote.html</code> with Live Server. Point out the hidden form, the empty <code class="inline">#notes-grid</code>, the <code class="inline">role="status"</code> span, and the DOM references already written at the top of the script.</li>
+          <li><b>Step 2: data layer (10m).</b> Live-code <code class="inline">loadNotes</code>/<code class="inline">saveNotes</code> with try/catch, then the CRUD functions and <code class="inline">getNotes</code>. Stress: <em>no DOM in here</em>. <b>Checkpoint:</b> <code class="inline">createNote("Test","Hello","work")</code> in the Console, then <code class="inline">notes</code>, then Application → Local Storage.</li>
+          <li><b>Step 3: rendering (12m).</b> <code class="inline">formatDate</code>, then <code class="inline">renderNotes</code>: clear, empty state, build cards in a <code class="inline">DocumentFragment</code>, append once, update the count. Uncomment <code class="inline">renderNotes()</code> in INIT. <b>Checkpoint:</b> reload and the Console-made note is a card. (Catch-up: <code class="inline">step-3-render.html</code>.)</li>
+          <li><b>Step 4: form and validation (15m).</b> <code class="inline">showForm</code>/<code class="inline">hideForm</code>, field errors placed right after their input, <code class="inline">validateForm</code>, <code class="inline">showSaveStatus</code> with <code class="inline">clearTimeout</code>, the submit handler. Land "one form, two modes": the hidden <code class="inline">#note-id</code> decides create vs update. <b>Checkpoint:</b> saving empty shows both messages; a valid save shows "Note saved!". (Catch-up: <code class="inline">step-4-form.html</code>.)</li>
+          <li><b>Step 5: search and filter (7m).</b> Type <code class="inline">debounce</code> from memory with the room (L18 callback). Wire <code class="inline">input</code> → debounced <code class="inline">applyFilters</code>, <code class="inline">change</code> → <code class="inline">applyFilters</code>. Point out the payoff: <code class="inline">renderNotes</code> already took the parameters. (Catch-up: <code class="inline">step-5-search.html</code>.)</li>
+          <li><b>Step 6: the quote (6m).</b> <code class="inline">fetchQuote</code> with <code class="inline">res.ok</code> check and a fallback in <code class="inline">catch</code>. <b>Checkpoint:</b> DevTools → Network → Offline, reload: fallback quote, app still works. (Catch-up: <code class="inline">step-6-quote.html</code>.)</li>
+          <li><b>Step 7: polish (12m).</b> One delegated click listener on <code class="inline">#notes-grid</code> for ✏️ and 🗑️ (including closing the form if you delete the note being edited), then the keyboard shortcuts. The transition CSS is already in the starter. Explain why the code uses <kbd>N</kbd> and not Ctrl+N.</li>
+          <li><b>Test pass (5m).</b> Students run the checklist in the lab README (or the workbook) against their own app and fix what fails.</li>
+          <li><b>Quiz + journal (8m).</b> Run Q1–Q5 as a poll (3m), then 5 minutes on the journal prompt.</li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script — the three moments to rehearse</div>
+        <ol class="steps">
+          <li><b>The loop, visible.</b> After Step 3, run this in the Console and narrate each line as a link in the chain:
+            <pre class="code">createNote(<span class="s">"Buy milk"</span>, <span class="s">"2 liters"</span>, <span class="s">"personal"</span>); <span class="c">// update state + save</span>
+renderNotes();                                     <span class="c">// re-render</span>
+location.reload();                                 <span class="c">// load → still there</span></pre></li>
+          <li><b>The textContent test.</b> Once the form works, save a note titled <code class="inline">&lt;img src=x onerror=alert(1)&gt;</code>. It shows as text. Then, in the Console, briefly swap one line to <code class="inline">title.innerHTML = note.title</code>, re-render, and let the alert fire. Undo it at once. Nobody forgets that demo.</li>
+          <li><b>Delete while editing.</b> Open a note in the form with ✏️, then delete that same note. Show why the delegation code calls <code class="inline">hideForm()</code> first:
+            <pre class="code"><span class="k">if</span> (noteIdInput.value === String(noteId)) hideForm();</pre>
+            Without it, "Update Note" would try to update a note that no longer exists.</li>
+        </ol>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Build QuickNote (guided)</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Everyone starts from <code class="inline">labs/module-6/l21-quicknote/starter/quicknote.html</code> (HTML + CSS done; TODOs 2a–7b in the script). Catch-up files for Steps 3–6 are in <code class="inline">checkpoints/</code>; the finished app is <code class="inline">solution/quicknote.html</code> (the lesson's complete source). The lab README has the step table, the test checklist, and the 8 stretch challenges as extensions.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Facilitator test checklist (walk the room with it):</b> add ☐ · empty save shows <em>both</em> messages ☐ · edit ("Update Note") ☐ · delete with confirm and fade ☐ · delete the note being edited closes the form ☐ · search is debounced ☐ · category filter ☐ · reload keeps notes ☐ · quote loads and the offline fallback works ☐ · <kbd>N</kbd> / <kbd>/</kbd> / <kbd>Esc</kbd> work, and typing "n" in a field doesn't open a note ☐ · an HTML-looking title shows as plain text ☐ · clean Console ☐.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Early finishers:</b> the extensions list (dark mode, export/import, drag &amp; drop, Markdown preview, multi-tab sync, word count, confirmation modal, pin notes). Word count and pin notes fit in 10 minutes.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Using a function before its step exists.</b> <code class="inline">ReferenceError: renderNotes is not defined</code> usually means they uncommented INIT early. The starter keeps INIT commented for this reason.</li>
+          <li><b>IDs as strings.</b> <code class="inline">card.dataset.id</code> and <code class="inline">#note-id</code> hold strings, but note ids are numbers. <code class="inline">notes.find(n =&gt; n.id === "1713…")</code> finds nothing. Hence <code class="inline">Number(...)</code> in the lesson code.</li>
+          <li><b>Field errors that pile up or jump.</b> If <code class="inline">clearFormErrors()</code> isn't called at the start of <code class="inline">validateForm()</code>, each failed save adds another message. If the error span is searched in the whole parent, the title's message can land under the body.</li>
+          <li><b>Listeners inside <code class="inline">renderNotes()</code>.</b> Some students attach click handlers to each card's buttons. They work until the next render. This is exactly why the lesson uses one delegated listener (quiz Q4).</li>
+          <li><b>"N typed into the title."</b> Forgetting <code class="inline">event.preventDefault()</code> puts an "n" in the freshly focused title; forgetting the <code class="inline">closest("input, textarea, select")</code> guard opens a new note whenever someone types "n".</li>
+          <li><b>Ctrl+N.</b> Students will ask. Chrome reserves it for a new window and never passes it to the page, so <code class="inline">preventDefault()</code> can't help. Single-key shortcuts outside fields are the Gmail and GitHub convention.</li>
+          <li><b>Stale data from earlier attempts.</b> A half-built <code class="inline">createNote</code> can save malformed notes that break rendering later. Fix: Application → Local Storage → delete <code class="inline">quicknote_notes</code>, reload.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: one form knows create vs edit because it <b>checks whether the hidden <code class="inline">note-id</code> input has a value</b> (Q1 · B); <code class="inline">textContent</code> so user text is <b>shown as plain text, never run</b> (Q2 · C); <code class="inline">debounce(applyFilters, 300)</code> = <b>re-render only after typing pauses for 300ms</b> (Q3 · A); one listener on <code class="inline">#notes-grid</code> because <b>cards are rebuilt every render — event delegation</b> (Q4 · D); quote API down = <b>fallback quote, app keeps working</b> (Q5 · B).</p>
+        <p style="font-size:.9rem;margin:.4rem 0 .2rem"><b>Journal (5m):</b> students trace one feature (deleting a note, say) through <em>user action → update state → save → re-render</em>, naming the functions it calls, and note one feature they'd add and one part of the flow they're unsure about.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- L22 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L22</span><h3>Next Steps &amp; Best Practices</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Read an error message for <b>what</b>, <b>where</b> and a likely <b>why</b>; use the debugging loop instead of random changes</li>
+          <li>Use <code class="inline">console.table</code>/<code class="inline">group</code>/<code class="inline">time</code>/<code class="inline">assert</code>, <code class="inline">debugger</code> and breakpoints</li>
+          <li>Organize code by concern, name things clearly, keep functions small, split files with modules</li>
+          <li>Recognize the common pitfalls: <code class="inline">null</code> queries, the async trap, <code class="inline">==</code>, shallow copies, duplicate listeners, edge cases</li>
+          <li>Read modern syntax (<code class="inline">?.</code>, <code class="inline">??</code>, destructuring, spread/rest) and pick a next step: projects, Git, npm + Vite, a framework, TypeScript, testing</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Read the error (5m).</b> Project <code class="inline">Cannot read properties of null (reading 'textContent')</code> and translate it together: WHAT (reading on <code class="inline">null</code>), WHERE (file:line, function), WHY (the selector matched nothing). Walk the five-row error table; stress <em>"Unexpected token → check the line before."</em></li>
+          <li><b>Console power tools + the debugger (7m).</b> Live: <code class="inline">console.table(notes)</code> on QuickNote, a <code class="inline">console.group</code>, a <code class="inline">console.time</code> around a fetch. Then drop <code class="inline">debugger;</code> into <code class="inline">deleteNote</code>, reload <em>with DevTools open</em>, step over, hover variables. Finish with a Sources-panel breakpoint (no code change).</li>
+          <li><b>The debugging mindset (3m).</b> Use the workbook loop: read → reproduce → hypothesis → test → fix → verify. Mention rubber-duck debugging and mean it.</li>
+          <li><b>Bug-hunt lab (15m).</b> Launch <code class="inline">labs/module-6/l22-debugging/</code>. Students fill the worksheet row by row. At minute 12, debrief bugs 6 and 7 together if the room is stuck.</li>
+          <li><b>Code organization + pitfalls (5m).</b> Use QuickNote as the example: data / rendering / events sections, naming conventions, "if it's over 20–30 lines, split it," and the module file structure (<code class="inline">type="module"</code> needs a server). Tick off the pitfalls the lab already covered; spend your words on shallow copy vs <code class="inline">structuredClone</code> and <code class="inline">==</code> vs <code class="inline">===</code>.</li>
+          <li><b>Modern features, ecosystem, learning path (5m).</b> One slide each: <code class="inline">?.</code> and <code class="inline">??</code> (0 is kept), destructuring, spread/rest. Then the map: frameworks (React/Vue/Svelte), Vite + npm (<code class="inline">npm create vite@latest</code>, not the deprecated create-react-app), Node LTS, TypeScript, testing. Close on the suggested order and the 80/20 rule: <em>build more than you watch.</em></li>
+          <li><b>Quiz + final journal (5m).</b> Q1–Q5 as a quick poll (2m); then the final journal prompt (3m in class, finish at home). Point students at the follow-on project menu in the workbook.</li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script — the async trap in 30 seconds</div>
+        <pre class="code"><span class="k">let</span> data;
+fetch(<span class="s">"https://dummyjson.com/quotes/random"</span>)
+  .then(r =&gt; r.json()).then(d =&gt; { data = d; });
+console.log(data);                   <span class="c">// undefined — fetch hasn't finished</span>
+setTimeout(() =&gt; console.log(data), <span class="s">1000</span>);  <span class="c">// now it's there</span></pre>
+        <p style="font-size:.9rem;margin:.2rem 0">Run it in the Console, then rewrite it with <code class="inline">await</code>. This is Bug 7 in the lab, so it lands twice.</p>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Bug Hunt: Snack Budget</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Students open <code class="inline">labs/module-6/l22-debugging/starter/</code> with Live Server and fix <b>seven planted bugs</b> in <code class="inline">script.js</code>, logging each in the worksheet (<code class="inline">l22-debugging/README.md</code>, also in the workbook). Five crash, in this order: missing comma (<code class="inline">Unexpected token '{'</code>) → missing settings (<code class="inline">reading 'weekly'</code> of undefined) → selector typo (<code class="inline">null</code>) → <code class="inline">formatprice is not defined</code> → <code class="inline">items.length is not a function</code>. Two are silent: <b>Bought</b> works once, then never again (a listener added inside <code class="inline">render()</code>), and <b>Load sample items</b> uses <code class="inline">samples</code> before <code class="inline">fetch</code> finishes. Fixed version with <code class="inline">// FIX n</code> comments: <code class="inline">l22-debugging/solution/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> students changing code before reading the message; fixing the reported line of the syntax error instead of the line before; "fixing" bug 6 by adding <code class="inline">removeEventListener</code> gymnastics instead of moving the listener out; wrapping bug 7 in a <code class="inline">setTimeout</code> "because it works now." That last one is a race, not a fix.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Panic at red text.</b> Model calm: read it aloud, click the file:line link. The message is a clue, not a verdict.</li>
+          <li><b>"The debugger does nothing."</b> DevTools must be open <em>before</em> the reload; otherwise <code class="inline">debugger</code> is ignored (quiz Q5).</li>
+          <li><b><code class="inline">||</code> vs <code class="inline">??</code></b> — <code class="inline">score || 10</code> turns a real 0 into 10. Use <code class="inline">??</code> for defaults when 0, <code class="inline">""</code> or <code class="inline">false</code> are valid.</li>
+          <li><b>Spread is shallow.</b> <code class="inline">{ ...original }</code> shares nested arrays; <code class="inline">structuredClone</code> makes a deep copy.</li>
+          <li><b>Ecosystem overwhelm.</b> Some students leave thinking they must learn everything at once. Point at the suggested order: more vanilla projects first, then Git. Frameworks make more sense once they've built without one.</li>
+          <li><b>Outdated tutorials.</b> Warn that <code class="inline">create-react-app</code> still appears in search results; it was deprecated in 2025. Start with Vite or a meta-framework.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: <code class="inline">Cannot read properties of null (reading 'textContent')</code> = <b><code class="inline">querySelector</code> found nothing and returned <code class="inline">null</code></b> (Q1 · C); <code class="inline">player.score ?? 10</code> with a score of 0 = <b>0</b> (Q2 · A); pushing onto <code class="inline">copy.scores</code> after a spread copy <b>changes <code class="inline">original.scores</code> too — shared nested array</b> (Q3 · B); a new React project today = <b>Vite or a framework like Next.js</b> (Q4 · C); <code class="inline">debugger</code> didn't pause because <b>DevTools wasn't open</b> (Q5 · B).</p>
+        <p style="font-size:.9rem;margin:.4rem 0 .2rem"><b>Final journal:</b> which skill felt impossible at the start and makes sense now; one project from the Project Ideas table (or their own), the lessons it would use, and the very first step; one topic to revisit.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSE -->
+  <div class="sec"><h2>Closing the Course</h2><span class="rule"></span></div>
+  <div class="note lab">
+    <div class="t">Course wrap-up (15 min) 🎉</div>
+    <p>Showcase: two or three students demo their QuickNote on the projector, including one extension if anyone got that far. Recap the whole journey, one line per module: <b>foundations → control flow &amp; functions → data → the DOM → interactive pages → a complete app.</b> Have everyone circle one project from the follow-on menu in the workbook and write its first step. Suggest they deploy QuickNote the way they deployed their HTML &amp; CSS site, since a live link belongs in a portfolio. Hand out completion recognition. Remind them that every professional started exactly here: the difference is more time and more projects.</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Technical trainer, full-stack developer &amp; course developer — 30+ years</span>
+    </div>
+    <div class="ver">Instructor Kit · Module 6 · Facilitator Guide · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

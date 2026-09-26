@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workbook — Module 3</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Student workbook —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">write in it · bring it to every session</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Front-End JavaScript Workbook · Module 3</div>
+    <h1>Working with Data</h1>
+    <p class="sub">Your working notebook for the four data lessons: arrays, objects, array methods, and strings. Follow along, do the exercises in the space provided, and check yourself with the quizzes.</p>
+    <div class="meta-row">
+      <span class="chip">Lessons <b>9–12</b></span>
+      <span class="chip"><b>4</b> lessons</span>
+      <span class="chip">Name: ____________________</span>
+    </div>
+  </header>
+
+  <div class="note">
+    <div class="t">How to use this workbook</div>
+    <p>Each lesson has <b>Key Ideas</b> (the reference to keep), a <b>Worked Example</b> (read it), <b>Your Turn</b> (do it — write your code in the boxes), a <b>Self-Check</b> quiz, and <b>Notes</b>. The lined boxes are for you to write real code and answers. Self-check questions come from the lesson quizzes and keep the lesson's question numbers, so a set may read Q1 · Q3 · Q4. After each lesson, answer the <b>Journal</b> prompt. It takes five minutes and makes the learning stick.</p>
+  </div>
+
+  <!-- LAB TRACKER -->
+  <div class="sec"><h2>Module Lab Tracker</h2><span class="rule"></span></div>
+  <p style="font-size:.92rem;color:var(--ink-2)">Each lesson has its own lab page. Your code runs in <code class="inline">script.js</code>, and a helper called <code class="inline">show()</code> prints every result on the page <em>and</em> in the Console. Use <code class="inline">show()</code> wherever the lesson says <code class="inline">console.log()</code>. Tick each lab as you finish it:</p>
+  <ul class="tick lab">
+    <li>☐ <b>L09</b> — To-Do List Manager: add, remove, insert, list, complete</li>
+    <li>☐ <b>L10</b> — Contact Book: add, find, update, display, list by group</li>
+    <li>☐ <b>L11</b> — Product Catalog Pipeline: six challenges, no loops</li>
+    <li>☐ <b>L12</b> — Text Formatting Utility: truncate, slugify, countWords, initials, maskEmail</li>
+  </ul>
+
+  <!-- ===== L09 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L09</span><h3>Arrays</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Create an array and read or change any element by <b>index</b> (starting at 0)</li>
+          <li>Add and remove with <code class="inline">push</code>, <code class="inline">pop</code>, <code class="inline">unshift</code>, <code class="inline">shift</code></li>
+          <li>Insert, remove, or replace anywhere with <code class="inline">splice</code></li>
+          <li>Search with <code class="inline">includes</code>, <code class="inline">indexOf</code>, <code class="inline">find</code>; copy with <code class="inline">slice</code> and spread</li>
+          <li>Loop with <code class="inline">for</code>, <code class="inline">for...of</code>, and <code class="inline">forEach</code></li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas</div>
+        <ul class="tick">
+          <li>The first element is <code class="inline">arr[0]</code>; the last is <code class="inline">arr[arr.length - 1]</code> or <code class="inline">arr.at(-1)</code>. Out of range gives <code class="inline">undefined</code>, not an error.</li>
+          <li><b>push/pop</b> work on the end; <b>unshift/shift</b> on the start. <code class="inline">push</code> returns the new length; <code class="inline">pop</code> and <code class="inline">shift</code> return the removed item.</li>
+          <li><code class="inline">indexOf</code> returns <b>-1</b> when the value isn't there. Check for it before you splice.</li>
+          <li><b>splice changes the original; slice makes a copy.</b> Same-sounding names, opposite effects.</li>
+          <li>A <code class="inline">const</code> array can still change its contents. <code class="inline">const</code> only stops you reassigning the variable.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 460 250" style="font-variant-ligatures:none" role="img" aria-label="slice(1, 3) copies b and c into a new array and leaves letters unchanged; splice(1, 2) removes b and c from letters and returns them.">
+            <rect x="6" y="6" width="218" height="238" rx="6" fill="#f4f6fa" stroke="#d6dee9" stroke-width="1.5"/>
+            <rect x="236" y="6" width="218" height="238" rx="6" fill="#fdf6ec" stroke="#ecd9bb" stroke-width="1.5"/>
+            <text x="115" y="30" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600" fill="#0f766e">letters.slice(1, 3)</text>
+            <text x="345" y="30" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600" fill="#b45309">letters.splice(1, 2)</text>
+            <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#5b6778">
+              <text x="20" y="58">letters (before)</text><text x="250" y="58">letters (before)</text>
+              <text x="20" y="134">returns a NEW array</text><text x="250" y="134">returns the removed items</text>
+              <text x="20" y="198">letters (after): unchanged</text><text x="250" y="198">letters (after): CHANGED</text>
+            </g>
+            <g font-family="'JetBrains Mono',monospace" font-size="13" font-weight="600" text-anchor="middle">
+              <!-- slice: before -->
+              <rect x="37" y="66" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="51" y="85" fill="#1e293b">a</text>
+              <rect x="69" y="66" width="28" height="28" rx="3" fill="#dff3ef" stroke="#0f766e" stroke-width="2"/><text x="83" y="85" fill="#0f766e">b</text>
+              <rect x="101" y="66" width="28" height="28" rx="3" fill="#dff3ef" stroke="#0f766e" stroke-width="2"/><text x="115" y="85" fill="#0f766e">c</text>
+              <rect x="133" y="66" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="147" y="85" fill="#1e293b">d</text>
+              <rect x="165" y="66" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="179" y="85" fill="#1e293b">e</text>
+              <!-- slice: result -->
+              <rect x="85" y="142" width="28" height="28" rx="3" fill="#dff3ef" stroke="#0f766e" stroke-width="2"/><text x="99" y="161" fill="#0f766e">b</text>
+              <rect x="117" y="142" width="28" height="28" rx="3" fill="#dff3ef" stroke="#0f766e" stroke-width="2"/><text x="131" y="161" fill="#0f766e">c</text>
+              <!-- slice: after -->
+              <rect x="37" y="206" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="51" y="225" fill="#1e293b">a</text>
+              <rect x="69" y="206" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="83" y="225" fill="#1e293b">b</text>
+              <rect x="101" y="206" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="115" y="225" fill="#1e293b">c</text>
+              <rect x="133" y="206" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="147" y="225" fill="#1e293b">d</text>
+              <rect x="165" y="206" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="179" y="225" fill="#1e293b">e</text>
+              <!-- splice: before -->
+              <rect x="267" y="66" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="281" y="85" fill="#1e293b">a</text>
+              <rect x="299" y="66" width="28" height="28" rx="3" fill="#fbe7cf" stroke="#b45309" stroke-width="2"/><text x="313" y="85" fill="#b45309">b</text>
+              <rect x="331" y="66" width="28" height="28" rx="3" fill="#fbe7cf" stroke="#b45309" stroke-width="2"/><text x="345" y="85" fill="#b45309">c</text>
+              <rect x="363" y="66" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="377" y="85" fill="#1e293b">d</text>
+              <rect x="395" y="66" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="409" y="85" fill="#1e293b">e</text>
+              <!-- splice: result -->
+              <rect x="315" y="142" width="28" height="28" rx="3" fill="#fbe7cf" stroke="#b45309" stroke-width="2"/><text x="329" y="161" fill="#b45309">b</text>
+              <rect x="347" y="142" width="28" height="28" rx="3" fill="#fbe7cf" stroke="#b45309" stroke-width="2"/><text x="361" y="161" fill="#b45309">c</text>
+              <!-- splice: after -->
+              <rect x="299" y="206" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="313" y="225" fill="#1e293b">a</text>
+              <rect x="331" y="206" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="345" y="225" fill="#1e293b">d</text>
+              <rect x="363" y="206" width="28" height="28" rx="3" fill="#ffffff" stroke="#9aa7b8"/><text x="377" y="225" fill="#1e293b">e</text>
+            </g>
+            <!-- arrows -->
+            <line x1="115" y1="100" x2="115" y2="120" stroke="#0f766e" stroke-width="2"/><polygon points="115,124 110,116 120,116" fill="#0f766e"/>
+            <line x1="345" y1="100" x2="345" y2="120" stroke="#b45309" stroke-width="2"/><polygon points="345,124 340,116 350,116" fill="#b45309"/>
+          </svg>
+          <figcaption>slice copies a portion out; splice cuts it out of the original.</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">const</span> colors = [<span class="s">"red"</span>, <span class="s">"yellow"</span>, <span class="s">"purple"</span>];
+colors.splice(1, 0, <span class="s">"orange"</span>);   <span class="c">// insert: ["red", "orange", "yellow", "purple"]</span>
+colors.push(<span class="s">"blue"</span>);              <span class="c">// add to end</span>
+<span class="k">const</span> i = colors.indexOf(<span class="s">"yellow"</span>); <span class="c">// 2</span>
+<span class="k">if</span> (i !== -1) colors.splice(i, 1);  <span class="c">// remove it safely</span>
+
+<span class="k">for</span> (<span class="k">const</span> color <span class="k">of</span> colors) {
+  console.log(color);               <span class="c">// red, orange, purple, blue</span>
+}</pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — To-Do List Manager</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Open <code class="inline">l09-arrays/starter/</code>. Write <code class="inline">addTodo</code>, <code class="inline">removeTodo</code>, <code class="inline">insertTodoAt</code>, <code class="inline">listTodos</code>, and <code class="inline">completeTodo</code>, then uncomment the tests. Plan it first: which array method does each function need?</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">What is the index of the first element in a JavaScript array?</div>
+          <div class="opts"><div class="opt">A) 0</div><div class="opt">B) 1</div><div class="opt">C) -1</div><div class="opt">D) It depends on the array</div></div></div>
+        <div class="q"><div class="qn">Q3</div><div class="qt">What does <code class="inline">splice()</code> do?</div>
+          <div class="opts"><div class="opt">A) Creates a copy of part of an array</div><div class="opt">B) Joins two arrays together</div><div class="opt">C) Removes, inserts, or replaces elements at any position</div><div class="opt">D) Sorts the array in place</div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">What does <code class="inline">["a","b","c"].includes("b")</code> return?</div>
+          <div class="opts"><div class="opt">A) 1</div><div class="opt">B) true</div><div class="opt">C) false</div><div class="opt">D) &quot;b&quot;</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Think of a list on a page you'd like to build — a playlist, a reading list, a set of scores. Which array methods would you use to add, remove, and find items in it? In your own words, explain the difference between <code class="inline">splice</code> and <code class="inline">slice</code>, and note which method you're still unsure about.</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L10 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L10</span><h3>Objects</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Create objects and read, add, update, and delete properties</li>
+          <li>Choose dot notation (default) or bracket notation (odd keys, keys in variables)</li>
+          <li>Write methods that use <code class="inline">this</code></li>
+          <li>Work with nested data and arrays of objects; destructure properties</li>
+          <li>Loop over <code class="inline">Object.keys</code>, <code class="inline">values</code>, and <code class="inline">entries</code></li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas</div>
+        <ul class="tick">
+          <li>An object stores <b>key: value</b> pairs, so you look data up by <em>name</em> instead of position.</li>
+          <li><code class="inline">obj[field]</code> uses the <em>value</em> of <code class="inline">field</code>; <code class="inline">obj.field</code> looks for a key literally named "field".</li>
+          <li>Inside a method, <code class="inline">this</code> is the object before the dot. <b>Arrow functions don't have their own <code class="inline">this</code></b>, so write methods as <code class="inline">greet() { … }</code>.</li>
+          <li>An <b>array of objects</b> is like a spreadsheet: each object is a row, each key a column.</li>
+          <li>Objects are compared by <b>reference</b>: two objects with the same contents are still not <code class="inline">===</code>.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 440 210" style="font-variant-ligatures:none" role="img" aria-label="Variables a and c point to the same object; b points to a second object with the same contents. a === c is true, a === b is false.">
+            <g font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600" text-anchor="middle">
+              <rect x="30" y="22" width="64" height="34" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/><text x="62" y="44" fill="#1d4ed8">a</text>
+              <rect x="30" y="76" width="64" height="34" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/><text x="62" y="98" fill="#1d4ed8">c</text>
+              <rect x="30" y="132" width="64" height="34" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/><text x="62" y="154" fill="#1d4ed8">b</text>
+              <rect x="252" y="34" width="168" height="48" rx="6" fill="#ffffff" stroke="#9aa7b8" stroke-width="1.5"/><text x="336" y="63" fill="#1e293b">{ x: 1, y: 2 }</text>
+              <rect x="252" y="126" width="168" height="48" rx="6" fill="#ffffff" stroke="#9aa7b8" stroke-width="1.5"/><text x="336" y="155" fill="#1e293b">{ x: 1, y: 2 }</text>
+            </g>
+            <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#5b6778">
+              <text x="30" y="14">variables</text><text x="252" y="26">object #1 (in memory)</text><text x="252" y="118">object #2 (in memory)</text>
+            </g>
+            <line x1="96" y1="39" x2="242" y2="53" stroke="#1d4ed8" stroke-width="2"/><polygon points="250,54 240,49 239,58" fill="#1d4ed8"/>
+            <line x1="96" y1="93" x2="242" y2="66" stroke="#1d4ed8" stroke-width="2"/><polygon points="250,64 239,62 242,71" fill="#1d4ed8"/>
+            <line x1="96" y1="149" x2="242" y2="150" stroke="#1d4ed8" stroke-width="2"/><polygon points="250,150 240,145 240,155" fill="#1d4ed8"/>
+            <g font-family="'JetBrains Mono',monospace" font-size="13" font-weight="600">
+              <text x="30" y="198" fill="#0f766e">a === c → true</text>
+              <text x="236" y="198" fill="#b91c1c">a === b → false</text>
+            </g>
+          </svg>
+          <figcaption>=== on objects asks "same object?", not "same contents?"</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">const</span> player = {
+  name: <span class="s">"Ray"</span>,
+  score: <span class="s">0</span>,
+  addPoints(points) {          <span class="c">// method: regular syntax, not an arrow</span>
+    <span class="k">this</span>.score += points;
+    <span class="k">return</span> <span class="s">`${this.name}: ${this.score} points`</span>;
+  }
+};
+player.addPoints(<span class="s">10</span>);          <span class="c">// "Ray: 10 points"</span>
+
+<span class="k">const</span> { name, score } = player; <span class="c">// destructuring</span>
+<span class="k">for</span> (<span class="k">const</span> [key, value] <span class="k">of</span> Object.entries({ name, score })) {
+  console.log(<span class="s">`${key} → ${value}`</span>);  <span class="c">// name → Ray, score → 10</span>
+}</pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Contact Book</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Open <code class="inline">l10-objects/starter/</code>. Write <code class="inline">addContact</code>, <code class="inline">findContact</code>, <code class="inline">updateContact</code>, <code class="inline">displayContact</code>, and <code class="inline">listByGroup</code>. A <code class="inline">for...of</code> loop is fine for <code class="inline">listByGroup</code>; you'll meet the shortcut next lesson. Sketch <code class="inline">findContact</code> and <code class="inline">updateContact</code> here:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">Which notation must you use when the key is stored in a variable?</div>
+          <div class="opts"><div class="opt">A) Dot notation</div><div class="opt">B) Bracket notation</div><div class="opt">C) Parentheses notation</div><div class="opt">D) Either works</div></div></div>
+        <div class="q"><div class="qn">Q3</div><div class="qt">Why shouldn't you use arrow functions as object methods that use <code class="inline">this</code>?</div>
+          <div class="opts"><div class="opt">A) Arrow functions can't be properties</div><div class="opt">B) Arrow functions don't have their own this</div><div class="opt">C) Arrow functions can't return values</div><div class="opt">D) Arrow functions cause syntax errors in objects</div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">What does <code class="inline">{ x: 1 } === { x: 1 }</code> evaluate to?</div>
+          <div class="opts"><div class="opt">A) true</div><div class="opt">B) false</div><div class="opt">C) TypeError</div><div class="opt">D) It depends on the values</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Describe something from your own site or life as an object — a recipe, a pet, a product — with at least four properties and one method. When would you reach for bracket notation instead of dot notation? What part of <code class="inline">this</code> or destructuring still feels fuzzy?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L11 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L11</span><h3>Array Methods</h3><span class="dur">55 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Transform with <code class="inline">map</code>, keep matches with <code class="inline">filter</code>, collapse with <code class="inline">reduce</code></li>
+          <li>Ask yes/no questions with <code class="inline">some</code> and <code class="inline">every</code>; get the first match with <code class="inline">find</code></li>
+          <li>Sort numbers and objects with a compare function</li>
+          <li>Chain methods into a filter → sort → map pipeline</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas</div>
+        <ul class="tick">
+          <li><b>map</b> → new array, same length · <b>filter</b> → new array, fewer items · <b>reduce</b> → one value. <b>forEach</b> returns <code class="inline">undefined</code>; use it for side effects only.</li>
+          <li>Always give <code class="inline">reduce</code> an initial value: <code class="inline">reduce((sum, n) =&gt; sum + n, 0)</code>.</li>
+          <li>Plain <code class="inline">sort()</code> sorts <b>as text</b>: <code class="inline">[40, 100, 1, 5, 25]</code> → <code class="inline">[1, 100, 25, 40, 5]</code>. For numbers use <code class="inline">(a, b) =&gt; a - b</code>.</li>
+          <li><code class="inline">sort</code> and <code class="inline">reverse</code> change the original; <code class="inline">toSorted</code> or <code class="inline">[...arr].sort()</code> don't.</li>
+          <li>Money math gives long decimals like <code class="inline">374.94000000000005</code>. Display with <code class="inline">toFixed(2)</code>, which returns a string.</li>
+        </ul>
+        <figure class="fig">
+          <svg viewBox="0 0 440 204" style="font-variant-ligatures:none" role="img" aria-label="Starting from [10, 20, 30, 40]: map doubles each item and returns four items; filter keeps items over 15 and returns three; reduce adds them into the single value 100.">
+            <g font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" text-anchor="middle">
+              <rect x="8" y="18" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="21" y="36" fill="#1e293b">10</text>
+              <rect x="38" y="18" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="51" y="36" fill="#1e293b">20</text>
+              <rect x="68" y="18" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="81" y="36" fill="#1e293b">30</text>
+              <rect x="98" y="18" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="111" y="36" fill="#1e293b">40</text>
+              <line x1="130" y1="31" x2="300" y2="31" stroke="#0f766e" stroke-width="2"/><polygon points="308,31 298,26 298,36" fill="#0f766e"/>
+              <text x="216" y="24" text-anchor="middle" font-size="11" fill="#0f766e">map(n =&gt; n * 2)</text>
+              <text x="216" y="50" text-anchor="middle" font-size="10.5" font-weight="500" fill="#5b6778">same length</text>
+              <rect x="316" y="18" width="26" height="26" rx="3" fill="#dff3ef" stroke="#0f766e" stroke-width="1.5"/><text x="329" y="36" fill="#0f766e">20</text>
+              <rect x="346" y="18" width="26" height="26" rx="3" fill="#dff3ef" stroke="#0f766e" stroke-width="1.5"/><text x="359" y="36" fill="#0f766e">40</text>
+              <rect x="376" y="18" width="26" height="26" rx="3" fill="#dff3ef" stroke="#0f766e" stroke-width="1.5"/><text x="389" y="36" fill="#0f766e">60</text>
+              <rect x="406" y="18" width="26" height="26" rx="3" fill="#dff3ef" stroke="#0f766e" stroke-width="1.5"/><text x="419" y="36" fill="#0f766e">80</text>
+              <rect x="8" y="88" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="21" y="106" fill="#1e293b">10</text>
+              <rect x="38" y="88" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="51" y="106" fill="#1e293b">20</text>
+              <rect x="68" y="88" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="81" y="106" fill="#1e293b">30</text>
+              <rect x="98" y="88" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="111" y="106" fill="#1e293b">40</text>
+              <line x1="130" y1="101" x2="300" y2="101" stroke="#1d4ed8" stroke-width="2"/><polygon points="308,101 298,96 298,106" fill="#1d4ed8"/>
+              <text x="216" y="94" text-anchor="middle" font-size="11" fill="#1d4ed8">filter(n =&gt; n &gt; 15)</text>
+              <text x="216" y="120" text-anchor="middle" font-size="10.5" font-weight="500" fill="#5b6778">fewer items</text>
+              <rect x="316" y="88" width="26" height="26" rx="3" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.5"/><text x="329" y="106" fill="#1d4ed8">20</text>
+              <rect x="346" y="88" width="26" height="26" rx="3" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.5"/><text x="359" y="106" fill="#1d4ed8">30</text>
+              <rect x="376" y="88" width="26" height="26" rx="3" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.5"/><text x="389" y="106" fill="#1d4ed8">40</text>
+              <rect x="8" y="158" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="21" y="176" fill="#1e293b">10</text>
+              <rect x="38" y="158" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="51" y="176" fill="#1e293b">20</text>
+              <rect x="68" y="158" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="81" y="176" fill="#1e293b">30</text>
+              <rect x="98" y="158" width="26" height="26" rx="3" fill="#fff7e6" stroke="#d97706" stroke-width="1.5"/><text x="111" y="176" fill="#1e293b">40</text>
+              <line x1="130" y1="171" x2="300" y2="171" stroke="#be185d" stroke-width="2"/><polygon points="308,171 298,166 298,176" fill="#be185d"/>
+              <text x="216" y="164" text-anchor="middle" font-size="11" fill="#be185d">reduce((s, n) =&gt; s + n, 0)</text>
+              <text x="216" y="190" text-anchor="middle" font-size="10.5" font-weight="500" fill="#5b6778">one value</text>
+              <rect x="316" y="158" width="36" height="26" rx="3" fill="#fce7f3" stroke="#be185d" stroke-width="1.5"/><text x="334" y="176" fill="#be185d">100</text>
+            </g>
+          </svg>
+          <figcaption>map keeps the length · filter keeps the matches · reduce collapses to one value</figcaption>
+        </figure>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">const</span> result = products
+  .filter(p =&gt; p.category === <span class="s">"electronics"</span>)  <span class="c">// keep electronics</span>
+  .sort((a, b) =&gt; a.price - b.price)             <span class="c">// cheapest first</span>
+  .map(p =&gt; <span class="s">`${p.name}: $${p.price}`</span>);         <span class="c">// format</span>
+<span class="c">// ["Tablet: $449", "Phone: $699", "Laptop: $999"]</span>
+
+<span class="k">const</span> total = products
+  .filter(p =&gt; p.category === <span class="s">"electronics"</span>)
+  .reduce((sum, p) =&gt; sum + p.price, <span class="s">0</span>);     <span class="c">// 2147</span></pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Product Catalog Pipeline</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Open <code class="inline">l11-array-methods/starter/</code>. Solve the six challenges with array methods only (no <code class="inline">for</code>/<code class="inline">while</code>). Before coding each one, write the chain in plain words, e.g. "filter in-stock → reduce to a sum":</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">What does <code class="inline">map()</code> return?</div>
+          <div class="opts"><div class="opt">A) A single value</div><div class="opt">B) A new array with the same number of elements</div><div class="opt">C) A new array with fewer elements</div><div class="opt">D) undefined</div></div></div>
+        <div class="q"><div class="qn">Q2</div><div class="qt">What does <code class="inline">[1,2,3].filter(n =&gt; n &gt; 1)</code> return?</div>
+          <div class="opts"><div class="opt">A) true</div><div class="opt">B) [1, 2, 3]</div><div class="opt">C) [2, 3]</div><div class="opt">D) [2]</div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">Which method modifies the original array?</div>
+          <div class="opts"><div class="opt">A) map()</div><div class="opt">B) filter()</div><div class="opt">C) sort()</div><div class="opt">D) reduce()</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Pick a small dataset you care about (your movies, workouts, or expenses) and write, in plain English, a filter → sort → map pipeline you'd run on it. Why does <code class="inline">filter</code> usually come before <code class="inline">map</code>? Which method — probably <code class="inline">reduce</code>? — are you still unsure about?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L12 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L12</span><h3>Strings &amp; Template Literals</h3><span class="dur">40 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Build text with template literals: <code class="inline">`Hi, ${name}!`</code> and multiline strings</li>
+          <li>Search with <code class="inline">includes</code>, <code class="inline">startsWith</code>, <code class="inline">endsWith</code>, <code class="inline">indexOf</code></li>
+          <li>Extract with <code class="inline">slice</code> and <code class="inline">at</code>; clean with <code class="inline">trim</code>, <code class="inline">toLowerCase</code>, <code class="inline">replace</code></li>
+          <li>Split text into arrays and join arrays back into text</li>
+          <li>Format with <code class="inline">padStart</code>, <code class="inline">padEnd</code>, and <code class="inline">repeat</code></li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas</div>
+        <ul class="tick">
+          <li><b>Strings are immutable.</b> Every method returns a <em>new</em> string, so store the result: <code class="inline">name = name.trim();</code></li>
+          <li>Only <b>backticks</b> interpolate <code class="inline">${…}</code>. Regular quotes print it literally.</li>
+          <li><code class="inline">slice</code> works like array slice, and negatives count from the end: <code class="inline">"Hello, World!".slice(-6)</code> → <code class="inline">"World!"</code>.</li>
+          <li><code class="inline">replace</code> changes the first match; <code class="inline">replaceAll</code> changes every match.</li>
+          <li><b>split → map → join</b> transforms text word by word.</li>
+          <li>You'll <em>read</em> a few regular expressions in the lab: <code class="inline">/\s+/g</code> = "one or more spaces, everywhere".</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Worked example</div>
+        <pre class="code"><span class="k">function</span> titleCase(str) {
+  <span class="k">return</span> str
+    .split(<span class="s">" "</span>)
+    .map(word =&gt; word[0].toUpperCase() + word.slice(1).toLowerCase())
+    .join(<span class="s">" "</span>);
+}
+titleCase(<span class="s">"the QUICK brown FOX"</span>);   <span class="c">// "The Quick Brown Fox"</span>
+
+<span class="s">"42"</span>.padStart(6, <span class="s">"0"</span>);             <span class="c">// "000042"</span>
+<span class="s">"report-2026.pdf"</span>.endsWith(<span class="s">".pdf"</span>); <span class="c">// true</span></pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Text Formatting Utility</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Open <code class="inline">l12-strings/starter/</code>. Write <code class="inline">truncate</code>, <code class="inline">slugify</code>, <code class="inline">countWords</code>, <code class="inline">initials</code>, and <code class="inline">maskEmail</code>. Try them in the order truncate → maskEmail → initials → countWords → slugify. List the string methods each one needs:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">Are JavaScript strings mutable or immutable?</div>
+          <div class="opts"><div class="opt">A) Mutable — you can change characters in place</div><div class="opt">B) Immutable — methods always return new strings</div><div class="opt">C) It depends on const vs. let</div><div class="opt">D) Mutable with template literals, immutable otherwise</div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">What does <code class="inline">"Hello, World!".slice(-6)</code> return?</div>
+          <div class="opts"><div class="opt">A) &quot;Hello,&quot;</div><div class="opt">B) &quot;orld!&quot;</div><div class="opt">C) An error — indexes can't be negative</div><div class="opt">D) &quot;World!&quot;</div></div></div>
+        <div class="q"><div class="qn">Q5</div><div class="qt">What does <code class="inline">"7".padStart(3, "0")</code> return?</div>
+          <div class="opts"><div class="opt">A) &quot;007&quot;</div><div class="opt">B) &quot;700&quot;</div><div class="opt">C) &quot;0007&quot;</div><div class="opt">D) 7</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Look at some text on your own site — a title, a name, a date — and describe a string function you could write to clean or format it (slug, initials, truncation, padding). Predict what <code class="inline">"JavaScript".slice(-6)</code> returns before you try it. Which string method do you think you'll use most, and which still confuses you?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <div class="note">
+    <div class="t">You finished Module 3 🎉</div>
+    <p>You can now store lists in arrays, model real things as objects, transform data with map, filter, and reduce, and clean and format text. In Module 4 you'll connect all of it to the web page itself through the DOM.</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Front-End JavaScript: Make Your Web Pages Come Alive</span>
+    </div>
+    <div class="ver">Workbook · Module 3 · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

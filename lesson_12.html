@@ -5,21 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Master JavaScript strings — string methods for searching, slicing, and transforming text, plus template literals for interpolation and multiline strings.">
     <meta name="keywords" content="javascript, strings, template literals, string methods, immutability">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 12: Strings &amp; Template Literals - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -83,6 +89,7 @@
                         <li><a href="#split-join" class="toc-link">Split &amp; Join</a></li>
                         <li><a href="#padding-repeat" class="toc-link">Padding &amp; Repeating</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -111,7 +118,8 @@ console.log(greeting);  // "Hello, World!" — unchanged!
 const word = "hello";
 console.log(word[0]);       // "h"
 console.log(word.length);   // 5
-// word[0] = "H";           // ❌ Silently fails — strings are immutable
+// word[0] = "H";           // ❌ Does nothing — strings are immutable
+//                          (in strict mode / modules it throws a TypeError)
                     </code></pre>
                 </div>
             </section>
@@ -149,7 +157,8 @@ const modern = `Line 1
 Line 2
 Line 3`;
 
-// Great for HTML snippets
+// Great for HTML snippets (but if name/age come from a user,
+// they must be escaped before this ever goes into innerHTML)
 const card = `
     &lt;div class="card"&gt;
         &lt;h2&gt;${name}&lt;/h2&gt;
@@ -250,9 +259,9 @@ const str = "Hello, World!";
 
 console.log(str.slice(0, 5));    // "Hello"
 console.log(str.slice(7));       // "World!"
-console.log(str.slice(-6));      // "orld!"
+console.log(str.slice(-6));      // "World!" (last 6 characters)
 console.log(str.slice(7, 12));   // "World"
-console.log(str.slice(-6, -1));  // "orld"
+console.log(str.slice(-6, -1));  // "World" (stops before the "!")
                 </code></pre>
 
                 <h3>substring()</h3>
@@ -283,7 +292,7 @@ console.log(word.at(-2));   // "p"  (second to last)
                     graph LR
                     A["'Hello, World!'"] --> B["slice(0,5) → 'Hello'"]
                     A --> C["slice(7) → 'World!'"]
-                    A --> D["slice(-6) → 'orld!'"]
+                    A --> D["slice(-6) → 'World!'"]
                     style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
                     style B fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
                     style C fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
@@ -497,18 +506,18 @@ console.log(progressBar(30));   // [██████░░░░░░░░�
 
 // 4. initials(fullName)
 //    Get initials from a full name
-//    initials("Ray De La Paz")  → "RDLP"
+//    initials("Ray de la Paz")  → "RDLP"
 //    initials("Alice")          → "A"
 
 // 5. maskEmail(email)
 //    Mask an email address for privacy
-//    maskEmail("ray@example.com")     → "r***@example.com"
+//    maskEmail("ray@example.com")     → "r**@example.com"
 //    maskEmail("alice@gmail.com")     → "a****@gmail.com"
                     </code></pre>
 
                     <details>
                         <summary>💡 Hint</summary>
-                        <p><strong>truncate:</strong> Check <code>length > maxLength</code>, then use <code>slice(0, maxLength - 3)</code> + <code>"..."</code>.</p>
+                        <p><strong>truncate:</strong> Check <code>length &gt; maxLength</code>, then use <code>slice(0, maxLength - 3)</code> + <code>"..."</code>.</p>
                         <p><strong>slugify:</strong> Chain: <code>trim()</code> → <code>toLowerCase()</code> → <code>replace(/[^a-z0-9\s-]/g, "")</code> → <code>replace(/\s+/g, "-")</code>.</p>
                         <p><strong>countWords:</strong> <code>trim()</code> → <code>split(/\s+/)</code> → <code>length</code>. Handle empty string edge case.</p>
                         <p><strong>initials:</strong> <code>split(" ")</code> → <code>map(w => w[0])</code> → <code>join("")</code> → <code>toUpperCase()</code>.</p>
@@ -520,7 +529,7 @@ console.log(progressBar(30));   // [██████░░░░░░░░�
                         <pre><code class="language-javascript">
 // 1. Truncate
 function truncate(str, maxLength) {
-    if (str.length <= maxLength) return str;
+    if (str.length &lt;= maxLength) return str;
     return str.slice(0, maxLength - 3) + "...";
 }
 
@@ -564,7 +573,7 @@ function initials(fullName) {
         .toUpperCase();
 }
 
-console.log(initials("Ray De La Paz"));  // "RDLP"
+console.log(initials("Ray de la Paz"));  // "RDLP"
 console.log(initials("Alice"));          // "A"
 
 
@@ -588,7 +597,7 @@ console.log(maskEmail("alice@gmail.com"));    // "a****@gmail.com"
                         <p><strong>Question 1:</strong> Are JavaScript strings mutable or immutable?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="Arrays are mutable (push, splice modify them), but strings are different.">A) Mutable — you can change characters in place</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="Strings are immutable — every string method returns a new string. The original is never modified. This means str[0] = 'X' silently fails.">B) Immutable — methods always return new strings</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Strings are immutable — every string method returns a new string. The original is never modified. That's why str[0] = 'X' does nothing (or throws a TypeError in strict mode).">B) Immutable — methods always return new strings</button>
                             <button class="quiz-option" data-correct="false" data-hint="Strings are always immutable, regardless of whether you use const, let, or var.">C) It depends on const vs. let</button>
                             <button class="quiz-option" data-correct="false" data-hint="Template literals are still strings — they follow the same immutability rules.">D) Mutable with template literals, immutable otherwise</button>
                         </div>
@@ -599,7 +608,7 @@ console.log(maskEmail("alice@gmail.com"));    // "a****@gmail.com"
                         <p><strong>Question 2:</strong> What does <code>"hello world".split(" ")</code> return?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="split() returns an array, not a string.">A) &quot;hello world&quot;</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="split(' ') breaks the string at every space, creating an array of words.">B) [&quot;hello&quot;, &quot;world&quot;]</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! split(' ') breaks the string at every space, creating an array of words.">B) [&quot;hello&quot;, &quot;world&quot;]</button>
                             <button class="quiz-option" data-correct="false" data-hint="split(' ') splits by spaces, not by individual characters. Use split('') for characters.">C) [&quot;h&quot;, &quot;e&quot;, &quot;l&quot;, &quot;l&quot;, &quot;o&quot;, &quot; &quot;, &quot;w&quot;, &quot;o&quot;, &quot;r&quot;, &quot;l&quot;, &quot;d&quot;]</button>
                             <button class="quiz-option" data-correct="false" data-hint="split() separates by the delimiter — each word becomes its own element.">D) [&quot;hello world&quot;]</button>
                         </div>
@@ -610,12 +619,48 @@ console.log(maskEmail("alice@gmail.com"));    // "a****@gmail.com"
                         <p><strong>Question 3:</strong> How do you check if a string ends with &quot;.pdf&quot;?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="includes() checks anywhere in the string, not specifically the end.">A) <code>str.includes(&quot;.pdf&quot;)</code></button>
-                            <button class="quiz-option" data-correct="true" data-explanation="endsWith() checks if the string ends with the specified substring — perfect for file extension checks.">B) <code>str.endsWith(&quot;.pdf&quot;)</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! endsWith() checks if the string ends with the specified substring — perfect for file extension checks.">B) <code>str.endsWith(&quot;.pdf&quot;)</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="startsWith() checks the beginning, not the end.">C) <code>str.startsWith(&quot;.pdf&quot;)</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="indexOf() returns a position, not a boolean, and doesn't guarantee the match is at the end.">D) <code>str.indexOf(&quot;.pdf&quot;)</code></button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> What does <code>"Hello, World!".slice(-6)</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="A negative start counts from the END of the string. Count back 6 characters, including the &quot;!&quot;.">A) &quot;Hello,&quot;</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Close! Count again — the &quot;!&quot; is one of the last 6 characters, and so is the &quot;W&quot;.">B) &quot;orld!&quot;</button>
+                            <button class="quiz-option" data-correct="false" data-hint="slice() never throws on a negative index — negative numbers count back from the end.">C) An error — indexes can't be negative</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! slice(-6) starts 6 characters from the end and goes to the end: &quot;World!&quot;.">D) &quot;World!&quot;</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> What does <code>"7".padStart(3, "0")</code> return?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! padStart adds characters to the START until the string is 3 characters long: &quot;007&quot;.">A) &quot;007&quot;</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That would be padEnd — padStart adds characters at the beginning.">B) &quot;700&quot;</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The first argument is the TARGET length, not how many characters to add.">C) &quot;0007&quot;</button>
+                            <button class="quiz-option" data-correct="false" data-hint="padStart works on strings and returns a string, not a number.">D) 7</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Look at some text on your own site — a title, a name, a date — and describe a string function you could write to clean or format it (slug, initials, truncation, padding). Predict what <code>"JavaScript".slice(-6)</code> returns before you try it. Which string method do you think you'll use most, and which still confuses you?</em></p>
                 </div>
             </section>
 

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification System</title>
+  <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>🔔 Notification System</h1>
+    <div class="controls">
+        <button type="button" class="btn-success" data-type="success">✅ Success</button>
+        <button type="button" class="btn-warning" data-type="warning">⚠️ Warning</button>
+        <button type="button" class="btn-error" data-type="error">❌ Error</button>
+        <button type="button" class="btn-info" data-type="info">ℹ️ Info</button>
+        <button type="button" class="btn-clear">🗑️ Clear All</button>
+    </div>
+    <p class="counter">Notifications: <span id="count">0</span></p>
+    <p class="hint">Bonus: press <kbd>b</kbd> to add a batch of five at once.</p>
+    <div id="notification-area" aria-live="polite"></div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facilitator Guide — Module 2</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+<style>pre.code,code.inline{font-variant-ligatures:none} /* show => and === as typed */</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">contains answers &amp; timing · not for students</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Instructor Kit · Facilitator Guide</div>
+    <h1>Module 2 — Control Flow &amp; Functions</h1>
+    <p class="sub">How to teach the four lessons that take students from straight-line scripts to programs that decide, repeat, and organize themselves into functions. Timing, live-demo scripts, the misconceptions to pre-empt, and how to run each lab.</p>
+    <div class="meta-row">
+      <span class="chip"><b>4</b> lessons</span>
+      <span class="chip"><b>~3.3 hrs</b> teaching</span>
+      <span class="chip">Lessons <b>L05–L08</b></span>
+      <span class="chip">Level <b>Beginner → Intermediate</b></span>
+      <span class="chip">Maps to <b>Day 1 PM (L05) → Day 2 AM</b></span>
+    </div>
+  </header>
+
+  <!-- HOW TO USE -->
+  <div class="sec"><h2>How to Use This Guide</h2><span class="rule"></span></div>
+  <ul class="tick">
+    <li>Each lesson has the same rhythm: <b>Frame</b> (why it matters) → <b>Teach</b> (live-code the concept) → <b>Lab</b> (students build) → <b>Check</b> (quiz + recap) → <b>Journal</b>. The minute timings in each teaching sequence add up to the lesson's length; adjust ±10 min to your group, and let labs run into the day's lab block when you have one.</li>
+    <li><b>Live-code everything.</b> Type the JavaScript in front of the class, save, and read the Console out loud. Never paste finished code. Beginners learn most from watching you hit an error, read the message, and fix it.</li>
+    <li><b>Predict before you run.</b> Before every demo run, ask the room "what will this print?" and take two or three guesses. This whole module is about predicting program flow, and the habit matters more than any single syntax rule.</li>
+    <li>Blue blocks are concepts; <span style="color:var(--lab);font-weight:600">teal</span> blocks are hands-on; <span style="color:var(--warn);font-weight:600">amber</span> blocks are watch-outs — the errors that eat class time if you don't pre-empt them.</li>
+    <li>Quiz answers here are for you. The student workbook has a 3-question subset of each lesson quiz, without answers, labelled with the lesson's question numbers; the separate <b>Answer Key</b> covers every question with matching numbers for grading.</li>
+  </ul>
+
+  <div class="note">
+    <div class="t">Before you start the module</div>
+    <p>Students should have VS Code with Live Server, a browser with DevTools open on the <b>Console</b> tab, and a working <code class="inline">index.html</code> + <code class="inline">script.js</code> from Module 1. Every lab in this module is a console program: the lab pages in <code class="inline">labs/module-2/</code> also print each result onto the page with a provided <code class="inline">show()</code> helper, so nobody is stuck if DevTools is fiddly. If anyone is behind, pair them up — do not stop the room to fix one setup.</p>
+  </div>
+
+  <!-- AT A GLANCE -->
+  <div class="sec"><h2>Module at a Glance</h2><span class="rule"></span></div>
+  <table class="timing">
+    <thead><tr><th>Lesson</th><th>Topic</th><th>Time</th><th>Students leave able to…</th></tr></thead>
+    <tbody>
+      <tr><td class="t">L05</td><td>Conditionals</td><td class="t">45m</td><td>Branch with if / else if / else, switch, and the ternary</td></tr>
+      <tr><td class="t">L06</td><td>Loops</td><td class="t">50m</td><td>Repeat work with for, while, for...of and for...in</td></tr>
+      <tr><td class="t">L07</td><td>Functions</td><td class="t">55m</td><td>Write declarations, expressions and arrows that return values</td></tr>
+      <tr><td class="t">L08</td><td>Scope &amp; Hoisting</td><td class="t">45m</td><td>Predict where a variable is visible; build a closure</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.9rem;color:var(--ink-2)">Total <b>195 minutes</b> of lesson time plus a 10-minute module wrap-up. L05 closes Day 1; L06–L08 fill Day 2 morning. The labs are <b>four separate console programs</b>, not one cumulative project: a grade calculator, a star rating + search filter, a mini utility library, and a scope puzzle + closure score tracker. L08 is the first <em>intermediate</em> lesson in the course, so slow down there.</p>
+
+  <!-- LESSON 05 -->
+  <div class="sec"><h2>Lesson Plans</h2><span class="rule"></span></div>
+
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L05</span><h3>Conditionals</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Write <code class="inline">if</code>, <code class="inline">else if</code>, and <code class="inline">else</code> statements to control program flow</li>
+          <li>Use <code class="inline">switch</code> for multi-branch decisions on one value</li>
+          <li>Write short value choices with the ternary operator (<code class="inline">? :</code>)</li>
+          <li>Replace deep nesting with guard clauses; use truthy/falsy values in conditions safely</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (3m).</b> "So far every line runs, every time. Real pages make choices: is the user logged in? Is the field empty? Is it morning?" Sketch a diamond on the board: condition → yes path / no path.</li>
+          <li><b>if / else + logical operators (6m).</b> Live-code the voting-age check, then combine with <code class="inline">&amp;&amp;</code> (age and ticket) and <code class="inline">||</code> (weekend or holiday). Always type the braces, even for one line.</li>
+          <li><b>else if chains — order matters (6m).</b> Build the grade chain from <code class="inline">&gt;= 90</code> down. Then deliberately put <code class="inline">&gt;= 60</code> first and show every passing score becomes a D. "First true condition wins; the rest are skipped."</li>
+          <li><b>switch (6m).</b> The day-of-week example: stacked cases for Tuesday–Thursday, <code class="inline">break</code>, <code class="inline">default</code>. Delete one <code class="inline">break</code> to show fall-through, then put it back.</li>
+          <li><b>Ternary (3m).</b> <code class="inline">const result = score &gt;= 60 ? "Pass" : "Fail";</code> Read it aloud as "is it? then this : otherwise that." One level only — no nesting.</li>
+          <li><b>Guard clauses + truthy/falsy (5m).</b> Show the nested <code class="inline">processOrder</code> pyramid next to the flat guard-clause version. Then <code class="inline">if (username)</code> vs the long <code class="inline">!== ""</code> chain, and the <code class="inline">0</code> trap.</li>
+          <li><b>Lab (10m).</b> Grade Calculator (below).</li>
+          <li><b>Check (3m).</b> Quiz Q1–Q5 as a quick poll.</li>
+          <li><b>Journal (3m).</b> The lesson's prompt: one decision a page they'd like to build has to make, written as a plain-English if / else if / else chain.</li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script</div>
+        <pre class="code"><span class="k">let</span> score = <span class="s">82</span>;
+
+<span class="k">if</span> (score &gt;= <span class="s">90</span>) {
+    console.log(<span class="s">"Grade: A"</span>);
+} <span class="k">else if</span> (score &gt;= <span class="s">80</span>) {
+    console.log(<span class="s">"Grade: B"</span>);
+} <span class="k">else</span> {
+    console.log(<span class="s">"Keep going"</span>);
+}
+<span class="c">// Ask: "82 is also &gt;= 70 — why don't we see C?"</span></pre>
+        <p style="font-size:.9rem;margin:.2rem 0">Say: "JavaScript walks down the chain and stops at the first true condition." Change <code class="inline">score</code> to 95, 82, 40 and have the room call out the result before each save. Then type <code class="inline">let input = "5";</code> and a <code class="inline">switch</code> with <code class="inline">case 5:</code> — let them predict, then show it falls to <code class="inline">default</code>. That's quiz Q4 taught in advance.</p>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Grade Calculator</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Students set <code class="inline">studentName</code> and <code class="inline">score</code>, pick the letter with an <code class="inline">else if</code> chain, pick the message with a <code class="inline">switch</code>, decide pass/fail with a ternary, and print <em>"Alex scored 78 (C) — Solid effort, keep improving!"</em> and <em>"Status: Pass"</em>. Bonus: reject scores below 0 or above 100 first. Starter in <code class="inline">labs/module-2/l05-conditionals/starter/</code>; solution in <code class="inline">labs/module-2/l05-conditionals/solution/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> the chain checking highest first; a <code class="inline">break</code> in every case; the letter stored in a variable <em>before</em> the <code class="inline">switch</code>. <b>Make them test:</b> 95, 60, 59, −5 and 105 — every branch plus both sides of the 60 boundary.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b><code class="inline">switch</code> uses strict equality (<code class="inline">===</code>).</b> A string <code class="inline">"5"</code> never matches <code class="inline">case 5:</code>, and there's no error — it just drops to <code class="inline">default</code>. Anything read from a page is a string; convert with <code class="inline">Number()</code> first.</li>
+          <li><b><code class="inline">if (quantity)</code> fails when 0 is valid.</b> <code class="inline">0</code> is falsy, so a real zero looks "missing." Check explicitly (<code class="inline">quantity !== undefined</code>) when zero is a legitimate value.</li>
+          <li><b><code class="inline">=</code> inside a condition.</b> <code class="inline">if (score = 90)</code> assigns and is always truthy. When "every score is an A," look for a single equals sign.</li>
+          <li><b>Guard clauses before functions.</b> The lesson's guard-clause example uses <code class="inline">function</code> and <code class="inline">return</code>, which aren't taught until L07. Tell students to read <code class="inline">return;</code> as "stop here and leave." In the lab, the guard is an <code class="inline">if</code>/<code class="inline">else</code> wrapper, not a <code class="inline">return</code>.</li>
+          <li><b>Missing <code class="inline">break</code></b> — the message for B shows the message for C too. Fall-through is only intentional for stacked cases.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Run quiz Q1–Q5 as a quick poll. Key answers: Q1 x = 5 prints <b>B</b> (first true branch wins); Q2 missing <code class="inline">break</code> → <b>falls through to the next case</b>; Q3 <code class="inline">10 &gt; 5 ? "yes" : "no"</code> → <b>"yes"</b>; Q4 <code class="inline">switch("5")</code> with <code class="inline">case 5</code> → <b>"no match"</b> (strict equality); Q5 <code class="inline">if (quantity)</code> is risky because <b>0 is falsy, so a valid 0 looks "missing."</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 06 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L06</span><h3>Loops</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Write <code class="inline">for</code> loops that repeat a known number of times</li>
+          <li>Use <code class="inline">while</code> and <code class="inline">do...while</code> for condition-based repetition</li>
+          <li>Iterate arrays with <code class="inline">for...of</code> and object keys with <code class="inline">for...in</code></li>
+          <li>Control loops with <code class="inline">break</code> / <code class="inline">continue</code>; avoid infinite loops and off-by-one errors</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (3m).</b> "Fifty products, fifty nearly identical lines? No." Introduce <b>DRY — Don't Repeat Yourself</b>. A loop writes the instructions once and repeats them.</li>
+          <li><b>Anatomy of <code class="inline">for</code> (8m).</b> Label the three parts on screen and say when each runs:
+            <pre class="code"><span class="c">//   start;      keep going?;  after each pass</span>
+<span class="k">for</span> (<span class="k">let</span> i = <span class="s">0</span>; i &lt; <span class="s">5</span>; i++) {
+    console.log(<span class="s">`Iteration ${i}`</span>);
+}</pre>
+            Then loop an array by index with <code class="inline">i &lt; fruits.length</code>, count backward, and count by 2s.</li>
+          <li><b>while / do...while (5m).</b> The password-attempts <code class="inline">while</code>; then the dice-roll <code class="inline">do...while</code>. "<code class="inline">do...while</code> always runs its body at least once."</li>
+          <li><b>for...of and for...in (6m).</b> <code class="inline">for (const color of colors)</code> gives values. <code class="inline">for (const key in user)</code> gives keys. Show <code class="inline">typeof key</code> is <code class="inline">"string"</code> on an array to explain why <code class="inline">for...in</code> is for objects only.</li>
+          <li><b>break &amp; continue (5m).</b> "Find the first number over 50" with <code class="inline">break</code>; "print only evens" with <code class="inline">continue</code>. <code class="inline">break</code> leaves the loop; <code class="inline">continue</code> skips to the next pass.</li>
+          <li><b>Pitfalls (4m).</b> Infinite loop (forgot <code class="inline">count++</code>) and off-by-one (<code class="inline">&lt;=</code> length). Keep the infinite loop <em>commented out</em> — show, don't run.</li>
+          <li><b>Lab (13m).</b> Star Rating &amp; Search Filter.</li>
+          <li><b>Check (3m).</b> Quiz Q1–Q5.</li>
+          <li><b>Journal (3m).</b> When would they pick <code class="inline">for</code>, <code class="inline">while</code>, <code class="inline">for...of</code>, <code class="inline">for...in</code>, and which loop fits a list from a page they'd like to build.</li>
+        </ol>
+      </div>
+      <div class="blk"><div class="h">Live-demo script</div>
+        <pre class="code"><span class="k">const</span> items = [<span class="s">"a"</span>, <span class="s">"b"</span>, <span class="s">"c"</span>];   <span class="c">// indices 0, 1, 2</span>
+
+<span class="k">for</span> (<span class="k">let</span> i = <span class="s">0</span>; i &lt;= items.length; i++) {
+    console.log(i, items[i]);
+}
+<span class="c">// Ask: "How many lines will print?"</span></pre>
+        <p style="font-size:.9rem;margin:.2rem 0">Most rooms say three. Run it: four lines, the last is <code class="inline">3 undefined</code>. Say: "length is 3, but the last index is 2. <code class="inline">&lt;</code> length, never <code class="inline">&lt;=</code>." Fix it live. This is quiz Q5.</p>
+      </div>
+      <div class="blk lab"><div class="h">Lab — Star Rating &amp; Search Filter</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Part 1: finish <code class="inline">starRating(rating)</code> so it builds <code class="inline">"★★★☆☆"</code> with a <code class="inline">for</code> loop from 1 to 5. Part 2: loop the five products with <code class="inline">for...of</code>, show the ones containing <code class="inline">"wireless"</code> (case-insensitive), and finish with <em>"3 results found."</em> Files in <code class="inline">labs/module-2/l06-loops/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Set expectations:</b> <code class="inline">starRating</code> is a function, and functions are next lesson. The starter hands them the shell; they write only the loop. <b>Circulate for:</b> <code class="inline">.toLowerCase()</code> on <em>both</em> sides; the counter declared with <code class="inline">let</code> outside the loop.</p>
+      </div>
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Off-by-one with <code class="inline">&lt;=</code>.</b> <code class="inline">i &lt;= items.length</code> runs one extra time and reads <code class="inline">undefined</code>. For stars, the loop <em>is</em> <code class="inline">i = 1; i &lt;= 5</code> — counting 1-to-5 is fine; indexing an array with <code class="inline">&lt;=</code> length is not.</li>
+          <li><b>Infinite loops freeze the tab.</b> Teach recovery before anyone needs it: close the tab (not the browser), or pause in DevTools Sources.</li>
+          <li><b>Case-sensitive search.</b> <code class="inline">"Wireless Mouse".includes("wireless")</code> is <code class="inline">false</code>. Lowercase both the product and the term.</li>
+          <li><b><code class="inline">for...in</code> on arrays</b> gives string keys (<code class="inline">"0"</code>, <code class="inline">"1"</code>), not values. Arrays get <code class="inline">for...of</code>.</li>
+          <li><b>Counter reset inside the loop</b> — <code class="inline">let matchCount = 0</code> placed inside the loop body always ends at 0 or 1.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: Q1 <code class="inline">i = 0; i &lt; 3</code> runs <b>3</b> times; Q2 array values → <b>for...of</b>; Q3 <code class="inline">continue</code> <b>skips to the next iteration</b>; Q4 <code class="inline">do...while</code> <b>always runs its body at least once</b>; Q5 <code class="inline">&lt;= items.length</code> <b>runs one extra time and logs undefined</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 07 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L07</span><h3>Functions</h3><span class="dur">55 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Write function declarations and explain that they are hoisted</li>
+          <li>Create function expressions and arrow functions (including implicit return)</li>
+          <li>Use parameters, arguments, and default values; return values and use them in expressions</li>
+          <li>Write small functions that do one thing, with clear names and early returns</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (3m).</b> The recipe analogy: define the recipe card once, cook it (call it) whenever you like, and swap ingredients (parameters) each time.</li>
+          <li><b>Declarations + calling (6m).</b> Write <code class="inline">greet()</code>. Show <code class="inline">console.log(greet)</code> (the function itself, nothing runs) vs <code class="inline">greet()</code> (the parentheses run it). Call <code class="inline">sayHi()</code> above its definition: it works, because declarations are hoisted.</li>
+          <li><b>Parameters, arguments, defaults (7m).</b> "Parameters are the parking spots; arguments are the cars." <code class="inline">greet(name = "stranger")</code>, then <code class="inline">showInfo(1, 2)</code> to show a missing argument becomes <code class="inline">undefined</code>.</li>
+          <li><b>return (7m).</b> <code class="inline">add(3, 5)</code> into a variable, then <code class="inline">add(10, 20) * 2</code>. <code class="inline">return</code> exits immediately (<code class="inline">checkAge(-5)</code>). A function with no <code class="inline">return</code> gives <code class="inline">undefined</code>.</li>
+          <li><b>Function expressions (5m).</b> <code class="inline">const multiply = function(a, b) {…};</code> Try calling one above its line: <code class="inline">ReferenceError</code>. Compare with the declaration table.</li>
+          <li><b>Arrow functions (7m).</b> Shrink one function three times:
+            <pre class="code"><span class="k">const</span> add      = <span class="k">function</span>(a, b) { <span class="k">return</span> a + b; };
+<span class="k">const</span> addArrow = (a, b) =&gt; { <span class="k">return</span> a + b; };
+<span class="k">const</span> addShort = (a, b) =&gt; a + b;   <span class="c">// implicit return</span></pre>
+            Then the shortcuts: one parameter, no parameters, and <code class="inline">=&gt; ({ … })</code> for objects.</li>
+          <li><b>Best practices (3m).</b> Do one thing; descriptive names; short functions; early returns (<code class="inline">getDiscount</code> before/after).</li>
+          <li><b>Lab (11m).</b> Mini Utility Library.</li>
+          <li><b>Check (3m).</b> Quiz Q1–Q5.</li>
+          <li><b>Journal (3m).</b> One job they repeated in L05–L06, described as a function: name, parameters, return value, declaration or arrow.</li>
+        </ol>
+      </div>
+      <div class="blk"><div class="h">Live-demo script</div>
+        <pre class="code"><span class="k">const</span> makeUser = n =&gt; { name: n };
+console.log(makeUser(<span class="s">"Ray"</span>));   <span class="c">// Ask: "What prints?"</span></pre>
+        <p style="font-size:.9rem;margin:.2rem 0">It prints <code class="inline">undefined</code>. Say: "JavaScript read those braces as a function body with a label called <code class="inline">name</code>, not as an object — and a body with no <code class="inline">return</code> gives <code class="inline">undefined</code>." Wrap it: <code class="inline">n =&gt; ({ name: n })</code> and rerun. That's quiz Q5, and it's the single most confusing arrow rule.</p>
+      </div>
+      <div class="blk lab"><div class="h">Lab — Mini Utility Library</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Four helpers: <code class="inline">capitalize(str)</code> as a <b>declaration</b>, <code class="inline">clamp(value, min, max)</code> as an <b>expression</b>, <code class="inline">pluralize(count, singular, plural = singular + "s")</code> as an <b>arrow</b> with a default parameter, and <code class="inline">temperatureConverter(value, fromUnit)</code> in any style, rounded with <code class="inline">.toFixed(1)</code> and returning <code class="inline">"Invalid unit"</code> otherwise. Files in <code class="inline">labs/module-2/l07-functions/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> functions that <code class="inline">console.log</code> instead of <code class="inline">return</code> (the test line then shows <code class="inline">undefined</code>); expressions called above their definition; <code class="inline">"0.0"</code> — <code class="inline">.toFixed(1)</code> returns a <em>string</em>, which is exactly what the template needs.</p>
+      </div>
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Logging instead of returning.</b> A function that only logs gives <code class="inline">undefined</code> to its caller. <code class="inline">console.log(greet())</code> prints the greeting <em>and then</em> <code class="inline">undefined</code>.</li>
+          <li><b>Hoisting: declarations vs <code class="inline">const</code> expressions.</b> A declaration can be called above its line. A <code class="inline">const</code>/<code class="inline">let</code> function expression called early throws <b><code class="inline">ReferenceError: Cannot access '…' before initialization</code></b> — not a <code class="inline">TypeError</code>. (Only the old <code class="inline">var</code> form gives <code class="inline">TypeError: … is not a function</code>.)</li>
+          <li><b>Forgetting the parentheses.</b> <code class="inline">greet</code> is the function; <code class="inline">greet()</code> runs it.</li>
+          <li><b>Braces on an arrow turn off implicit return.</b> <code class="inline">(a, b) =&gt; { a + b }</code> returns <code class="inline">undefined</code>. Either drop the braces or add <code class="inline">return</code>.</li>
+          <li><b>Default parameters only fill <code class="inline">undefined</code></b>, not <code class="inline">null</code> or <code class="inline">""</code>. Mention it if someone asks; don't lead with it.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: Q1 no <code class="inline">return</code> → <b>undefined</b>; Q2 callable before its definition → <b>function declaration</b>; Q3 <code class="inline">fn = n =&gt; n * 3; fn(4)</code> → <b>12</b>; Q4 <code class="inline">greet()</code> with default <code class="inline">"friend"</code> → <b>"Hi, friend!"</b>; Q5 arrow returning an object → <b><code class="inline">n =&gt; ({ name: n })</code></b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 08 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L08</span><h3>Scope &amp; Hoisting</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Explain global, function, and block scope; predict where a variable is accessible</li>
+          <li>Trace a lookup outward through the scope chain; recognize shadowing</li>
+          <li>Describe how <code class="inline">var</code>, <code class="inline">let</code>/<code class="inline">const</code>, and functions are hoisted; explain the Temporal Dead Zone</li>
+          <li>Explain a closure and build one that keeps a private variable</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (3m).</b> Scope answers one question: "Can I use this variable <em>here</em>?" Most "why is this undefined?" mysteries are scope.</li>
+          <li><b>Global &amp; function scope (4m).</b> <code class="inline">appName</code> readable inside a function; <code class="inline">taxRate</code> inside <code class="inline">calculateTotal</code> is a <code class="inline">ReferenceError</code> outside. Two functions, two independent <code class="inline">greeting</code> variables. "Privacy is a feature."</li>
+          <li><b>Block scope and the <code class="inline">var</code> leak (6m).</b> <code class="inline">let</code> stays in its <code class="inline">{ }</code>; <code class="inline">var leaked</code> escapes the <code class="inline">if</code>. Show <code class="inline">for (var j…)</code> leaving <code class="inline">j = 3</code> behind. Mention the classic <code class="inline">setTimeout</code> 3, 3, 3 bug as a story, not a deep dive.</li>
+          <li><b>Scope chain &amp; shadowing (6m).</b> Draw the nested boxes (diagram below): inner looks outward, never inward. Then <code class="inline">color</code> "red" inside <code class="inline">paint()</code> vs "blue" outside.</li>
+          <li><b>Hoisting &amp; the TDZ (7m).</b> <code class="inline">var nickname</code> logs <code class="inline">undefined</code> before its line; <code class="inline">let age</code> throws a <code class="inline">ReferenceError</code>; declarations are fully hoisted; <code class="inline">const</code> function expressions are in the TDZ.</li>
+          <li><b>Closures (5m).</b> <code class="inline">createGreeter("Hello")</code>, then <code class="inline">createCounter()</code>: <code class="inline">count</code> survives after the outer function finishes, and nobody can reach it except the returned methods.</li>
+          <li><b>Lab (8m).</b> Scope Detective &amp; Score Tracker.</li>
+          <li><b>Check (3m).</b> Quiz Q1–Q5.</li>
+          <li><b>Journal (3m).</b> Explain the <code class="inline">var</code> leak and the TDZ without looking back; explain the counter closure to a friend.</li>
+        </ol>
+      </div>
+      <figure class="fig">
+        <svg viewBox="0 0 460 250" role="img" aria-label="The scope chain: inner scope sits inside outer scope, which sits inside global scope. Lookups travel outward only.">
+          <rect x="10" y="10" width="440" height="230" rx="8" fill="#fdf0dc" stroke="#b45309" stroke-width="2"/>
+          <text x="24" y="32" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#92400e" letter-spacing="1">GLOBAL</text>
+          <text x="24" y="50" font-family="'JetBrains Mono',monospace" font-size="12" fill="#45536a">globalVar</text>
+          <rect x="40" y="64" width="300" height="160" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+          <text x="54" y="86" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1d4ed8" letter-spacing="1">outer()</text>
+          <text x="54" y="104" font-family="'JetBrains Mono',monospace" font-size="12" fill="#45536a">outerVar</text>
+          <rect x="70" y="118" width="240" height="90" rx="5" fill="#d7efe9" stroke="#0f766e" stroke-width="2"/>
+          <text x="84" y="140" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#0f766e" letter-spacing="1">inner()</text>
+          <text x="84" y="158" font-family="'JetBrains Mono',monospace" font-size="12" fill="#45536a">innerVar</text>
+          <text x="84" y="190" font-family="'JetBrains Mono',monospace" font-size="11" fill="#16202e">sees: inner · outer · global</text>
+          <line x1="360" y1="190" x2="360" y2="44" stroke="#16202e" stroke-width="2"/>
+          <polygon points="360,40 354,52 366,52" fill="#16202e"/>
+          <text x="372" y="112" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#16202e">lookups</text>
+          <text x="372" y="128" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#16202e">go OUT,</text>
+          <text x="372" y="144" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#16202e">never in</text>
+        </svg>
+        <figcaption>Draw this on the board: each scope can see outward to its parents, never inward to its children.</figcaption>
+      </figure>
+      <div class="blk"><div class="h">Live-demo script</div>
+        <pre class="code">console.log(nickname);  <span class="c">// ?</span>
+<span class="k">var</span> nickname = <span class="s">"Ray"</span>;
+
+console.log(age);       <span class="c">// ?</span>
+<span class="k">let</span> age = <span class="s">25</span>;</pre>
+        <p style="font-size:.9rem;margin:.2rem 0">Take predictions for each line, then run. <code class="inline">undefined</code>, then <code class="inline">ReferenceError: Cannot access 'age' before initialization</code>. Say: "Both were hoisted. <code class="inline">var</code> got a placeholder <code class="inline">undefined</code>; <code class="inline">let</code> is in the Temporal Dead Zone until its line runs — and that error is a favor, because a silent <code class="inline">undefined</code> is harder to debug." That's quiz Q1 and Q4 together.</p>
+      </div>
+      <div class="blk lab"><div class="h">Lab — Scope Detective &amp; Score Tracker</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Part 1: students write a prediction for all eight <code class="inline">console.log</code> lines <em>before</em> the first reload, then compare. Part 2: <code class="inline">createScoreTracker()</code> returns <code class="inline">addPoints</code>, <code class="inline">penalty</code> (never below 0), <code class="inline">getScore</code>, and <code class="inline">reset</code> over a private <code class="inline">let score</code>. Files in <code class="inline">labs/module-2/l08-scope-closures/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Run the debrief as a class:</b> go line by line and have students hold up fingers for how many they got right. Lines 3 and 5 are the ones to stop on. <b>Circulate for:</b> <code class="inline">penalty</code> using <code class="inline">Math.max(0, score - points)</code>; <code class="inline">let score</code> declared <em>inside</em> the function, not globally.</p>
+      </div>
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Don't demo with <code class="inline">var name</code>.</b> In a browser script, a global <code class="inline">var name</code> collides with the built-in <code class="inline">window.name</code>, which turns every value into a string and confuses the hoisting demo. That's why the lesson uses <code class="inline">nickname</code>. Stick to it when you improvise.</li>
+          <li><b>TDZ error is a <code class="inline">ReferenceError</code>, not a <code class="inline">TypeError</code>.</b> Calling a <code class="inline">const</code> function expression before its line: "Cannot access 'greet' before initialization." Only <code class="inline">var greet = function…</code> produces "greet is not a function."</li>
+          <li><b>"<code class="inline">var d</code> is inside the <code class="inline">if</code>, so line 5 must fail."</b> The most common wrong prediction: <code class="inline">var</code> ignores blocks and belongs to the whole function.</li>
+          <li><b>Thinking shadowing changes the outer variable.</b> The inner <code class="inline">const color = "red"</code> is a different variable; the global stays <code class="inline">"blue"</code>.</li>
+          <li><b>Closures sound abstract.</b> Keep it concrete: "the function packs a backpack with the variables it could see when it was made." Mastery isn't the goal today; recognizing the pattern is.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: Q1 <code class="inline">console.log(x); var x = 10;</code> → <b>undefined</b>; Q2 block-scoped keyword → <b>let</b>; Q3 a closure is <b>a function that remembers variables from its outer scope</b>; Q4 <code class="inline">console.log(total); let total = 50;</code> → <b>ReferenceError: Cannot access 'total' before initialization</b>; Q5 shadowed <code class="inline">color</code> → <b>"blue"</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRAP -->
+  <div class="sec"><h2>Closing the Module</h2><span class="rule"></span></div>
+  <div class="note lab">
+    <div class="t">Module 2 wrap-up (10 min)</div>
+    <p>Put the Grade Calculator on the projector and ask the room how they'd rewrite it now that they know functions: <code class="inline">getLetterGrade(score)</code>, <code class="inline">getMessage(letter)</code>, an early-<code class="inline">return</code> guard. That one refactor ties the whole module together. Recap the arc: <b>decide → repeat → package → scope.</b> Preview Module 3: "Your programs can decide and repeat. Next we give them real data to work with — arrays, objects, and strings."</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Technical trainer, full-stack developer &amp; course developer — 30+ years</span>
+    </div>
+    <div class="ver">Instructor Kit · Module 2 · Facilitator Guide · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Learn to make your JavaScript programs make decisions with if/else statements, switch, and the ternary operator.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 5: Conditionals - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -81,6 +87,7 @@
                         <li><a href="#nesting" class="toc-link">Nesting &amp; Guard Clauses</a></li>
                         <li><a href="#truthy-conditions" class="toc-link">Truthy/Falsy in Conditions</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -89,9 +96,9 @@
             <!-- Section 1 -->
             <section id="intro" class="lesson-section">
                 <h2>Introduction</h2>
-                <p>Programs typically execute code sequentially. However, robust applications must make decisions—executing different logic paths based on application state (e.g., user authentication, input validation, feature flags).</p>
-                <p><strong>Conditionals</strong> facilitate this control flow, running code blocks selectively based on boolean conditions. This is essential for creating interactive, responsive applications.</p>
-            </section>
+                <p>So far, your code has run straight from top to bottom, every line, every time. But real programs have to make choices. Is the user logged in? Did they fill in the email field? Is it morning or evening? Depending on the answer, you want your page to do something different.</p>
+                <p><strong>Conditionals</strong> are how you teach JavaScript to make those choices: "<em>if</em> this is true, do this; <em>otherwise</em>, do that." Once you've got them, your pages stop being scripts that always do the same thing and start responding to what's actually happening.</p>
+
                 <div class="mermaid">
                     graph TD
                     A["Start"] --> B{"Is condition true?"}
@@ -411,6 +418,7 @@ function processOrder(user, item) {
 
                 <h3>Guard Clauses (Much Better)</h3>
                 <p>A <strong>guard clause</strong> checks for problems early and exits, so the main logic stays flat and readable.</p>
+                <p><em>Heads-up:</em> these examples are wrapped in a <code>function</code>, which you'll learn properly in Lesson 7. For now, just read <code>return;</code> as "stop here and leave the function," so none of the code below it runs.</p>
 
                 <pre><code class="language-javascript">
 // ✅ Guard clauses — flat and readable
@@ -625,7 +633,7 @@ if (x > 10) {
 }</code></pre>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="5 is not greater than 10, so this block is skipped.">A) A</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="5 > 10 is false, but 5 > 3 is true, so 'B' prints. The remaining conditions are skipped.">B) B</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! 5 > 10 is false, but 5 > 3 is true, so 'B' prints. The remaining conditions are skipped.">B) B</button>
                             <button class="quiz-option" data-correct="false" data-hint="Even though 5 > 1 is true, the else-if chain already matched at x > 3. Only the first match runs.">C) C</button>
                             <button class="quiz-option" data-correct="false" data-hint="The else block only runs if ALL previous conditions are false.">D) D</button>
                         </div>
@@ -636,9 +644,9 @@ if (x > 10) {
                         <p><strong>Question 2:</strong> What happens if you forget <code>break</code> in a <code>switch</code> case?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="JavaScript won't throw an error — it just behaves unexpectedly.">A) JavaScript throws an error</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="Without break, execution 'falls through' to the next case — running its code too, regardless of whether it matches.">B) Execution falls through to the next case</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Without break, execution 'falls through' to the next case — running its code too, regardless of whether it matches.">B) Execution falls through to the next case</button>
                             <button class="quiz-option" data-correct="false" data-hint="It doesn't skip — it actually does the opposite and keeps going.">C) The case is skipped</button>
-                            <button class="quiz-option" data-correct="false" data-hint="The default block runs only after falling through all remaining cases.">D) The default block runs</button>
+                            <button class="quiz-option" data-correct="false" data-hint="default runs when no case matches. A missing break doesn&#39;t jump to default; it just keeps running whatever case comes next.">D) The default block runs</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
@@ -646,13 +654,58 @@ if (x > 10) {
                     <div class="quiz-question">
                         <p><strong>Question 3:</strong> What does <code>let result = 10 > 5 ? "yes" : "no";</code> assign to <code>result</code>?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="true" data-explanation="10 > 5 is true, so the ternary returns the first value: 'yes'.">A) "yes"</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! 10 > 5 is true, so the ternary returns the first value: 'yes'.">A) "yes"</button>
                             <button class="quiz-option" data-correct="false" data-hint="'no' would only be assigned if the condition (10 > 5) were false.">B) "no"</button>
                             <button class="quiz-option" data-correct="false" data-hint="The ternary operator always returns one of its two values, not a boolean.">C) true</button>
                             <button class="quiz-option" data-correct="false" data-hint="The ternary always produces a value — it won't be undefined.">D) undefined</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> What does this code output?</p>
+                        <pre><code class="language-javascript">let input = "5";
+switch (input) {
+    case 5:
+        console.log("number five");
+        break;
+    default:
+        console.log("no match");
+}</code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="switch compares with strict equality (===). Is the string &quot;5&quot; strictly equal to the number 5?">A) number five</button>
+                            <button class="quiz-option" data-correct="false" data-hint="A type mismatch in a case isn&#39;t an error. JavaScript just treats it as &quot;not a match&quot; and moves on.">B) An error</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! switch uses strict equality (===), and the string &quot;5&quot; is not === the number 5. No case matches, so default runs. Convert first with Number(input) if you want a numeric match.">C) no match</button>
+                            <button class="quiz-option" data-correct="false" data-hint="There is a default block, so something will always print.">D) Nothing prints</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> A shopping cart stores <code>let quantity = 0;</code> and zero is a perfectly valid quantity. Why is <code>if (quantity) { ... }</code> a risky way to check that a quantity was entered?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Numbers work fine in an if condition. JavaScript converts them to true/false.">A) You can&#39;t put a number inside an if condition</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Look at the list of falsy values from Lesson 4. Is 0 on it?">B) 0 is truthy, so the check always passes</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Truthy checks treat 0 as falsy regardless of whether you declared the variable with let or const.">C) It only works if quantity was declared with const</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! 0 is falsy, so a truthy check treats a real value of 0 as if it were missing. When 0 is valid, check explicitly, for example if (quantity !== undefined).">D) 0 is falsy, so a valid 0 would be treated as &quot;missing&quot;</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Journal -->
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Think of one decision a page you&#39;d like to build has to make (a greeting that changes with the time of day, a form that checks for a blank field, a price that changes for members). Write it out in plain English as an <code>if</code> / <code>else if</code> / <code>else</code> chain. Would a <code>switch</code> or a ternary fit it better, and why? Which of the three are you still unsure when to reach for?</em></p>
                 </div>
             </section>
 

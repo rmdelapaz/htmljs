@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workbook — Module 6</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Student workbook —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">write in it · bring it to every session</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Front-End JavaScript Workbook · Module 6</div>
+    <h1>Capstone &amp; Next Steps</h1>
+    <p class="sub">Your working notebook for the last two lessons. First you build QuickNote, a complete note-taking app that uses every skill from the course. Then you learn to debug like a professional and plan what to build next.</p>
+    <div class="meta-row">
+      <span class="chip">Lessons <b>21–22</b></span>
+      <span class="chip"><b>2</b> lessons</span>
+      <span class="chip">Name: ____________________</span>
+    </div>
+  </header>
+
+  <div class="note">
+    <div class="t">How to use this workbook</div>
+    <p>L21 is one long guided build: tick each step as your app passes its checkpoint, and use the test checklist at the end. L22 has a bug hunt (fill in the worksheet as you go) and a menu of follow-on projects to choose from. Self-check questions come from the lesson quizzes and keep the lesson's question numbers, so a set may read Q1 · Q2 · Q4. After each lesson, answer the <b>Journal</b> prompt. The last one closes the course, so give it the full five minutes.</p>
+  </div>
+
+  <!-- TRACKER -->
+  <div class="sec"><h2>Capstone Tracker</h2><span class="rule"></span></div>
+  <p style="font-size:.92rem;color:var(--ink-2)">Tick each step when your QuickNote passes its checkpoint:</p>
+  <ul class="tick lab">
+    <li>☐ <b>Step 1</b> — starter open in Live Server, no Console errors</li>
+    <li>☐ <b>Step 2</b> — data layer: <code class="inline">createNote()</code> from the Console lands in Local Storage</li>
+    <li>☐ <b>Step 3</b> — notes render as cards (and the empty state shows when there are none)</li>
+    <li>☐ <b>Step 4</b> — the form creates notes, validates both fields, and flashes "Note saved!"</li>
+    <li>☐ <b>Step 5</b> — debounced search + category filter</li>
+    <li>☐ <b>Step 6</b> — a quote loads, with a fallback when offline</li>
+    <li>☐ <b>Step 7</b> — edit, delete, and <kbd>N</kbd> / <kbd>/</kbd> / <kbd>Esc</kbd> shortcuts</li>
+    <li>☐ <b>L22</b> — all seven Snack Budget bugs found and fixed</li>
+  </ul>
+
+  <!-- ===== L21 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L21</span><h3>Building a Complete Project</h3><span class="dur">90 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Plan an app first: features, a data model, and how the parts connect</li>
+          <li>Keep a <b>data layer</b> (create, read, update, delete + <code class="inline">localStorage</code>) separate from <b>rendering</b></li>
+          <li>Use <b>one form</b> for creating and editing, with validation</li>
+          <li>Add debounced search, a filter, a fetched quote with a fallback, and keyboard shortcuts</li>
+          <li>Put user text on the page safely with <code class="inline">textContent</code></li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas — one loop runs the whole app</div>
+        <figure class="fig">
+          <svg viewBox="0 0 480 250" role="img" aria-label="QuickNote's loop: a user action runs an event handler, which updates the notes array; the app then saves to localStorage and re-renders the DOM, and the user sees the change. On page load, loadNotes fills the notes array.">
+            <text x="407" y="14" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#0f766e">page load → loadNotes()</text>
+            <line x1="407" y1="20" x2="407" y2="36" stroke="#0f766e" stroke-width="1.6"/><polygon points="407,39 402.5,30 411.5,30" fill="#0f766e"/>
+            <rect x="8" y="40" width="130" height="54" rx="6" fill="#f4f6fa" stroke="#d6dee9" stroke-width="1.5"/>
+            <text x="73" y="63" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">User action</text>
+            <text x="73" y="80" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#6f7c8e">click · type · submit</text>
+            <line x1="138" y1="67" x2="170" y2="67" stroke="#45536a" stroke-width="1.6"/><polygon points="174,67 165,62.5 165,71.5" fill="#45536a"/>
+            <rect x="175" y="40" width="130" height="54" rx="6" fill="#f4f6fa" stroke="#d6dee9" stroke-width="1.5"/>
+            <text x="240" y="63" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">Event handler</text>
+            <text x="240" y="80" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#6f7c8e">addEventListener</text>
+            <line x1="305" y1="67" x2="337" y2="67" stroke="#45536a" stroke-width="1.6"/><polygon points="341,67 332,62.5 332,71.5" fill="#45536a"/>
+            <rect x="342" y="40" width="130" height="54" rx="6" fill="#1d4ed8"/>
+            <text x="407" y="63" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#ffffff">Update state</text>
+            <text x="407" y="80" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#c9d9ff">the notes array</text>
+            <line x1="407" y1="94" x2="407" y2="154" stroke="#45536a" stroke-width="1.6"/><polygon points="407,159 402.5,150 411.5,150" fill="#45536a"/>
+            <line x1="372" y1="94" x2="286" y2="155" stroke="#45536a" stroke-width="1.6"/><polygon points="282,158 287.2,149.3 292.4,156.6" fill="#45536a"/>
+            <rect x="342" y="160" width="130" height="54" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="407" y="183" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1d4ed8">Save</text>
+            <text x="407" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#3457b8">saveNotes() → storage</text>
+            <rect x="175" y="160" width="130" height="54" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="240" y="183" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1d4ed8">Re-render</text>
+            <text x="240" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#3457b8">renderNotes() → DOM</text>
+            <polyline points="175,187 73,187 73,100" fill="none" stroke="#45536a" stroke-width="1.6" stroke-dasharray="5 4"/><polygon points="73,95 68.5,104 77.5,104" fill="#45536a"/>
+            <text x="124" y="206" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#6f7c8e">user sees it</text>
+          </svg>
+          <figcaption>QuickNote's loop: user action → update state → save → re-render.</figcaption>
+        </figure>
+        <ul class="tick">
+          <li><b>Plan before you code.</b> A feature list, the shape of one note object, and the loop above save hours of rework.</li>
+          <li>The <b>data layer</b> (<code class="inline">loadNotes</code>, <code class="inline">saveNotes</code>, <code class="inline">createNote</code>, <code class="inline">updateNote</code>, <code class="inline">deleteNote</code>, <code class="inline">getNotes</code>) knows nothing about the DOM. <code class="inline">renderNotes()</code> rebuilds the grid from the data every time.</li>
+          <li><b>One form, two modes:</b> an empty hidden <code class="inline">#note-id</code> means "create"; an id means "edit."</li>
+          <li><b>Event delegation:</b> the cards are rebuilt on every render, so one click listener on <code class="inline">#notes-grid</code> handles every ✏️ and 🗑️.</li>
+          <li><b>Graceful degradation:</b> if the quote API fails, show a fallback and keep going. Everything the user typed goes in with <code class="inline">textContent</code>.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Worked example — one form, two modes</div>
+        <pre class="code">noteForm.addEventListener(<span class="s">"submit"</span>, (event) =&gt; {
+    event.preventDefault();
+    <span class="k">if</span> (!validateForm()) <span class="k">return</span>;
+    <span class="k">const</span> editId = noteIdInput.value;          <span class="c">// "" or "1713300000000"</span>
+    <span class="k">if</span> (editId) {
+        updateNote(Number(editId), titleInput.value, bodyInput.value, categorySelect.value);
+        showSaveStatus(<span class="s">"Note updated!"</span>);
+    } <span class="k">else</span> {
+        createNote(titleInput.value, bodyInput.value, categorySelect.value);
+        showSaveStatus(<span class="s">"Note saved!"</span>);
+    }
+    hideForm();
+    renderNotes(searchInput.value, filterCategory.value);
+});</pre>
+        <p style="font-size:.88rem;color:var(--ink-2)">Read it as the loop: the submit is the user action; <code class="inline">createNote</code>/<code class="inline">updateNote</code> update state and save; <code class="inline">renderNotes</code> re-renders. <code class="inline">Number()</code> is needed because input values are always strings.</p>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Build QuickNote</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Open <code class="inline">starter/quicknote.html</code> with Live Server and follow along, TODO by TODO. Before Step 2, sketch <b>one note object</b> (its properties and example values):</p>
+        <div class="write"></div>
+        <p style="font-size:.92rem;margin:.6rem 0 .2rem">When you finish, test your app. Tick each one that works:</p>
+        <ul class="tick lab">
+          <li>☐ Add a note in each category (newest first)</li>
+          <li>☐ Save with both fields empty → <em>both</em> error messages</li>
+          <li>☐ Edit a note (button says "Update Note")</li>
+          <li>☐ Delete a note (confirm, fade out, count updates)</li>
+          <li>☐ Delete the note you're editing → the form closes</li>
+          <li>☐ Search waits for you to pause; the category filter is instant</li>
+          <li>☐ Reload → notes are still there</li>
+          <li>☐ Quote loads; offline shows the fallback and nothing breaks</li>
+          <li>☐ <kbd>N</kbd> new note (but typing "n" in a field doesn't), <kbd>/</kbd> search, <kbd>Esc</kbd> close</li>
+          <li>☐ A title like <code class="inline">&lt;img src=x onerror=alert(1)&gt;</code> shows as plain text</li>
+        </ul>
+        <p style="font-size:.92rem;margin:.6rem 0 .2rem">Bugs you hit and how you fixed them:</p>
+        <div class="write tall"></div>
+        <p style="font-size:.92rem;margin:.6rem 0 .2rem"><b>Stretch:</b> circle one to try next — dark mode · export/import · drag &amp; drop · Markdown preview · multi-tab sync · word count · confirmation modal · pin notes.</p>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">QuickNote uses one form for both creating and editing notes. How does the submit handler know which one to do?</div>
+          <div class="opts"><div class="opt">A) It reads the text on the Save button</div><div class="opt">B) It checks whether the hidden <code class="inline">note-id</code> input has a value</div><div class="opt">C) It checks whether the notes array is empty</div></div></div>
+        <div class="q"><div class="qn">Q2</div><div class="qt">Why does <code class="inline">renderNotes()</code> put the note's title and body on the page with <code class="inline">textContent</code> instead of <code class="inline">innerHTML</code>?</div>
+          <div class="opts"><div class="opt">A) <code class="inline">textContent</code> is much faster, so the grid renders quicker</div><div class="opt">B) <code class="inline">innerHTML</code> can't display text loaded from localStorage</div><div class="opt">C) So anything the user typed is shown as plain text and never run as HTML or script</div></div></div>
+        <div class="q"><div class="qn">Q4</div><div class="qt">Why does QuickNote attach ONE click listener to <code class="inline">#notes-grid</code> instead of a listener on every edit and delete button?</div>
+          <div class="opts"><div class="opt">A) Browsers only allow one click listener per page</div><div class="opt">B) <code class="inline">closest()</code> only works on container elements</div><div class="opt">C) So clicks on the buttons are ignored</div><div class="opt">D) The cards are rebuilt on every render, so one listener on the parent (event delegation) handles every card, old or new</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>QuickNote runs on one loop: user action → update state → save → re-render. Pick one feature (deleting a note, say) and trace it through that loop in your own words, naming the functions it calls along the way. What's one feature you'd add to make QuickNote your own, and which part of the app's flow are you still unsure about?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== L22 ===== -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L22</span><h3>Next Steps &amp; Best Practices</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">By the end you can</div>
+        <ul class="tick">
+          <li>Read an error message for <b>what</b> went wrong and <b>where</b></li>
+          <li>Debug with <code class="inline">console.table</code>, <code class="inline">debugger</code> and breakpoints, one hypothesis at a time</li>
+          <li>Organize code by concern with clear names and small functions</li>
+          <li>Spot the common pitfalls and read modern syntax like <code class="inline">?.</code> and <code class="inline">??</code></li>
+          <li>Choose what to learn and build next</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Key ideas — debug with a loop, not with luck</div>
+        <figure class="fig">
+          <svg viewBox="0 0 480 240" role="img" aria-label="The debugging loop: something broke, read the error, reproduce it, form a hypothesis, test it, fix it, verify. If the test shows the hypothesis was wrong, form a new one.">
+            <rect x="8" y="20" width="140" height="46" rx="6" fill="#fdf0dc" stroke="#b45309" stroke-width="1.5"/>
+            <text x="78" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#b45309">Something broke</text>
+            <line x1="148" y1="43" x2="165" y2="43" stroke="#45536a" stroke-width="1.6"/><polygon points="169,43 160,38.5 160,47.5" fill="#45536a"/>
+            <rect x="170" y="20" width="140" height="46" rx="6" fill="#f4f6fa" stroke="#d6dee9" stroke-width="1.5"/>
+            <text x="240" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">Read the error</text>
+            <line x1="310" y1="43" x2="327" y2="43" stroke="#45536a" stroke-width="1.6"/><polygon points="331,43 322,38.5 322,47.5" fill="#45536a"/>
+            <rect x="332" y="20" width="140" height="46" rx="6" fill="#f4f6fa" stroke="#d6dee9" stroke-width="1.5"/>
+            <text x="402" y="48" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">Reproduce it</text>
+            <polyline points="402,66 402,96 60,96 60,122" fill="none" stroke="#45536a" stroke-width="1.6"/><polygon points="60,127 55.5,118 64.5,118" fill="#45536a"/>
+            <rect x="8" y="128" width="104" height="50" rx="6" fill="#1d4ed8"/>
+            <text x="60" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="600" fill="#ffffff">Hypothesis</text>
+            <text x="60" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#c9d9ff">"X causes Y"</text>
+            <line x1="112" y1="153" x2="123" y2="153" stroke="#45536a" stroke-width="1.6"/><polygon points="127,153 118,148.5 118,157.5" fill="#45536a"/>
+            <rect x="128" y="128" width="104" height="50" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/>
+            <text x="180" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="600" fill="#1d4ed8">Test it</text>
+            <text x="180" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#3457b8">log · debugger</text>
+            <line x1="232" y1="153" x2="243" y2="153" stroke="#45536a" stroke-width="1.6"/><polygon points="247,153 238,148.5 238,157.5" fill="#45536a"/>
+            <rect x="248" y="128" width="104" height="50" rx="6" fill="#d7efe9" stroke="#0f766e" stroke-width="1.5"/>
+            <text x="300" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="600" fill="#0f766e">Fix it</text>
+            <line x1="352" y1="153" x2="363" y2="153" stroke="#45536a" stroke-width="1.6"/><polygon points="367,153 358,148.5 358,157.5" fill="#45536a"/>
+            <rect x="368" y="128" width="104" height="50" rx="6" fill="#d7efe9" stroke="#0f766e" stroke-width="1.5"/>
+            <text x="420" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="600" fill="#0f766e">Verify</text>
+            <text x="420" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#0f766e">nothing else broke</text>
+            <path d="M180 178 C180 222, 60 222, 60 186" fill="none" stroke="#b45309" stroke-width="1.6" stroke-dasharray="5 4"/><polygon points="60,180 55.5,189 64.5,189" fill="#b45309"/>
+            <text x="120" y="234" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#b45309">wrong? new hypothesis</text>
+          </svg>
+          <figcaption>The debugging loop — change one thing at a time, on purpose.</figcaption>
+        </figure>
+        <table class="timing">
+          <thead><tr><th>Error says…</th><th>Usually means</th><th>Try</th></tr></thead>
+          <tbody>
+            <tr><td><code class="inline">Cannot read properties of null</code></td><td><code class="inline">querySelector</code> returned <code class="inline">null</code></td><td>Check the selector; does the element exist yet?</td></tr>
+            <tr><td><code class="inline">X is not a function</code></td><td>Calling something that isn't a function</td><td>Check spelling, import, variable type</td></tr>
+            <tr><td><code class="inline">X is not defined</code></td><td>The variable doesn't exist in this scope</td><td>Check spelling, scope, declaration order</td></tr>
+            <tr><td><code class="inline">Unexpected token</code></td><td>Syntax error (missing bracket, comma)</td><td>Check the line <b>before</b> the error line</td></tr>
+            <tr><td><code class="inline">Cannot read properties of undefined</code></td><td>A nested property's parent is missing</td><td>Log the data's shape; use <code class="inline">?.</code></td></tr>
+          </tbody>
+        </table>
+        <ul class="tick">
+          <li><code class="inline">debugger;</code> only pauses when DevTools is <b>open</b>. Or click a line number in <b>Sources</b> to set a breakpoint.</li>
+          <li><b>Pitfalls:</b> queries can return <code class="inline">null</code> · <code class="inline">fetch</code> isn't finished on the next line · use <code class="inline">===</code> · spread copies are <b>shallow</b> (<code class="inline">structuredClone</code> is deep) · add delegated listeners <b>once</b> · test the edge cases (empty, zero, offline, first visit).</li>
+          <li><code class="inline">??</code> falls back only for <code class="inline">null</code>/<code class="inline">undefined</code>; <code class="inline">||</code> also replaces <code class="inline">0</code>, <code class="inline">""</code> and <code class="inline">false</code>.</li>
+          <li><b>Organize by concern</b> (data · rendering · events), name things for what they do, keep functions small. Split big projects into modules with <code class="inline">&lt;script type="module"&gt;</code>; they need a server like Live Server.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Worked example — reading an error</div>
+        <pre class="code"><span class="c">// Uncaught TypeError: Cannot read properties of null (reading 'textContent')</span>
+<span class="c">//     at renderUser (app.js:45:23)</span>
+
+<span class="c">// WHAT:  reading .textContent on something that's null</span>
+<span class="c">// WHERE: app.js line 45, inside renderUser</span>
+<span class="c">// WHY:   querySelector probably found nothing</span>
+<span class="k">const</span> el = document.querySelector(<span class="s">"#user-name"</span>);
+<span class="k">if</span> (el) el.textContent = name;           <span class="c">// or: check the selector!</span></pre>
+      </div>
+      <div class="blk lab"><div class="h">Your turn — Bug Hunt: Snack Budget</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Open <code class="inline">l22-debugging/starter/</code> with Live Server, open the Console, and find all <b>seven</b> bugs. Fix one, save, reload, repeat. Log each one:</p>
+        <table class="timing">
+          <thead><tr><th>#</th><th>What I saw (error or behavior)</th><th>Line</th><th>My hypothesis</th><th>My fix</th></tr></thead>
+          <tbody>
+            <tr><td class="t">1</td><td style="height:44px"></td><td></td><td></td><td></td></tr>
+            <tr><td class="t">2</td><td style="height:44px"></td><td></td><td></td><td></td></tr>
+            <tr><td class="t">3</td><td style="height:44px"></td><td></td><td></td><td></td></tr>
+            <tr><td class="t">4</td><td style="height:44px"></td><td></td><td></td><td></td></tr>
+            <tr><td class="t">5</td><td style="height:44px"></td><td></td><td></td><td></td></tr>
+            <tr><td class="t">6</td><td style="height:44px"></td><td></td><td></td><td></td></tr>
+            <tr><td class="t">7</td><td style="height:44px"></td><td></td><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.92rem;margin:.6rem 0 .2rem">Which bug took longest, and what would have found it faster?</p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Your learning path</div>
+        <figure class="fig">
+          <svg viewBox="0 0 480 84" role="img" aria-label="Suggested learning order: 1 more vanilla JavaScript projects, 2 Git and GitHub, 3 npm and Vite, 4 pick a framework, 5 TypeScript, 6 testing.">
+            <rect x="4" y="16" width="68" height="54" rx="6" fill="#1d4ed8"/>
+            <text x="38" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#ffffff">1</text>
+            <text x="38" y="49" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#ffffff">More JS</text>
+            <text x="38" y="61" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#c9d9ff">projects</text>
+            <line x1="72" y1="43" x2="80" y2="43" stroke="#45536a" stroke-width="1.6"/><polygon points="84,43 77,39.5 77,46.5" fill="#45536a"/>
+            <rect x="84" y="16" width="68" height="54" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.5"/>
+            <text x="118" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#1d4ed8">2</text>
+            <text x="118" y="49" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#1d4ed8">Git &amp;</text>
+            <text x="118" y="61" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#3457b8">GitHub</text>
+            <line x1="152" y1="43" x2="160" y2="43" stroke="#45536a" stroke-width="1.6"/><polygon points="164,43 157,39.5 157,46.5" fill="#45536a"/>
+            <rect x="164" y="16" width="68" height="54" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.5"/>
+            <text x="198" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#1d4ed8">3</text>
+            <text x="198" y="49" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#1d4ed8">npm &amp;</text>
+            <text x="198" y="61" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#3457b8">Vite</text>
+            <line x1="232" y1="43" x2="240" y2="43" stroke="#45536a" stroke-width="1.6"/><polygon points="244,43 237,39.5 237,46.5" fill="#45536a"/>
+            <rect x="244" y="16" width="68" height="54" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.5"/>
+            <text x="278" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#1d4ed8">4</text>
+            <text x="278" y="49" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#1d4ed8">Pick a</text>
+            <text x="278" y="61" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#3457b8">framework</text>
+            <line x1="312" y1="43" x2="320" y2="43" stroke="#45536a" stroke-width="1.6"/><polygon points="324,43 317,39.5 317,46.5" fill="#45536a"/>
+            <rect x="324" y="16" width="68" height="54" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.5"/>
+            <text x="358" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#1d4ed8">5</text>
+            <text x="358" y="55" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#1d4ed8">TypeScript</text>
+            <line x1="392" y1="43" x2="400" y2="43" stroke="#45536a" stroke-width="1.6"/><polygon points="404,43 397,39.5 397,46.5" fill="#45536a"/>
+            <rect x="404" y="16" width="68" height="54" rx="6" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.5"/>
+            <text x="438" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600" fill="#1d4ed8">6</text>
+            <text x="438" y="55" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#1d4ed8">Testing</text>
+          </svg>
+          <figcaption>A practical order — each step builds on the one before.</figcaption>
+        </figure>
+        <ul class="tick">
+          <li><b>80/20:</b> 20% reading and watching, 80% building. Don't tutorial-hop; finish one resource and build something with it.</li>
+          <li>Starting a framework project today? <code class="inline">npm create vite@latest</code> (or Next.js / Nuxt / SvelteKit). Skip <code class="inline">create-react-app</code>; it was deprecated in 2025.</li>
+          <li><b>Portfolio:</b> three polished, <b>deployed</b> projects with READMEs beat ten half-finished ones.</li>
+        </ul>
+      </div>
+      <div class="blk lab"><div class="h">Follow-on project menu — pick your next build</div>
+        <p style="font-size:.92rem;margin:.2rem 0">These are the lesson's project ideas, from ⭐ (a weekend) to ⭐⭐⭐ (a real stretch). Tick one, or write your own in the last row.</p>
+        <table class="timing">
+          <thead><tr><th>Pick</th><th>Level</th><th>Project</th><th>Skills practiced</th></tr></thead>
+          <tbody>
+            <tr><td class="t">☐</td><td class="t">⭐</td><td>Pomodoro timer with sound</td><td>Timers, Audio API, localStorage</td></tr>
+            <tr><td class="t">☐</td><td class="t">⭐</td><td>Color palette generator</td><td>Random values, DOM, clipboard API</td></tr>
+            <tr><td class="t">☐</td><td class="t">⭐⭐</td><td>Weather app with a real API</td><td>Fetch, API keys, geolocation</td></tr>
+            <tr><td class="t">☐</td><td class="t">⭐⭐</td><td>Quiz app with scoring</td><td>Arrays, state management, timers</td></tr>
+            <tr><td class="t">☐</td><td class="t">⭐⭐</td><td>Expense tracker with charts</td><td>Forms, localStorage, canvas/SVG</td></tr>
+            <tr><td class="t">☐</td><td class="t">⭐⭐⭐</td><td>Kanban board with drag &amp; drop</td><td>Drag &amp; Drop API, complex state</td></tr>
+            <tr><td class="t">☐</td><td class="t">⭐⭐⭐</td><td>Chat app with WebSockets</td><td>Real-time data, Node.js back-end</td></tr>
+            <tr><td class="t">☐</td><td class="t">⭐⭐⭐</td><td>Markdown editor with live preview</td><td>Text processing, content rendering</td></tr>
+            <tr><td class="t">☐</td><td class="t">?</td><td style="height:40px">My own idea:</td><td></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.92rem;margin:.6rem 0 .2rem"><b>Plan it like QuickNote.</b> Features (3–5), the shape of one data object, which lessons' skills it uses, and your very first step:</p>
+        <div class="write tall"></div>
+      </div>
+      <div class="blk"><div class="h">Self-check</div>
+        <div class="q"><div class="qn">Q1</div><div class="qt">The console shows <code class="inline">Cannot read properties of null (reading 'textContent')</code>. What's the most likely cause?</div>
+          <div class="opts"><div class="opt">A) <code class="inline">textContent</code> is misspelled</div><div class="opt">B) The browser doesn't support <code class="inline">textContent</code></div><div class="opt">C) <code class="inline">querySelector</code> didn't find the element, so it returned <code class="inline">null</code></div></div></div>
+        <div class="q"><div class="qn">Q2</div><div class="qt">A player's score is <code class="inline">0</code>. What does <code class="inline">const shown = player.score ?? 10;</code> set <code class="inline">shown</code> to?</div>
+          <div class="opts"><div class="opt">A) <code class="inline">0</code></div><div class="opt">B) <code class="inline">10</code></div><div class="opt">C) <code class="inline">false</code></div></div></div>
+        <div class="q"><div class="qn">Q3</div><div class="qt">You copy an object with <code class="inline">const copy = { ...original };</code> and then push a new item onto <code class="inline">copy.scores</code> (an array). What happens to <code class="inline">original.scores</code>?</div>
+          <div class="opts"><div class="opt">A) Nothing — spread makes a completely separate copy</div><div class="opt">B) It changes too, because the nested array is shared</div><div class="opt">C) JavaScript throws an error</div></div></div>
+      </div>
+      <div class="blk"><div class="h">Journal</div>
+        <p style="font-size:.92rem;margin:.2rem 0"><em>Look back at the whole course. Which JavaScript skill felt impossible at the start but makes sense to you now? Pick one project from the "Project Ideas" table (or your own idea) and write down which lessons' skills it would use and the very first step you'd take to build it. What's one topic you're still unsure about and want to revisit before moving on?</em></p>
+        <div class="write"></div>
+      </div>
+      <div class="blk"><div class="h">Notes</div><div class="notes-lines"></div></div>
+    </div>
+  </section>
+
+  <div class="note lab">
+    <div class="t">🎉 You did it — you're a JavaScript developer</div>
+    <p>You went from "what is JavaScript?" to a complete app that saves data, talks to an API, and responds to the keyboard. That's the whole journey: <b>foundations → control flow &amp; functions → data → the DOM → interactive pages → a complete app.</b> Deploy QuickNote, pick your next project from the menu, and keep building. The difference between where you are today and where you want to be is more time and more projects.</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Front-End JavaScript: Make Your Web Pages Come Alive</span>
+    </div>
+    <div class="ver">Workbook · Module 6 · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

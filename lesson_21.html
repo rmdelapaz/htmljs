@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Build a complete interactive note-taking app from scratch, combining DOM manipulation, events, forms, timers, Local Storage, and the Fetch API.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 21: Building a Complete Project - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -58,7 +64,7 @@
                         <li>Search and filter notes in real time (debounced)</li>
                         <li>Persistent storage — notes survive page refreshes</li>
                         <li>Fetch a random inspirational quote from an API</li>
-                        <li>Auto-save indicator with timer feedback</li>
+                        <li>A "Note saved!" status message that fades out on a timer</li>
                         <li>Smooth CSS transitions for adding and removing notes</li>
                         <li>Responsive layout and keyboard shortcuts</li>
                     </ul>
@@ -83,7 +89,8 @@
                         <li><a href="#search-filter" class="toc-link">Step 5: Search &amp; Filter</a></li>
                         <li><a href="#api-quote" class="toc-link">Step 6: Fetching an Inspirational Quote</a></li>
                         <li><a href="#polish" class="toc-link">Step 7: Polish &amp; Enhancements</a></li>
-                        <li><a href="#complete-code" class="toc-link">Complete Source Code</a></li>
+                        <li><a href="#complete-code" class="toc-link">Complete Source Code &amp; Quiz</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary &amp; Challenges</a></li>
                     </ol>
                 </nav>
@@ -111,7 +118,7 @@
                             <tr><td>Persistent storage</td><td>localStorage, JSON</td><td>19</td></tr>
                             <tr><td>Search &amp; filter</td><td>Array methods, debounce, input events</td><td>11, 15, 18</td></tr>
                             <tr><td>Random quote</td><td>Fetch API, async/await, error handling</td><td>20</td></tr>
-                            <tr><td>Auto-save indicator</td><td>setTimeout, CSS transitions</td><td>18</td></tr>
+                            <tr><td>"Saved" status message</td><td>setTimeout, CSS transitions</td><td>18</td></tr>
                             <tr><td>Animations</td><td>classList, CSS transitions via JS</td><td>14, 18</td></tr>
                             <tr><td>Keyboard shortcuts</td><td>Keyboard events, event object</td><td>15</td></tr>
                         </tbody>
@@ -191,6 +198,9 @@
                 &lt;option value="ideas"&gt;Ideas&lt;/option&gt;
             &lt;/select&gt;
             &lt;button id="new-note-btn"&gt;+ New Note&lt;/button&gt;
+            &lt;!-- "Note saved!" message (lives outside the form so
+                 it's still visible after the form closes) --&gt;
+            &lt;span class="save-status" id="save-status" role="status"&gt;&lt;/span&gt;
         &lt;/div&gt;
 
         &lt;!-- Note form (hidden by default, toggled on) --&gt;
@@ -212,7 +222,6 @@
                 &lt;div class="form-actions"&gt;
                     &lt;button type="submit" id="save-btn"&gt;Save Note&lt;/button&gt;
                     &lt;button type="button" id="cancel-btn"&gt;Cancel&lt;/button&gt;
-                    &lt;span class="save-status" id="save-status"&gt;&lt;/span&gt;
                 &lt;/div&gt;
             &lt;/form&gt;
         &lt;/div&gt;
@@ -226,7 +235,7 @@
         &lt;footer class="app-footer"&gt;
             &lt;span id="note-count"&gt;0 notes&lt;/span&gt;
             &lt;span class="shortcut-hint"&gt;
-                &lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;N&lt;/kbd&gt; New note
+                &lt;kbd&gt;N&lt;/kbd&gt; New note · &lt;kbd&gt;/&lt;/kbd&gt; Search · &lt;kbd&gt;Esc&lt;/kbd&gt; Close
             &lt;/span&gt;
         &lt;/footer&gt;
     &lt;/div&gt;
@@ -367,7 +376,7 @@ function renderNotes(searchTerm = "", category = "all") {
         notesGrid.innerHTML = `
             &lt;div class="empty-state"&gt;
                 &lt;p&gt;${notes.length === 0
-                    ? "No notes yet. Click <strong>+ New Note</strong> to get started!"
+                    ? "No notes yet. Click &lt;strong&gt;+ New Note&lt;/strong&gt; to get started!"
                     : "No notes match your search."
                 }&lt;/p&gt;
             &lt;/div&gt;
@@ -452,6 +461,11 @@ function formatDate(isoString) {
                     <h4>💡 The Render Pattern</h4>
                     <p>This "clear and re-render" approach is simple and reliable. For a note-taking app with dozens (not thousands) of notes, it's perfectly efficient. Frameworks like React optimize this with a virtual DOM, but for vanilla JS apps of this scale, rebuilding the DOM works great — especially when using a <code>DocumentFragment</code> to batch the insertions.</p>
                 </div>
+
+                <div class="card card-warning">
+                    <h4>🔒 Why <code>textContent</code> for Note Data?</h4>
+                    <p>Every piece of text the <em>user</em> typed (title, body) goes into the page with <code>textContent</code>, never <code>innerHTML</code>. If someone types <code>&lt;img src=x onerror=alert(1)&gt;</code> into a note, <code>textContent</code> shows it as harmless text instead of running it. The only <code>innerHTML</code> in this render function holds text <em>we</em> wrote ourselves (the empty-state message and the button icons) — that's the safe way to use it.</p>
+                </div>
             </section>
 
             <!-- Step 4 -->
@@ -527,8 +541,10 @@ function validateForm() {
 
 function showFieldError(input, message) {
     input.classList.add("input-error");
-    let error = input.parentElement.querySelector(".field-error");
-    if (!error) {
+    // Look only at the element right after THIS input — searching the
+    // whole parent could grab another field's error message
+    let error = input.nextElementSibling;
+    if (!error || !error.classList.contains("field-error")) {
         error = document.createElement("span");
         error.classList.add("field-error");
         error.setAttribute("role", "alert");
@@ -571,10 +587,12 @@ noteForm.addEventListener("submit", (event) => {
 });
 
 // Save status flash
+let statusTimer;
 function showSaveStatus(message) {
     saveStatus.textContent = message;
     saveStatus.classList.add("visible");
-    setTimeout(() => {
+    clearTimeout(statusTimer);  // restart the 2s clock on quick repeat saves
+    statusTimer = setTimeout(() => {
         saveStatus.classList.remove("visible");
     }, 2000);
 }
@@ -659,7 +677,7 @@ async function fetchQuote() {
     }
 }
 
-fetchQuote();
+// We'll call fetchQuote() once, in the Initialization step below
                 </code></pre>
 
                 <div class="card card-info">
@@ -696,6 +714,8 @@ notesGrid.addEventListener("click", (event) => {
     // Delete button with confirmation
     if (event.target.closest(".delete-btn")) {
         if (confirm("Delete this note?")) {
+            // If this note is open in the form, close the form too
+            if (noteIdInput.value === String(noteId)) hideForm();
             card.classList.add("removing");
             // Wait for CSS animation before removing from data
             setTimeout(() => {
@@ -714,24 +734,35 @@ notesGrid.addEventListener("click", (event) => {
 // ============================================================
 
 document.addEventListener("keydown", (event) => {
-    // Ctrl+N or Cmd+N — new note
-    if ((event.ctrlKey || event.metaKey) && event.key === "n") {
-        event.preventDefault();
+    // Escape — close form (works even while typing)
+    if (event.key === "Escape") {
+        hideForm();
+        return;
+    }
+
+    // Single-key shortcuts must NOT fire while the user is typing,
+    // or pressing "n" inside a note would open a new one!
+    const isTyping = event.target.closest("input, textarea, select");
+    if (isTyping || event.ctrlKey || event.metaKey || event.altKey) return;
+
+    // N — new note
+    if (event.key === "n" || event.key === "N") {
+        event.preventDefault();  // stop the "n" landing in the title box
         showForm();
     }
 
-    // Escape — close form
-    if (event.key === "Escape") {
-        hideForm();
-    }
-
-    // Ctrl+/ or Cmd+/ — focus search
-    if ((event.ctrlKey || event.metaKey) && event.key === "/") {
+    // / — focus search
+    if (event.key === "/") {
         event.preventDefault();
         searchInput.focus();
     }
 });
                 </code></pre>
+
+                <div class="card card-info">
+                    <h4>💡 Why Not <kbd>Ctrl</kbd>+<kbd>N</kbd>?</h4>
+                    <p>It's tempting to use <kbd>Ctrl</kbd>+<kbd>N</kbd> for "new note," but browsers reserve it for "new window" — Chrome won't even send that key combo to your page, so <code>preventDefault()</code> can't stop it. Instead we follow the convention used by Gmail and GitHub: plain single-key shortcuts (<kbd>N</kbd>, <kbd>/</kbd>) that only work when you're <em>not</em> typing in a field. The <code>closest("input, textarea, select")</code> check is what makes that safe.</p>
+                </div>
 
                 <h3>CSS Transitions for Polish</h3>
                 <pre><code class="language-html">
@@ -740,11 +771,15 @@ document.addEventListener("keydown", (event) => {
     .note-form-container {
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.4s ease, padding 0.4s ease;
+        visibility: hidden;  /* keeps Tab from reaching the hidden fields */
+        transition: max-height 0.4s ease, padding 0.4s ease, visibility 0.4s;
     }
     .note-form-container.visible {
         max-height: 500px;
         padding: 1.5rem;
+        visibility: visible;
+        /* become visible instantly when opening, so focus() works */
+        transition: max-height 0.4s ease, padding 0.4s ease, visibility 0s;
     }
 
     /* Note card entrance */
@@ -767,7 +802,7 @@ document.addEventListener("keydown", (event) => {
     .save-status {
         opacity: 0;
         transition: opacity 0.3s;
-        color: #22c55e;
+        color: #15803d;
         font-size: 0.9rem;
     }
     .save-status.visible { opacity: 1; }
@@ -846,8 +881,8 @@ fetchQuote();
         #new-note-btn:hover { background: #4f46e5; }
 
         /* Form */
-        .note-form-container { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-        .note-form-container.visible { max-height: 500px; padding: 1.5rem; }
+        .note-form-container { max-height: 0; overflow: hidden; visibility: hidden; transition: max-height 0.4s ease, visibility 0.4s; background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .note-form-container.visible { max-height: 500px; padding: 1.5rem; visibility: visible; transition: max-height 0.4s ease, visibility 0s; }
         .form-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
         .form-row input { flex: 1; }
         #note-form input, #note-form select, #note-form textarea {
@@ -864,7 +899,7 @@ fetchQuote();
         #save-btn:hover { background: #4f46e5; }
         #cancel-btn { background: white; color: #64748b; border: 1px solid #cbd5e1; }
         #cancel-btn:hover { border-color: #94a3b8; }
-        .save-status { opacity: 0; transition: opacity 0.3s; color: #22c55e; font-size: 0.9rem; margin-left: auto; }
+        .save-status { opacity: 0; transition: opacity 0.3s; color: #15803d; font-size: 0.9rem; align-self: center; }
         .save-status.visible { opacity: 1; }
 
         /* Notes Grid */
@@ -921,6 +956,7 @@ fetchQuote();
                 &lt;option value="ideas"&gt;Ideas&lt;/option&gt;
             &lt;/select&gt;
             &lt;button id="new-note-btn"&gt;+ New Note&lt;/button&gt;
+            &lt;span class="save-status" id="save-status" role="status"&gt;&lt;/span&gt;
         &lt;/div&gt;
 
         &lt;div class="note-form-container" id="note-form-container"&gt;
@@ -938,7 +974,6 @@ fetchQuote();
                 &lt;div class="form-actions"&gt;
                     &lt;button type="submit" id="save-btn"&gt;Save Note&lt;/button&gt;
                     &lt;button type="button" id="cancel-btn"&gt;Cancel&lt;/button&gt;
-                    &lt;span class="save-status" id="save-status"&gt;&lt;/span&gt;
                 &lt;/div&gt;
             &lt;/form&gt;
         &lt;/div&gt;
@@ -947,7 +982,7 @@ fetchQuote();
 
         &lt;footer class="app-footer"&gt;
             &lt;span id="note-count"&gt;0 notes&lt;/span&gt;
-            &lt;span class="shortcut-hint"&gt;&lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;N&lt;/kbd&gt; New note&lt;/span&gt;
+            &lt;span class="shortcut-hint"&gt;&lt;kbd&gt;N&lt;/kbd&gt; New note · &lt;kbd&gt;/&lt;/kbd&gt; Search · &lt;kbd&gt;Esc&lt;/kbd&gt; Close&lt;/span&gt;
         &lt;/footer&gt;
     &lt;/div&gt;
 
@@ -1106,8 +1141,8 @@ fetchQuote();
 
     function showFieldError(input, msg) {
         input.classList.add("input-error");
-        let el = input.parentElement.querySelector(".field-error");
-        if (!el) { el = document.createElement("span"); el.classList.add("field-error"); el.setAttribute("role", "alert"); input.after(el); }
+        let el = input.nextElementSibling;
+        if (!el || !el.classList.contains("field-error")) { el = document.createElement("span"); el.classList.add("field-error"); el.setAttribute("role", "alert"); input.after(el); }
         el.textContent = msg;
     }
 
@@ -1125,10 +1160,12 @@ fetchQuote();
         return ok;
     }
 
+    let statusTimer;
     function showSaveStatus(msg) {
         saveStatus.textContent = msg;
         saveStatus.classList.add("visible");
-        setTimeout(() => saveStatus.classList.remove("visible"), 2000);
+        clearTimeout(statusTimer);
+        statusTimer = setTimeout(() => saveStatus.classList.remove("visible"), 2000);
     }
 
     noteForm.addEventListener("submit", (e) => {
@@ -1158,6 +1195,7 @@ fetchQuote();
         if (e.target.closest(".edit-btn")) { const n = notes.find(x => x.id === id); if (n) showForm(n); }
         else if (e.target.closest(".delete-btn")) {
             if (confirm("Delete this note?")) {
+                if (noteIdInput.value === String(id)) hideForm();
                 card.classList.add("removing");
                 setTimeout(() => { deleteNote(id); renderNotes(searchInput.value, filterCategory.value); }, 300);
             }
@@ -1166,9 +1204,11 @@ fetchQuote();
 
     // === KEYBOARD SHORTCUTS ===
     document.addEventListener("keydown", (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === "n") { e.preventDefault(); showForm(); }
-        if (e.key === "Escape") hideForm();
-        if ((e.ctrlKey || e.metaKey) && e.key === "/") { e.preventDefault(); searchInput.focus(); }
+        if (e.key === "Escape") { hideForm(); return; }
+        // Single-key shortcuts only when the user isn't typing in a field
+        if (e.target.closest("input, textarea, select") || e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.key === "n" || e.key === "N") { e.preventDefault(); showForm(); }
+        if (e.key === "/") { e.preventDefault(); searchInput.focus(); }
     });
 
     // === API QUOTE ===
@@ -1191,6 +1231,77 @@ fetchQuote();
 &lt;/html&gt;
                     </code></pre>
                 </details>
+
+                <div class="card quiz-container">
+                    <h3>🎯 Quick Quiz</h3>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 1:</strong> QuickNote uses one form for both creating and editing notes. How does the submit handler know which one to do?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="The button text changes for the user's benefit, but the code doesn't read it to decide anything.">A) It reads the text on the Save button</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The hidden note-id input is empty for a new note and holds the note's ID when editing, so one if/else picks createNote() or updateNote().">B) It checks whether the hidden <code>note-id</code> input has a value</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Every submit would then look like an edit once you had any notes. Look for the hidden input in the form.">C) It checks whether the notes array is empty</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 2:</strong> Why does <code>renderNotes()</code> put the note's title and body on the page with <code>textContent</code> instead of <code>innerHTML</code>?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Speed isn't the main reason here — think about what a user could type into a note.">A) <code>textContent</code> is much faster, so the grid renders quicker</button>
+                            <button class="quiz-option" data-correct="false" data-hint="innerHTML works fine with localStorage data. The concern is what the text might contain.">B) <code>innerHTML</code> can't display text loaded from localStorage</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! textContent always treats the text as plain text, so anything a user types — even something that looks like an HTML tag or script — is displayed, never run.">C) So anything the user typed is shown as plain text and never run as HTML or script</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 3:</strong> What does wrapping the search handler in <code>debounce(applyFilters, 300)</code> accomplish?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Each keystroke restarts a 300ms timer, so the notes are only filtered and re-rendered once the user pauses typing.">A) The notes re-render only after the user stops typing for 300ms, not on every keystroke</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Debounce doesn't count repeats — it waits for a pause.">B) Search runs at most 300 times per session</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Nothing expires here. Debounce is about waiting for the user to pause.">C) Search results disappear after 300ms</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> Why does QuickNote attach ONE click listener to <code>#notes-grid</code> instead of a listener on every edit and delete button?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Browsers are happy to have many listeners. The real problem is what happens to the buttons on each render.">A) Browsers only allow one click listener per page</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Both approaches can use closest(). Think about what renderNotes() does to the old cards.">B) <code>closest()</code> only works on container elements</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The listener runs for clicks on the buttons inside the grid too — that's how the edit and delete buttons work.">C) So clicks on the buttons are ignored</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! This is event delegation. renderNotes() throws away and rebuilds every card, so listeners on individual buttons would be lost. One listener on the parent catches clicks from all current and future cards.">D) The cards are rebuilt on every render, so one listener on the parent (event delegation) handles every card, old or new</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> What happens in QuickNote if the quote API is down or the user is offline?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Look at the catch block in fetchQuote() — the error is handled, not re-thrown.">A) The app crashes and no notes load</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The try/catch in fetchQuote() catches the failure, shows a built-in fallback quote, and everything else keeps working. That's graceful degradation.">B) A fallback quote is shown and the rest of the app keeps working</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The notes come from localStorage, not the API — they don't depend on the quote at all.">C) Notes are saved but can't be displayed until the API comes back</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Journal -->
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>QuickNote runs on one loop: user action → update state → save → re-render. Pick one feature (deleting a note, say) and trace it through that loop in your own words, naming the functions it calls along the way. What's one feature you'd add to make QuickNote your own, and which part of the app's flow are you still unsure about?</em></p>
+                </div>
             </section>
 
             <!-- Summary -->

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Answer Key — Module 1</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">answers &amp; solutions · not for students</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Instructor Kit · Answer Key</div>
+    <h1>Module 1 — Answers &amp; Solutions</h1>
+    <p class="sub">Correct quiz answers with the "why," plus a reference solution for each hands-on exercise. Use for grading and for reteaching missed items.</p>
+    <div class="meta-row"><span class="chip">Lessons <b>1–4</b></span><span class="chip"><b>20</b> quiz items</span><span class="chip"><b>4</b> exercises</span></div>
+  </header>
+
+  <div class="note"><div class="t">Numbering matches the workbook</div><p>This key covers every question in each lesson's quiz. The participant workbook's self-check uses a 3-question subset per lesson, labelled with the lesson's own question numbers (e.g. Q2 · Q3 · Q4), so a student's "Q4" is always this key's Q4.</p></div>
+
+  <!-- L01 -->
+  <div class="sec"><h2>L01 · Welcome to JavaScript</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">What is JavaScript's primary role in web development?</div><div class="opts"><div class="opt correct">C) Adding interactivity and behavior</div></div><div class="why"><b>Why:</b> HTML structures and CSS styles; JavaScript responds to clicks, updates content, validates forms. Storing data in databases is a back-end job.</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">JavaScript and Java are the same language.</div><div class="opts"><div class="opt correct">B) False</div></div><div class="why"><b>Why:</b> the name rode Java's 1990s popularity — a marketing decision. They are separate languages with different designs.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">Which of these does a browser need to run JavaScript?</div><div class="opts"><div class="opt correct">C) Nothing extra — browsers have a built-in JavaScript engine</div></div><div class="why"><b>Why:</b> every modern browser ships an engine (V8, SpiderMonkey, JavaScriptCore). Node.js is for servers; no compiler or plugin is needed.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">In the exercise, what happened when you typed <code class="inline">document.title = "I changed this with JavaScript!"</code> into the Console?</div><div class="opts"><div class="opt correct">A) The text in the browser tab changed, just for your copy of the page</div></div><div class="why"><b>Why:</b> <code class="inline">document.title</code> is the tab text, not the <code class="inline">&lt;h1&gt;</code>. The change lives only in your browser — a refresh puts it back.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">What is ECMAScript?</div><div class="opts"><div class="opt correct">D) The official specification (rulebook) that JavaScript follows</div></div><div class="why"><b>Why:</b> engines implement the spec; names like ES6/ES2015 are editions of it. It isn't an engine, a server runtime, or a replacement language.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Spot JavaScript in the Wild</div><p>Look for: the Console opened (not Elements); <code class="inline">document.title</code> returned the title as a quoted string; the tab text changed after assignment; the page turned light yellow; a refresh restored both. Their list of three features should be things that change without a full reload (menus, live search, carousels, counters), each with a reason HTML/CSS can't do it. Worksheet and expected results: <code class="inline">labs/module-1/l01-welcome-to-javascript/README.md</code>; the statements as a script: <code class="inline">labs/module-1/l01-welcome-to-javascript/solution/</code>.</p></div>
+
+  <!-- L02 -->
+  <div class="sec"><h2>L02 · Linking Scripts &amp; the Console</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">Where is the recommended place to put a <code class="inline">&lt;script&gt;</code> tag that links to an external file?</div><div class="opts"><div class="opt correct">B) Just before the closing &lt;/body&gt; tag</div></div><div class="why"><b>Why:</b> all the HTML has been parsed by then, so every element exists when the script runs. (In the <code class="inline">&lt;head&gt;</code> <em>with</em> <code class="inline">defer</code> is also correct — the option says "without defer.")</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">What does <code class="inline">console.log()</code> do?</div><div class="opts"><div class="opt correct">A) Prints a message to the browser's Developer Tools Console</div></div><div class="why"><b>Why:</b> it's a developer tool — visitors never see it unless they open DevTools. Putting text on the page is Module 4.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">What does the <code class="inline">defer</code> attribute do on a <code class="inline">&lt;script&gt;</code> tag?</div><div class="opts"><div class="opt correct">C) Downloads the script in parallel and runs it after HTML parsing completes</div></div><div class="why"><b>Why:</b> the download doesn't block parsing, and deferred scripts run in order once the document is parsed. It only works on external scripts.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">What happens with this code? <code class="inline">&lt;script src="app.js"&gt; console.log("Hi!"); &lt;/script&gt;</code></div><div class="opts"><div class="opt correct">D) app.js runs, but the console.log() inside the tags is ignored</div></div><div class="why"><b>Why:</b> when a script has <code class="inline">src</code>, its contents are ignored — silently, with no error. Use a separate <code class="inline">&lt;script&gt;</code> for inline code.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">Which of these is a good JavaScript comment?</div><div class="opts"><div class="opt correct">A) <code class="inline">// Start at 3 lives so new players aren't punished too early</code></div></div><div class="why"><b>Why:</b> it explains <em>why</em>, which the code can't. B only restates the code; C is HTML comment syntax; D is Python/shell syntax.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Your First JS Project</div><p>Look for: a <code class="inline">js-practice</code> folder with <code class="inline">index.html</code> and <code class="inline">app.js</code> side by side; <code class="inline">&lt;script src="app.js"&gt;&lt;/script&gt;</code> just before <code class="inline">&lt;/body&gt;</code>; in the Console a log, a yellow warning, a red "not a real one!" error, an info line, <code class="inline">5 + 3 = 8</code>, <code class="inline">10 * 4 = 40</code>, and a table of HTML/CSS/JavaScript. Reference: <code class="inline">labs/module-1/l02-linking-scripts/solution/</code>.</p></div>
+
+  <!-- L03 -->
+  <div class="sec"><h2>L03 · Variables &amp; Data Types</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">Which keyword should you use by default when declaring a variable?</div><div class="opts"><div class="opt correct">C) const</div></div><div class="why"><b>Why:</b> it prevents accidental reassignment. Switch to <code class="inline">let</code> only when the value needs to change; <code class="inline">var</code> is legacy, and <code class="inline">define</code> isn't JavaScript.</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">What is the result of <code class="inline">typeof null</code>?</div><div class="opts"><div class="opt correct">B) "object"</div></div><div class="why"><b>Why:</b> a bug from 1995 that can't be fixed without breaking old sites. Check for null with <code class="inline">value === null</code>.</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">What does <code class="inline">"5" + 3</code> evaluate to?</div><div class="opts"><div class="opt correct">B) "53"</div></div><div class="why"><b>Why:</b> with a string on either side, <code class="inline">+</code> concatenates: 3 becomes <code class="inline">"3"</code> and the strings join.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">You write <code class="inline">let favoriteColor;</code> and then <code class="inline">console.log(favoriteColor);</code>. What appears in the console?</div><div class="opts"><div class="opt correct">A) undefined</div></div><div class="why"><b>Why:</b> the variable exists but has no value yet. <code class="inline">null</code> only appears if you assign it; a ReferenceError means the variable was never declared.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">Which of these is a valid JavaScript variable name?</div><div class="opts"><div class="opt correct">D) <code class="inline">$totalScore</code></div></div><div class="why"><b>Why:</b> it starts with <code class="inline">$</code> and has only letters after. <code class="inline">2ndPlace</code> starts with a digit, <code class="inline">user-name</code> has a hyphen, <code class="inline">const</code> is reserved.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Build a User Profile</div><p>Look for: <code class="inline">const</code> for <code class="inline">firstName</code>, <code class="inline">lastName</code>, <code class="inline">email</code>; <code class="inline">let</code> for <code class="inline">age</code>, <code class="inline">isPremiumMember</code>, <code class="inline">accountBalance</code>, <code class="inline">nickname = null</code>; seven lines like <code class="inline">age: 30 (number)</code> (note <code class="inline">nickname: null (object)</code>); the greeting <code class="inline">Hello, Ray de la Paz! You are 30 years old.</code>; updated values ending <code class="inline">Balance: $120.00</code> via <code class="inline">.toFixed(2)</code>; and the <code class="inline">const</code> reassignment tried, seen to throw <code class="inline">TypeError: Assignment to constant variable</code>, then commented out. Any names and values are fine if the types and keywords are right. Reference: <code class="inline">labs/module-1/l03-variables-data-types/solution/</code>.</p></div>
+
+  <!-- L04 -->
+  <div class="sec"><h2>L04 · Operators &amp; Expressions</h2><span class="rule"></span></div>
+  <div class="q"><div class="qn">Q1</div><div class="qt">What does <code class="inline">10 % 3</code> return?</div><div class="opts"><div class="opt correct">B) 1</div></div><div class="why"><b>Why:</b> <code class="inline">%</code> is the remainder: 10 ÷ 3 = 3 remainder 1.</div></div>
+  <div class="q"><div class="qn">Q2</div><div class="qt">What does <code class="inline">5 === "5"</code> return?</div><div class="opts"><div class="opt correct">A) false</div></div><div class="why"><b>Why:</b> strict equality checks value <em>and</em> type; a number and a string are different types. (<code class="inline">5 == "5"</code> would be true.)</div></div>
+  <div class="q"><div class="qn">Q3</div><div class="qt">What is the result of <code class="inline">true &amp;&amp; false || true</code>?</div><div class="opts"><div class="opt correct">B) true</div></div><div class="why"><b>Why:</b> <code class="inline">&amp;&amp;</code> goes first: <code class="inline">true &amp;&amp; false</code> is <code class="inline">false</code>; then <code class="inline">false || true</code> is <code class="inline">true</code>.</div></div>
+  <div class="q"><div class="qn">Q4</div><div class="qt">After this code runs, what is the value of <code class="inline">points</code>? <code class="inline">let points = 10; points += 5; points *= 2;</code></div><div class="opts"><div class="opt correct">C) 30</div></div><div class="why"><b>Why:</b> <code class="inline">+= 5</code> makes it 15, then <code class="inline">*= 2</code> doubles the current value to 30.</div></div>
+  <div class="q"><div class="qn">Q5</div><div class="qt">Which of these values is truthy?</div><div class="opts"><div class="opt correct">D) <code class="inline">"0"</code></div></div><div class="why"><b>Why:</b> it's a non-empty string (one character), so it's truthy — even though the number <code class="inline">0</code> is falsy. <code class="inline">""</code> and <code class="inline">NaN</code> are falsy too.</div></div>
+  <div class="note lab"><div class="t">Exercise solution — Tip Calculator</div><p>Look for: <code class="inline">const billAmount = 85.50</code>, <code class="inline">tipPercentage = 20</code>, <code class="inline">numberOfPeople = 3</code>; <code class="inline">tipAmount = billAmount * tipPercentage / 100</code>; <code class="inline">totalWithTip = billAmount + tipAmount</code>; <code class="inline">perPerson = totalWithTip / numberOfPeople</code>; output exactly <code class="inline">Bill: $85.50</code>, <code class="inline">Tip (20%): $17.10</code>, <code class="inline">Total: $102.60</code>, <code class="inline">Per person: $34.20</code> — each money value through <code class="inline">.toFixed(2)</code> (without it, per person shows <code class="inline">34.199999999999996</code>). Bonus: <code class="inline">const isExpensive = totalWithTip &gt; 100;</code> logs <code class="inline">Expensive? true</code>. Reference: <code class="inline">labs/module-1/l04-operators-expressions/solution/</code>.</p></div>
+
+  <div class="foot">
+    <div class="who"><span class="bio">Instructor Kit · confidential — do not distribute to students</span></div>
+    <div class="ver">Answer Key · Module 1 · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

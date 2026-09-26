@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Before You Begin — Setup Guide</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="kit.css">
+<style>
+  @media print { .blk { break-inside:avoid; } .lesson { break-inside:auto; } .lesson-head, ol.steps li, table.timing { break-inside:avoid; } .lesson-head { break-after:avoid; } }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Student handout —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">send this out before Day 1</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Front-End JavaScript Course · Before You Begin</div>
+    <h1>Get Ready to Code</h1>
+    <p class="sub">A 15-minute check to do <b>before the first session</b>. You already built pages in the HTML &amp; CSS course, so most of this is confirming your tools still work — plus one new skill: opening the browser's <b>DevTools console</b>, where JavaScript talks back to you.</p>
+    <div class="meta-row">
+      <span class="chip">⏱ <b>~15 min</b></span>
+      <span class="chip">No JavaScript experience required</span>
+      <span class="chip">Any computer: Windows / Mac / Linux</span>
+    </div>
+  </header>
+
+  <div class="note warn">
+    <div class="t">Please finish this before class</div>
+    <p>Class time is for coding, not installing. If you get stuck on any step, that's fine — note where, and we'll help you in the first few minutes. But please <b>try</b> before you arrive.</p>
+  </div>
+
+  <div class="sec"><h2>What to Bring</h2><span class="rule"></span></div>
+  <ul class="tick">
+    <li><b>A laptop</b> (Windows, macOS, or Linux) and its <b>charger</b>.</li>
+    <li><b>VS Code with the Live Server extension</b> — the same setup you used in the HTML &amp; CSS course.</li>
+    <li>An up-to-date <b>modern browser</b>. <b>Chrome or Edge</b> is recommended (class demos use them); Firefox works fine too.</li>
+    <li>What you know about HTML and CSS. That's it — everything else is provided.</li>
+  </ul>
+
+  <div class="sec"><h2>Set Up in 5 Steps</h2><span class="rule"></span></div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lcode">1</span><h3>Confirm VS Code &amp; Live Server</h3><span class="dur">~3 min</span></div>
+    <div class="lesson-body">
+      <ol class="steps">
+        <li>Open <b>VS Code</b>. If it isn't installed, download it free from <b>code.visualstudio.com</b> and accept the installer's defaults.</li>
+        <li>Click the <b>Extensions</b> icon in the left sidebar (four squares) and search for <b>Live Server</b> (by Ritwick Dey).</li>
+        <li>If it shows <b>Install</b>, click it. If it already shows <b>Uninstall</b> or a gear icon, you're set.</li>
+      </ol>
+      <div class="note warn"><div class="t">If Live Server won't install or start</div><p>Install Microsoft's <b>Live Preview</b> extension instead. It does the same job: right-click the file → <b>Show Preview</b> (or open it in your browser from the preview's menu).</p></div>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lcode">2</span><h3>Update your browser</h3><span class="dur">~2 min</span></div>
+    <div class="lesson-body">
+      <ol class="steps">
+        <li><b>Chrome:</b> menu (⋮) → <b>Help → About Google Chrome</b>. <b>Edge:</b> menu (…) → <b>Help and feedback → About Microsoft Edge</b>. <b>Firefox:</b> menu (☰) → <b>Help → About Firefox</b>.</li>
+        <li>Let it download any update, then click <b>Relaunch</b>.</li>
+      </ol>
+      <div class="note"><div class="t">Why bother?</div><p>We use modern JavaScript features such as <code class="inline">fetch</code>, <code class="inline">async</code>/<code class="inline">await</code>, and optional chaining. Every current browser supports them; a browser that hasn't updated in years may not.</p></div>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lcode">3</span><h3>Learn to open the console</h3><span class="dur">~5 min</span></div>
+    <div class="lesson-body">
+      <p style="margin:.2rem 0 .6rem">The <b>console</b> lives in the browser's <b>DevTools</b>. You'll open it dozens of times a day, so learn the shortcut for your system now.</p>
+      <table class="timing">
+        <thead><tr><th>Browser</th><th>Windows / Linux</th><th>macOS</th></tr></thead>
+        <tbody>
+          <tr><td class="t">Chrome</td><td><b>Ctrl + Shift + J</b></td><td><b>Cmd + Option + J</b></td></tr>
+          <tr><td class="t">Edge</td><td><b>Ctrl + Shift + J</b></td><td><b>Cmd + Option + J</b></td></tr>
+          <tr><td class="t">Firefox</td><td><b>Ctrl + Shift + K</b></td><td><b>Cmd + Option + K</b></td></tr>
+          <tr><td class="t">Any browser</td><td><b>F12</b>, then click the <b>Console</b> tab</td><td>Right-click the page → <b>Inspect</b>, then <b>Console</b></td></tr>
+        </tbody>
+      </table>
+      <ol class="steps">
+        <li>Open any web page and press the shortcut. A panel opens with a <b>Console</b> tab and a blinking cursor next to <code class="inline">&gt;</code>.</li>
+        <li>Type <code class="inline">2 + 2</code> and press <b>Enter</b>. The console answers <code class="inline">4</code>. That's JavaScript running.</li>
+      </ol>
+      <div class="note warn"><div class="t">On a Mac with Safari?</div><p>Safari hides its DevTools until you turn them on: <b>Safari → Settings → Advanced</b> → tick <b>Show features for web developers</b> (older versions: <b>Show Develop menu in menu bar</b>). Then press <b>Cmd + Option + C</b>. It works, but installing Chrome or Edge will make class easier to follow.</p></div>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lcode">4</span><h3>Create a practice folder</h3><span class="dur">~2 min</span></div>
+    <div class="lesson-body">
+      <ol class="steps">
+        <li>On your Desktop (or in your Documents folder), create a new folder named <code class="inline">js-practice</code> (lowercase, no spaces).</li>
+        <li>In VS Code, choose <b>File → Open Folder…</b> and select it.</li>
+        <li>This is where your exercises and labs will live. Keep one sub-folder per exercise as the week goes on.</li>
+      </ol>
+      <div class="note warn"><div class="t">One rule that saves headaches</div><p>Keep file and folder names <b>lowercase with no spaces</b>, and match them <b>exactly</b> in your code. <code class="inline">src="app.js"</code> will not load a file named <code class="inline">App.js</code> on many servers.</p></div>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lcode">5</span><h3>The 2-minute "hello console" test</h3><span class="dur">~2 min</span></div>
+    <div class="lesson-body">
+      <ol class="steps">
+        <li>In <code class="inline">js-practice</code>, create <code class="inline">index.html</code>. Type <code class="inline">!</code> and press <b>Tab</b> for the HTML skeleton, then put this inside <code class="inline">&lt;body&gt;</code>:
+<pre class="code">&lt;h1&gt;Hello!&lt;/h1&gt;
+&lt;script src="app.js"&gt;&lt;/script&gt;</pre></li>
+        <li>Create a second file in the same folder, <code class="inline">app.js</code>, containing:
+<pre class="code">console.log("Hello, console!");
+document.querySelector("h1").textContent = "JavaScript is working!";</pre></li>
+        <li><b>Save both files</b> (Ctrl/⌘ + S), right-click <code class="inline">index.html</code> → <b>Open with Live Server</b>.</li>
+        <li>The page heading should read <b>"JavaScript is working!"</b>. Open the console (step 3): you should see <b>Hello, console!</b></li>
+      </ol>
+      <div class="note lab"><div class="t">✅ You're ready</div><p>If you saw both — the changed heading <b>and</b> the console message — you're completely set up for Day 1. If the heading still says "Hello!", check that <code class="inline">app.js</code> is in the same folder and spelled exactly the same, and look for a red error in the console. Still stuck? Note what you saw and we'll sort it out in the first few minutes of class.</p></div>
+    </div>
+  </div>
+
+  <div class="sec"><h2>Frequently Asked</h2><span class="rule"></span></div>
+  <div class="blk"><div class="h">Do I need to know any programming?</div><p style="font-size:.95rem;color:var(--ink-2);margin:.2rem 0">No. We start JavaScript from zero. You only need the HTML and CSS you already know.</p></div>
+  <div class="blk"><div class="h">Do I need to buy or sign up for anything?</div><p style="font-size:.95rem;color:var(--ink-2);margin:.2rem 0">No. Every tool is free, and the public data services we use later in the week don't need an account or a key.</p></div>
+  <div class="blk"><div class="h">Can I use a Chromebook or tablet?</div><p style="font-size:.95rem;color:var(--ink-2);margin:.2rem 0">A full laptop (Windows/Mac/Linux) is strongly recommended. Chromebooks can work but VS Code setup is trickier — contact us first if that's all you have.</p></div>
+  <div class="blk"><div class="h">What if I can't finish the setup?</div><p style="font-size:.95rem;color:var(--ink-2);margin:.2rem 0">Come anyway. Note where you got stuck; we'll help you in the first few minutes so you're coding with everyone else.</p></div>
+
+  <div class="note">
+    <div class="t">For the host or organizer: network check</div>
+    <p>The room needs ordinary internet access. On Day 5 students call public APIs from their own browsers: <code class="inline">api.github.com</code> (Lesson 20) and <code class="inline">dummyjson.com</code> (Lesson 21); the final assessment may also use <code class="inline">openlibrary.org</code> and <code class="inline">open-meteo.com</code>. Make sure a content filter doesn't block them. <b>GitHub allows about 60 requests per hour per public IP address without logging in</b> — and a classroom behind one network usually shares a single public IP, so the whole class shares those 60. Ask IT whether the room has one shared IP; if it does, have students test sparingly, keep a phone hotspot as a backup, and expect a friendly "rate limit reached" message rather than a bug if the budget runs out.</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Front-End JavaScript: Make Your Web Pages Come Alive</span>
+    </div>
+    <div class="ver">Student Setup Guide · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

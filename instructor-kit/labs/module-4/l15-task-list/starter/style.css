@@ -1,0 +1,38 @@
+/* Task List — styles from the lesson. Changes for accessibility:
+   darker button colors (AA contrast with white text), a visible focus ring,
+   a readable "done" gray, and dark-mode rules for the task cards. */
+body { font-family: sans-serif; padding: 2rem; background: #f1f5f9; color: #1e293b; }
+.task-app { max-width: 500px; margin: 0 auto; }
+.add-form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.add-form input {
+    flex: 1; padding: 0.5rem; border: 2px solid #94a3b8;
+    border-radius: 6px; font-size: 1rem;
+}
+.add-form button {
+    padding: 0.5rem 1rem; background: #1d4ed8; color: white;
+    border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;
+}
+#task-list { list-style: none; padding: 0; }
+.task-item {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem; background: white; border-radius: 8px;
+    margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.task-item.done .task-text { text-decoration: line-through; color: #64748b; }
+.task-text { flex: 1; overflow-wrap: anywhere; }
+.complete-btn { background: #15803d; color: white; border: none;
+    border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; }
+.delete-btn { background: #b91c1c; color: white; border: none;
+    border-radius: 4px; padding: 0.25rem 0.5rem; cursor: pointer; }
+.counter { text-align: center; color: #475569; margin-top: 1rem; }
+.hint { font-size: .9rem; color: #475569; }
+kbd { border: 1px solid #94a3b8; border-radius: 4px; padding: 0 .3rem; font-size: .85em; }
+
+input:focus-visible, button:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+
+body.dark-mode { background: #0f172a; color: #e2e8f0; }
+/* The lesson's body.dark-mode alone leaves light text on white cards — fix the cards too */
+body.dark-mode .task-item { background: #1e293b; }
+body.dark-mode .task-item.done .task-text,
+body.dark-mode .counter,
+body.dark-mode .hint { color: #94a3b8; }

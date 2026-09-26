@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Final Assessment &amp; Rubric</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="kit.css">
+<style>
+  table.rubric { width:100%; border-collapse:collapse; margin:12px 0; font-size:.85rem; }
+  table.rubric th, table.rubric td { border:1px solid var(--line); padding:9px 11px; vertical-align:top; text-align:left; }
+  table.rubric thead th { background:var(--surface-2); font-family:"JetBrains Mono",monospace; font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); font-weight:600; }
+  table.rubric td.crit { font-weight:600; color:var(--ink); width:20%; }
+  table.rubric td .pts { display:block; font-family:"JetBrains Mono",monospace; font-size:.66rem; color:var(--accent); margin-top:3px; }
+  table.rubric tbody tr:nth-child(even) td { background:var(--surface); }
+  @media print { table.rubric { break-inside:auto; } table.rubric tr { break-inside:avoid; } .blk { break-inside:avoid; } .lesson { break-inside:auto; } .lesson-head, ul.tick li { break-inside:avoid; } .lesson-head { break-after:avoid; } }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">capstone brief + grading rubric</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Front-End JavaScript Course · Final Assessment</div>
+    <h1>Capstone: Build an Interactive App</h1>
+    <p class="sub">The single end-of-course assessment. Students demonstrate everything from all six modules by building a small, complete app of their own — a different app from the QuickNote project built together in Lesson 21. Score it with the rubric below; completion requires an app that runs with no console errors.</p>
+    <div class="meta-row">
+      <span class="chip">Covers <b>Modules 1–6</b></span>
+      <span class="chip">Deliverable: a <b>working app</b> (choice of 3 briefs)</span>
+      <span class="chip">Pass: <b>Proficient</b> + runs error-free</span>
+    </div>
+  </header>
+
+  <div class="sec"><h2>How It Runs</h2><span class="rule"></span></div>
+  <ul class="tick">
+    <li><b>Kickoff (Day 5, 3:30):</b> students pick one of the three briefs below, sketch their data (what one saved item looks like as an object), and list their functions — the same planning step as QuickNote.</li>
+    <li><b>Build time:</b> about 4–6 hours of independent work. Set a due date (one week after the course works well) and offer one mid-point check-in.</li>
+    <li><b>Rules:</b> vanilla JavaScript only — no frameworks or libraries. Lesson code and QuickNote <b>patterns</b> may be reused; the app itself must be the student's own. Another keyless public API that supports browser requests may be swapped in with your approval.</li>
+  </ul>
+
+  <div class="blk"><div class="h">Required deliverables</div>
+    <ul class="tick">
+      <li>A project folder with <code class="inline">index.html</code>, <code class="inline">style.css</code>, and <code class="inline">app.js</code> (zipped, or a repository link).</li>
+      <li>A short <code class="inline">README</code>: which brief, the features built, and any known issues.</li>
+      <li>A <b>3-minute demo</b> (live or recorded): add data, reload the page to show it persisted, trigger one validation error and one API call.</li>
+    </ul>
+  </div>
+
+  <div class="sec"><h2>Choose One Brief</h2><span class="rule"></span></div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lcode">A</span><h3>Shelf — a reading list</h3><span class="dur">Open Library API</span></div>
+    <div class="lesson-body">
+      <p style="margin:.2rem 0 .5rem">Search for books, add them to a personal shelf, and track what you're reading.</p>
+      <ul class="tick">
+        <li>A search form (validated: at least 2 characters after trimming) that fetches <code class="inline">https://openlibrary.org/search.json?q=TERM&amp;limit=10</code> and lists title, author, and first-published year.</li>
+        <li>An <b>Add to shelf</b> button on each result; no duplicates on the shelf.</li>
+        <li>Each shelf book has a status (Want to read · Reading · Done) you can change, and a Remove button.</li>
+        <li>The shelf and statuses survive a page reload; a summary line shows counts per status.</li>
+      </ul>
+      <p style="font-size:.88rem;color:var(--ink-3);margin:.4rem 0 0"><b>Stretch:</b> filter the shelf by status; show covers from <code class="inline">covers.openlibrary.org/b/id/COVER_ID-M.jpg</code>.</p>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lcode">B</span><h3>Weather Board — saved cities</h3><span class="dur">Open-Meteo API</span></div>
+    <div class="lesson-body">
+      <p style="margin:.2rem 0 .5rem">Keep a board of cities you care about, each showing its current weather.</p>
+      <ul class="tick">
+        <li>An add-city form (validated: required, at least 2 characters, not already on the board).</li>
+        <li>Look the city up with <code class="inline">https://geocoding-api.open-meteo.com/v1/search?name=CITY&amp;count=1</code>; show a clear "City not found" message when there are no results.</li>
+        <li>Fetch current conditions with <code class="inline">https://api.open-meteo.com/v1/forecast?latitude=…&amp;longitude=…&amp;current=temperature_2m,wind_speed_10m</code> and render one card per city with a Remove button.</li>
+        <li>The city list (name, latitude, longitude) survives a reload, and the weather is re-fetched on load.</li>
+      </ul>
+      <p style="font-size:.88rem;color:var(--ink-3);margin:.4rem 0 0"><b>Stretch:</b> a °F/°C toggle (<code class="inline">&amp;temperature_unit=fahrenheit</code>) remembered in storage; a Refresh-all button.</p>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lcode">C</span><h3>Recipe Box — find &amp; save recipes</h3><span class="dur">DummyJSON API</span></div>
+    <div class="lesson-body">
+      <p style="margin:.2rem 0 .5rem">Search a recipe collection, save favorites, and add recipes of your own.</p>
+      <ul class="tick">
+        <li>A search form (validated: at least 2 characters) that fetches <code class="inline">https://dummyjson.com/recipes/search?q=TERM</code> and lists name, cook time, and difficulty.</li>
+        <li>A <b>Save</b> button on each result; saved recipes appear in "My Box" with a Remove button.</li>
+        <li>An <b>Add your own</b> form: name required, at least 3 ingredients (one per line), prep time a whole number from 1 to 600 minutes — each error shown next to its field.</li>
+        <li>My Box (saved and your own recipes) survives a reload; a filter box narrows it as you type.</li>
+      </ul>
+      <p style="font-size:.88rem;color:var(--ink-3);margin:.4rem 0 0"><b>Stretch:</b> a detail view with ingredients and instructions; sort My Box by time.</p>
+    </div>
+  </div>
+
+  <div class="sec"><h2>Requirements Checklist (every brief)</h2><span class="rule"></span></div>
+  <div class="grid2">
+    <div class="blk"><div class="h">DOM &amp; events</div>
+      <ul class="tick">
+        <li>The page is rendered from a data array with <code class="inline">createElement</code> + <code class="inline">textContent</code> — user or API text is <b>never</b> inserted with <code class="inline">innerHTML</code></li>
+        <li>At least three kinds of interaction (e.g. submit, click, input)</li>
+        <li>List buttons handled with <b>event delegation</b></li>
+        <li>An empty state ("Nothing saved yet") when the list is empty</li>
+      </ul>
+    </div>
+    <div class="blk"><div class="h">Forms &amp; validation</div>
+      <ul class="tick">
+        <li>Every input has a linked <code class="inline">&lt;label&gt;</code></li>
+        <li><code class="inline">preventDefault()</code> on submit; input trimmed before checking</li>
+        <li>Clear error messages next to the field, announced to screen readers (e.g. <code class="inline">aria-live</code> or <code class="inline">aria-describedby</code>)</li>
+        <li>Invalid data never reaches the list or storage</li>
+      </ul>
+    </div>
+    <div class="blk"><div class="h">Storage</div>
+      <ul class="tick">
+        <li>Saved data stored in <code class="inline">localStorage</code> with <code class="inline">JSON.stringify</code></li>
+        <li>Restored on page load with <code class="inline">JSON.parse</code></li>
+        <li>Missing or corrupted storage falls back to an empty list (no crash)</li>
+        <li>Storage updated after every add, change, and remove</li>
+      </ul>
+    </div>
+    <div class="blk"><div class="h">Fetch &amp; errors</div>
+      <ul class="tick">
+        <li><code class="inline">async</code>/<code class="inline">await</code> with <code class="inline">try</code>/<code class="inline">catch</code></li>
+        <li>Checks <code class="inline">response.ok</code> before using the data</li>
+        <li>A visible loading state while waiting</li>
+        <li>A friendly message for "no results", a bad response, and no network</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec"><h2>Grading Rubric</h2><span class="rule"></span></div>
+  <p style="font-size:.9rem;color:var(--ink-2)">Score each criterion 1–3 (max 18). <b>Pass = no criterion below 2 (therefore ≥12/18) and the app runs with no console errors.</b></p>
+  <table class="rubric">
+    <thead>
+      <tr><th>Criterion</th><th>Developing (1)</th><th>Proficient (2)</th><th>Exemplary (3)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="crit">DOM &amp; rendering <span class="pts">/3</span></td>
+        <td>Hard-coded HTML, or output built by pasting user/API text into <code class="inline">innerHTML</code>; list goes out of sync with the data.</td>
+        <td>One render function draws the list from the data array with <code class="inline">createElement</code>/<code class="inline">textContent</code>; empty state shown.</td>
+        <td>Clean separation of data and rendering; efficient updates; polished states (loading, empty, error).</td>
+      </tr>
+      <tr>
+        <td class="crit">Events &amp; interaction <span class="pts">/3</span></td>
+        <td>Some controls don't respond, or one listener per item added in a loop that breaks on new items.</td>
+        <td>Submit, click, and input handled; list buttons use event delegation; every feature in the brief works.</td>
+        <td>Smooth UX: keyboard-friendly, focus managed after actions, at least one stretch feature.</td>
+      </tr>
+      <tr>
+        <td class="crit">Forms &amp; validation <span class="pts">/3</span></td>
+        <td>Invalid input accepted, the page reloads on submit, or errors only in <code class="inline">alert()</code>.</td>
+        <td>Labeled inputs; trimmed, checked input; clear message next to each field; invalid data never saved.</td>
+        <td>Real-time feedback as the user types; errors announced to screen readers; duplicates prevented.</td>
+      </tr>
+      <tr>
+        <td class="crit">Data &amp; persistence <span class="pts">/3</span></td>
+        <td>Data lost on reload, or stored as <code class="inline">"[object Object]"</code>.</td>
+        <td>Saved with <code class="inline">JSON.stringify</code>, restored with <code class="inline">JSON.parse</code> on load; storage updated after every change.</td>
+        <td>Safe loading with a fallback for missing or corrupted storage; tidy data model (ids, one save function).</td>
+      </tr>
+      <tr>
+        <td class="crit">Fetching data <span class="pts">/3</span></td>
+        <td>Fetch fails silently, ignores <code class="inline">response.ok</code>, or freezes the UI with no feedback.</td>
+        <td><code class="inline">async</code>/<code class="inline">await</code> + <code class="inline">try</code>/<code class="inline">catch</code>; checks <code class="inline">response.ok</code>; shows loading and error messages.</td>
+        <td>Distinct messages for no results, bad responses, and no network; the button is disabled while a request runs.</td>
+      </tr>
+      <tr>
+        <td class="crit">Code quality &amp; accessibility <span class="pts">/3</span></td>
+        <td>Console errors; global clutter; unclear names; unlabeled controls.</td>
+        <td>Runs with no console errors; <code class="inline">const</code>/<code class="inline">let</code>, small named functions, comments where useful; labels and visible focus.</td>
+        <td>Well-organized, readable code; semantic HTML; good contrast; a README a stranger could follow.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <div class="t">Completion policy</div>
+    <p>A student <b>completes the course</b> when their project meets the pass rule: <b>no criterion below 2 (therefore ≥12/18) and the app runs with no console errors</b>. A 12/18 total with one criterion at 1 does <em>not</em> pass. Below the bar, give targeted feedback tied to the criteria above and allow a resubmission.</p>
+  </div>
+
+  <div class="note warn">
+    <div class="t">Grading tip: test like a user</div>
+    <p>Open the app with the console visible. Submit the empty form, add two items, change one, reload, remove one, reload again. Then go offline (DevTools → Network → <b>Offline</b>) and try a search. Five minutes of this covers every criterion. If an API is down or rate-limited on grading day, judge the error handling — that is exactly what it's for.</p>
+  </div>
+
+  <div class="sec"><h2>Scoring Sheet</h2><span class="rule"></span></div>
+  <table class="rubric">
+    <thead><tr><th>Criterion</th><th>Score (1–3)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="crit">DOM &amp; rendering</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td class="crit">Events &amp; interaction</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td class="crit">Forms &amp; validation</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td class="crit">Data &amp; persistence</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td class="crit">Fetching data</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td class="crit">Code quality &amp; accessibility</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td class="crit">Total &nbsp;/18 · Brief (A/B/C) · No console errors (Y/N):</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    </tbody>
+  </table>
+
+  <div class="foot">
+    <div class="who"><span class="bio">Instructor Kit · final assessment &amp; rubric</span></div>
+    <div class="ver">Final Assessment · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

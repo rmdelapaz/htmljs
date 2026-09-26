@@ -5,21 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Learn how to dynamically create, insert, clone, and remove HTML elements with JavaScript using createElement, append, remove, and more.">
     <meta name="keywords" content="javascript, dom, createelement, append, remove, documentfragment">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 16: Creating &amp; Removing Elements - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -82,6 +88,7 @@
                         <li><a href="#innerhtml-vs-createelement" class="toc-link">innerHTML vs. createElement</a></li>
                         <li><a href="#fragments" class="toc-link">DocumentFragment &amp; Batch Inserts</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -185,8 +192,10 @@ const firstItem = document.createElement("li");
 firstItem.textContent = "I'm first now!";
 list.prepend(firstItem);
 
-// append and prepend can also accept plain strings
-list.append("Some text at the end");
+// append and prepend can also accept plain strings (they become text nodes)
+const note = document.querySelector("#note");  // e.g. a &lt;p&gt;
+note.append(" (updated just now)");
+// (Don't append bare text to a &lt;ul&gt; — a list should only contain &lt;li&gt;s)
                 </code></pre>
 
                 <h3>before() &amp; after()</h3>
@@ -446,13 +455,13 @@ addTask("Write code");
                             <tr><td>Safety with user input</td><td>Dangerous (XSS risk)</td><td>Safe (textContent)</td></tr>
                             <tr><td>Existing content</td><td>Destroyed &amp; replaced</td><td>Preserved</td></tr>
                             <tr><td>Event listeners</td><td>Lost on old elements</td><td>Preserved on siblings</td></tr>
-                            <tr><td>Performance (many items)</td><td>One reflow</td><td>One reflow per append*</td></tr>
+                            <tr><td>Performance (many items)</td><td>One parse, one insertion</td><td>One live-DOM insertion per append*</td></tr>
                             <tr><td>Best for</td><td>Static HTML you control</td><td>Dynamic, interactive content</td></tr>
                         </tbody>
                     </table>
                 </div>
 
-                <p><small>* Use <code>DocumentFragment</code> (next section) to batch <code>createElement</code> calls into one reflow.</small></p>
+                <p><small>* Use <code>DocumentFragment</code> (next section) to batch many <code>createElement</code> results into a single insertion.</small></p>
 
                 <div class="card card-success">
                     <h4>✅ Rules of Thumb</h4>
@@ -469,25 +478,25 @@ addTask("Write code");
             <section id="fragments" class="lesson-section">
                 <h2>DocumentFragment &amp; Batch Inserts</h2>
 
-                <p>Every time you insert an element into the DOM, the browser may recalculate layout (a "reflow"). If you're adding 100 items one at a time, that's potentially 100 reflows. A <code>DocumentFragment</code> lets you build a batch of elements off-screen and insert them all at once — one reflow.</p>
+                <p>Every time you insert an element into the live page, the browser has to update the DOM and eventually recalculate layout (a "reflow"). Modern browsers are smart: they usually wait and do one layout pass before the next screen update. But if your loop also <em>reads</em> layout — say, checking <code>offsetHeight</code> after each append — the browser is forced to reflow again and again. A <code>DocumentFragment</code> lets you build a batch of elements off-screen and insert them into the page in a single step, which keeps the live DOM from being touched 100 times.</p>
 
                 <pre><code class="language-javascript">
-// ❌ Slow: 100 individual DOM insertions
+// ❌ Less efficient: 100 separate insertions into the live page
 const list = document.querySelector("#my-list");
 for (let i = 0; i &lt; 100; i++) {
     const li = document.createElement("li");
     li.textContent = `Item ${i + 1}`;
-    list.append(li);  // Reflow on each append
+    list.append(li);  // Touches the live DOM every time
 }
 
-// ✅ Fast: Build in a fragment, insert once
+// ✅ Better: Build in a fragment, insert once
 const fragment = document.createDocumentFragment();
 for (let i = 0; i &lt; 100; i++) {
     const li = document.createElement("li");
     li.textContent = `Item ${i + 1}`;
-    fragment.append(li);  // No reflow — fragment is off-screen
+    fragment.append(li);  // Off-screen — the page isn't touched
 }
-list.append(fragment);    // One reflow for all 100 items
+list.append(fragment);    // One insertion for all 100 items
                 </code></pre>
 
                 <h3>How Fragments Work</h3>
@@ -516,7 +525,7 @@ console.log(fragment.childNodes.length);  // 0
                     A["Create Fragment"] --> B["Build elements<br/>in memory"]
                     B --> C["Append elements<br/>to fragment"]
                     C --> D["Append fragment<br/>to DOM"]
-                    D --> E["One reflow<br/>All visible!"]
+                    D --> E["One insertion<br/>All visible!"]
                     style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
                     style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
                     style C fill:#ecfdf5,stroke:#22c55e,stroke-width:2px,color:#1e293b
@@ -526,7 +535,7 @@ console.log(fragment.childNodes.length);  // 0
 
                 <div class="card card-info">
                     <h4>💡 When Do You Need Fragments?</h4>
-                    <p>For a handful of elements (5–10), the performance difference is negligible. Use fragments when you're inserting <strong>dozens or hundreds</strong> of elements, rendering data from an API, or building complex UI sections. If you're adding one or two elements, just <code>append</code> them directly.</p>
+                    <p>For a handful of elements (5–10), the performance difference is negligible. Use fragments when you're inserting <strong>dozens or hundreds</strong> of elements, rendering data from an API, or building complex UI sections. If you're adding one or two elements, just <code>append</code> them directly. (Since <code>append</code> accepts many arguments, <code>list.append(...items)</code> with an array of elements is another one-step insert.)</p>
                 </div>
             </section>
 
@@ -598,7 +607,7 @@ console.log(fragment.childNodes.length);  // 0
         &lt;button class="btn-clear"&gt;🗑️ Clear All&lt;/button&gt;
     &lt;/div&gt;
     &lt;p class="counter"&gt;Notifications: &lt;span id="count"&gt;0&lt;/span&gt;&lt;/p&gt;
-    &lt;div id="notification-area"&gt;&lt;/div&gt;
+    &lt;div id="notification-area" aria-live="polite"&gt;&lt;/div&gt;
 
     &lt;script&gt;
     // TODO: Complete each task
@@ -607,6 +616,7 @@ console.log(fragment.childNodes.length);  // 0
     //    - Create a &lt;div class="notification {type}"&gt;
     //    - Inside it, create a &lt;span class="notification-text"&gt; with the message
     //    - Create a &lt;button class="close-btn"&gt; with "×" as text
+    //      and aria-label="Dismiss notification" (screen readers can't read "×" meaningfully)
     //    - Append text span and close button to the notification div
     //    - Prepend the notification to #notification-area
     //    - Auto-remove after 5 seconds using setTimeout
@@ -625,7 +635,9 @@ console.log(fragment.childNodes.length);  // 0
     //    elements and updates #count
 
     // 5. Bonus: Use a DocumentFragment to add 5 notifications at once
-    //    when a keyboard shortcut (e.g., Ctrl+Shift+N) is pressed
+    //    when the "b" key (for "batch") is pressed
+    //    (Avoid shortcuts like Ctrl+Shift+N — browsers reserve those
+    //     and your page never even sees them)
     &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -635,9 +647,9 @@ console.log(fragment.childNodes.length);  // 0
                         <summary>💡 Hint</summary>
                         <p><strong>1:</strong> Use <code>document.createElement("div")</code>, add classes with <code>classList.add("notification", type)</code>, and create child elements for the text and button. Use <code>prepend</code> to add new notifications at the top.</p>
                         <p><strong>2:</strong> Use <code>event.target.dataset.type</code> to get the notification type from the clicked button. For "Clear All," use <code>replaceChildren()</code> on the notification area.</p>
-                        <p><strong>3:</strong> Use <code>event.target.closest(".notification").remove()</code> when a close button is clicked.</p>
+                        <p><strong>3:</strong> Check <code>event.target.closest(".close-btn")</code>, then use <code>.closest(".notification").remove()</code> to remove the whole notification.</p>
                         <p><strong>4:</strong> Count with <code>notificationArea.querySelectorAll(".notification").length</code>.</p>
-                        <p><strong>5:</strong> Create a <code>DocumentFragment</code>, loop 5 times to create notification divs, append them to the fragment, then prepend the fragment to the notification area.</p>
+                        <p><strong>5:</strong> Create a <code>DocumentFragment</code>, loop 5 times to create notification divs, append them to the fragment, then prepend the fragment to the notification area. Listen for <code>keydown</code> on <code>document</code> and check <code>event.key === "b"</code>.</p>
                     </details>
 
                     <details>
@@ -672,6 +684,7 @@ function showNotification(type, message) {
     const closeBtn = document.createElement("button");
     closeBtn.classList.add("close-btn");
     closeBtn.textContent = "×";
+    closeBtn.setAttribute("aria-label", "Dismiss notification");
 
     notification.append(text, closeBtn);
     notificationArea.prepend(notification);
@@ -700,16 +713,16 @@ controls.addEventListener("click", (event) => {
 
 // 3. Event delegation for close buttons
 notificationArea.addEventListener("click", (event) => {
-    if (event.target.matches(".close-btn")) {
-        event.target.closest(".notification").remove();
+    const closeBtn = event.target.closest(".close-btn");
+    if (closeBtn) {
+        closeBtn.closest(".notification").remove();
         updateCount();
     }
 });
 
-// 5. Bonus: Batch notifications with Ctrl+Shift+N
+// 5. Bonus: Batch notifications with the "b" key
 document.addEventListener("keydown", (event) => {
-    if (event.ctrlKey && event.shiftKey && event.key === "N") {
-        event.preventDefault();
+    if (event.key === "b" && !event.ctrlKey && !event.metaKey) {
         const types = ["success", "warning", "error", "info", "success"];
         const fragment = document.createDocumentFragment();
 
@@ -724,6 +737,7 @@ document.addEventListener("keydown", (event) => {
             const closeBtn = document.createElement("button");
             closeBtn.classList.add("close-btn");
             closeBtn.textContent = "×";
+            closeBtn.setAttribute("aria-label", "Dismiss notification");
 
             notification.append(text, closeBtn);
             fragment.append(notification);
@@ -750,7 +764,7 @@ document.addEventListener("keydown", (event) => {
                         <p><strong>Question 1:</strong> What does <code>document.createElement("div")</code> return?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="The element is created in memory only. It won't appear on the page until you insert it.">A) A new &lt;div&gt; that is immediately visible on the page</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="createElement creates the element in memory. It exists as a JavaScript object but isn't part of the visible DOM until you append or insert it.">B) A new &lt;div&gt; element in memory, not yet in the DOM</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! createElement creates the element in memory. It exists as a JavaScript object but isn't part of the visible DOM until you append or insert it.">B) A new &lt;div&gt; element in memory, not yet in the DOM</button>
                             <button class="quiz-option" data-correct="false" data-hint="createElement returns an Element object, not an HTML string.">C) A string of HTML</button>
                             <button class="quiz-option" data-correct="false" data-hint="createElement doesn't select existing elements — it creates brand new ones.">D) A reference to an existing &lt;div&gt; on the page</button>
                         </div>
@@ -761,7 +775,7 @@ document.addEventListener("keydown", (event) => {
                         <p><strong>Question 2:</strong> What happens if you <code>append</code> an element that's already in the DOM?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="An element can only exist in one place. Appending it somewhere new moves it from its old position.">A) It creates a copy in the new location</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="DOM elements can only exist in one place. Appending an existing element moves it from its current position to the new one. Use cloneNode() if you want a copy.">B) It moves from its old position to the new one</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! DOM elements can only exist in one place. Appending an existing element moves it from its current position to the new one. Use cloneNode() if you want a copy.">B) It moves from its old position to the new one</button>
                             <button class="quiz-option" data-correct="false" data-hint="No error is thrown — the element simply moves to its new position.">C) It throws an error</button>
                             <button class="quiz-option" data-correct="false" data-hint="The element does move. Appending is never ignored for existing elements.">D) Nothing — the element stays where it was</button>
                         </div>
@@ -773,7 +787,7 @@ document.addEventListener("keydown", (event) => {
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="There's no 'delete' keyword for DOM elements. Use the remove() method.">A) <code>delete element</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="That's the older approach — it works but requires a reference to the parent.">B) <code>element.parentNode.removeChild(element)</code></button>
-                            <button class="quiz-option" data-correct="true" data-explanation="element.remove() is the modern, clean way to remove an element from the DOM. No need to reference the parent.">C) <code>element.remove()</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! element.remove() is the modern, clean way to remove an element from the DOM. No need to reference the parent.">C) <code>element.remove()</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="Setting display to none hides the element but doesn't remove it from the DOM. It still exists in the tree.">D) <code>element.style.display = &quot;none&quot;</code></button>
                         </div>
                         <div class="quiz-feedback"></div>
@@ -782,8 +796,8 @@ document.addEventListener("keydown", (event) => {
                     <div class="quiz-question">
                         <p><strong>Question 4:</strong> What does <code>cloneNode(true)</code> do compared to <code>cloneNode(false)</code>?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="true" data-explanation="cloneNode(true) creates a deep copy — the element and ALL its children and descendants. cloneNode(false) copies only the element itself, without any children.">A) Deep clone (element + all children) vs. shallow clone (element only)</button>
-                            <button class="quiz-option" data-correct="false" data-hint="The argument controls depth (children), not event listeners. Event listeners are never copied by cloneNode.">B) Clone with event listeners vs. without</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! cloneNode(true) creates a deep copy — the element and ALL its children and descendants. cloneNode(false) copies only the element itself, without any children.">A) Deep clone (element + all children) vs. shallow clone (element only)</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The argument controls depth (children), not event listeners. Listeners added with addEventListener are never copied by cloneNode.">B) Clone with event listeners vs. without</button>
                             <button class="quiz-option" data-correct="false" data-hint="Both return a clone. The boolean controls whether children are included, not whether the clone is inserted.">C) Clone and insert vs. clone without inserting</button>
                             <button class="quiz-option" data-correct="false" data-hint="Both create new copies. The boolean controls whether the element's children are also cloned.">D) Clone as new element vs. clone as reference</button>
                         </div>
@@ -793,13 +807,28 @@ document.addEventListener("keydown", (event) => {
                     <div class="quiz-question">
                         <p><strong>Question 5:</strong> Why use a <code>DocumentFragment</code> when adding many elements?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="false" data-hint="Fragments don't add security. They help with performance by reducing reflows.">A) It prevents XSS attacks</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Fragments don't add security. They help with performance by batching insertions.">A) It prevents XSS attacks</button>
                             <button class="quiz-option" data-correct="false" data-hint="Fragments don't persist. They empty out after being appended to the DOM.">B) It keeps a backup of the elements</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="A DocumentFragment lets you build all elements off-screen, then insert them all at once — causing only one browser reflow instead of one per element. This matters when adding dozens or hundreds of items.">C) It batches insertions into one DOM update, reducing reflows</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! A DocumentFragment lets you build all the elements off-screen, then insert them into the live page in one step instead of touching the DOM once per element. This matters most when adding dozens or hundreds of items.">C) It batches many insertions into one DOM update</button>
                             <button class="quiz-option" data-correct="false" data-hint="Fragments aren't required. They're an optimization for batch inserts — you can always append elements individually.">D) It's the only way to add multiple elements</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Imagine adding a "guestbook" to your own site where visitors type a message that appears on the page. Describe, step by step, how you'd build each new entry with <code>createElement</code>, <code>textContent</code>, and <code>append</code>, and explain in your own words why pasting the visitor's message into <code>innerHTML</code> would be dangerous. Looking back over all of Module 4, which DOM skill are you still unsure about?</em></p>
                 </div>
             </section>
 

@@ -5,21 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Learn to select DOM elements with querySelector and modify their text, classes, styles, and attributes using JavaScript.">
     <meta name="keywords" content="javascript, dom, selecting elements, queryselector, modifying elements">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 14: Selecting &amp; Modifying Elements - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -82,6 +88,7 @@
                         <li><a href="#styles" class="toc-link">Modifying Inline Styles</a></li>
                         <li><a href="#attributes" class="toc-link">Attributes &amp; Data Attributes</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -174,6 +181,7 @@ const texts = itemArray.map(item => item.textContent);
 // Or use Array.from()
 const texts2 = Array.from(items).map(item => item.textContent);
                     </code></pre>
+                    <p>One more difference from <code>children</code> (Lesson 13): the NodeList from <code>querySelectorAll</code> is a <strong>static snapshot</strong>. If you add a new <code>&lt;li&gt;</code> afterward, <code>items</code> won't include it — run the query again to get a fresh list.</p>
                 </div>
 
                 <h3>Scoped Queries</h3>
@@ -236,16 +244,21 @@ container.innerHTML = "&lt;h2&gt;New Section&lt;/h2&gt;&lt;p&gt;With a paragraph
 
 // Add to existing HTML
 container.innerHTML += "&lt;p&gt;Another paragraph&lt;/p&gt;";
+// Careful: += re-parses and rebuilds EVERYTHING inside container,
+// wiping out event listeners and anything typed into inputs there.
+// Lesson 16 shows a cleaner way to add elements (createElement + append).
                 </code></pre>
 
                 <div class="card card-danger">
                     <h4>❌ Never Use innerHTML with User Input</h4>
-                    <p>If you insert user-provided text with <code>innerHTML</code>, a malicious user could inject JavaScript code. This is called a <strong>Cross-Site Scripting (XSS)</strong> attack. Always use <code>textContent</code> for user data.</p>
+                    <p>If you insert user-provided text with <code>innerHTML</code>, a malicious user could inject JavaScript code. This is called a <strong>Cross-Site Scripting (XSS)</strong> attack. "User input" means anything you didn't write yourself: form fields, URL parameters, data from an API or <code>localStorage</code>. Always use <code>textContent</code> for that kind of data.</p>
                     <pre><code class="language-javascript">
 const userInput = '&lt;img src="x" onerror="alert(\'hacked!\')"&gt;';
 
-// ❌ DANGEROUS — this would execute the script
+// ❌ DANGEROUS — the broken image fires onerror, running the attacker's code
 // element.innerHTML = userInput;
+// (A plain &lt;script&gt; tag inserted via innerHTML does NOT run —
+//  but event-handler attributes like onerror do, so it's still unsafe.)
 
 // ✅ SAFE — treats everything as plain text
 element.textContent = userInput;
@@ -293,7 +306,7 @@ card.classList.toggle("active");
 
 // Check if a class exists
 if (card.classList.contains("card")) {
-    console.log("It's a card!");  // true
+    console.log("It's a card!");  // contains() returns true, so this runs
 }
 
 // Add multiple classes at once
@@ -424,6 +437,11 @@ console.log(link.hasAttribute("target"));   // true or false
 link.removeAttribute("title");
                 </code></pre>
 
+                <div class="card card-info">
+                    <h4>💡 Attribute vs. Property: href</h4>
+                    <p><code>getAttribute("href")</code> returns exactly what's written in the HTML (e.g. <code>"about.html"</code>), while the <code>link.href</code> property returns the full resolved URL (e.g. <code>"https://mysite.com/about.html"</code>). Use whichever you actually need.</p>
+                </div>
+
                 <h3>Common Properties vs. getAttribute</h3>
                 <p>Many attributes have direct properties on the element. These are usually more convenient.</p>
 
@@ -464,7 +482,7 @@ console.log(btn.dataset.confirm);   // "true" (always a string)
 
 // Set data attributes
 btn.dataset.status = "pending";
-// Adds: data-status="pending" to the HTML
+// Adds data-status="pending" to the element (check the Elements panel)
 
 // Delete a data attribute
 delete btn.dataset.confirm;
@@ -572,7 +590,7 @@ delete btn.dataset.confirm;
                         <pre><code class="language-javascript">
 // 1. Change the name
 const nameEl = document.querySelector("#name");
-nameEl.textContent = "Ray De La Paz";
+nameEl.textContent = "Ray de la Paz";
 
 // 2. Update the bio
 document.querySelector("#bio").textContent =
@@ -602,7 +620,11 @@ card.dataset.status = "active";
 
 // 9. Toggle dark mode
 card.classList.toggle("dark");
-// Call again to toggle off:
+// Notice the card background stays light blue while the text turns light?
+// The inline style from step 6 beats the .dark class. Clear it first:
+// card.style.backgroundColor = "";
+// That's the "prefer classes over inline styles" lesson in action!
+// Call toggle again to switch dark mode off:
 // card.classList.toggle("dark");
 
 // 10. Bonus: Update all fields at once
@@ -634,8 +656,8 @@ updateProfile({
                         <p><strong>Question 1:</strong> What does <code>querySelector</code> return if no element matches?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="undefined is what you get for missing object properties. querySelector returns null.">A) undefined</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="querySelector returns null when no element matches the CSS selector. Always check for null before using the result.">B) null</button>
-                            <button class="quiz-option" data-correct="false" data-hint="querySelectorAll returns an empty NodeList. querySelector returns null for no match.">C) An empty NodeList</button>
+                            <button class="quiz-option" data-correct="false" data-hint="querySelectorAll returns an empty NodeList. querySelector returns null for no match.">B) An empty NodeList</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! querySelector returns null when no element matches the CSS selector. Always check for null before using the result.">C) null</button>
                             <button class="quiz-option" data-correct="false" data-hint="querySelector silently returns null — no error is thrown.">D) It throws an error</button>
                         </div>
                         <div class="quiz-feedback"></div>
@@ -645,7 +667,7 @@ updateProfile({
                         <p><strong>Question 2:</strong> Why should you avoid <code>innerHTML</code> with user input?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="innerHTML works in all modern browsers. The concern is security, not compatibility.">A) It doesn't work in all browsers</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="innerHTML parses HTML, so malicious user input like &lt;script&gt; tags can execute code. This is called Cross-Site Scripting (XSS). Use textContent for user data — it treats everything as plain text.">B) It can execute malicious scripts (XSS attacks)</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! innerHTML parses HTML, so malicious input like an &lt;img&gt; with an onerror attribute can run the attacker's code. This is called Cross-Site Scripting (XSS). Use textContent for user data — it treats everything as plain text.">B) It can execute malicious scripts (XSS attacks)</button>
                             <button class="quiz-option" data-correct="false" data-hint="innerHTML can actually be faster than multiple DOM operations. The issue is security.">C) It's too slow for dynamic content</button>
                             <button class="quiz-option" data-correct="false" data-hint="innerHTML works fine with styles. The issue is that it parses HTML and can execute scripts.">D) It removes existing CSS styles</button>
                         </div>
@@ -655,8 +677,8 @@ updateProfile({
                     <div class="quiz-question">
                         <p><strong>Question 3:</strong> What method adds a CSS class without removing existing ones?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="false" data-hint="className replaces ALL classes with the new value — it doesn't add to existing ones.">A) <code>element.className = &quot;new&quot;</code></button>
-                            <button class="quiz-option" data-correct="true" data-explanation="classList.add() adds a class while preserving all existing classes on the element.">B) <code>element.classList.add(&quot;new&quot;)</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! classList.add() adds a class while preserving all existing classes on the element.">A) <code>element.classList.add(&quot;new&quot;)</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="className replaces ALL classes with the new value — it doesn't add to existing ones.">B) <code>element.className = &quot;new&quot;</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="classList.toggle() would add it if missing, but also remove it if already present.">C) <code>element.classList.toggle(&quot;new&quot;)</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="setAttribute replaces the entire class attribute, similar to className.">D) <code>element.setAttribute(&quot;class&quot;, &quot;new&quot;)</code></button>
                         </div>
@@ -664,15 +686,41 @@ updateProfile({
                     </div>
 
                     <div class="quiz-question">
-                        <p><strong>Question 4:</strong> How do you access <code>data-item-id</code> in JavaScript?</p>
+                        <p><strong>Question 4:</strong> Using the <code>dataset</code> property, how do you read <code>data-item-id</code>?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="Close, but kebab-case is converted to camelCase in the dataset property.">A) <code>element.dataset.item-id</code></button>
-                            <button class="quiz-option" data-correct="true" data-explanation="data-* attributes are accessed through dataset with camelCase conversion. data-item-id becomes dataset.itemId.">B) <code>element.dataset.itemId</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! data-* attributes are accessed through dataset with camelCase conversion. data-item-id becomes dataset.itemId.">B) <code>element.dataset.itemId</code></button>
                             <button class="quiz-option" data-correct="false" data-hint="There's no 'data' property. Use 'dataset' to access data-* attributes.">C) <code>element.data.itemId</code></button>
-                            <button class="quiz-option" data-correct="false" data-hint="This works but is verbose. The dataset property is the modern, cleaner approach.">D) <code>element.getAttribute(&quot;data-item-id&quot;)</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="This works too, but it doesn't use dataset. The question asks for the dataset way.">D) <code>element.getAttribute(&quot;data-item-id&quot;)</code></button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> Your stylesheet sets <code>h1 { font-size: 2rem; }</code>. What does <code>heading.style.fontSize</code> return if no inline style was set?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="element.style only knows about inline styles (the style attribute), not rules from your stylesheet.">A) "2rem"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="That's the kind of resolved value getComputedStyle gives you — but element.style doesn't look at the stylesheet.">B) "32px"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="It doesn't return undefined — fontSize always exists on the style object. What value does an unset inline style have?">C) undefined</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! element.style only reads inline styles, so an unset property is an empty string. Use getComputedStyle(heading).fontSize to get the value actually applied.">D) "" (an empty string)</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Pick one element on a page you built in the HTML &amp; CSS course and write the lines of JavaScript that would select it and change its text, a class, and one attribute. Then explain in your own words why <code>textContent</code> is safe for a visitor's name but <code>innerHTML</code> isn't. Which of these tools are you still unsure when to use?</em></p>
                 </div>
             </section>
 

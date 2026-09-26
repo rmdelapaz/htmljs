@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:,">
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="timer-container">
+        <h1>🍅 Pomodoro Timer</h1>
+
+        <div class="timer-ring">
+            <svg width="280" height="280" aria-hidden="true">
+                <circle class="bg-ring" cx="140" cy="140" r="130"></circle>
+                <circle class="progress-ring" id="progress-ring"
+                        cx="140" cy="140" r="130"
+                        stroke-dasharray="816.81"
+                        stroke-dashoffset="0"></circle>
+            </svg>
+            <div class="timer-display" id="timer-display" role="timer">25:00</div>
+            <div class="timer-label" id="timer-label">Focus Time</div>
+        </div>
+
+        <div class="controls">
+            <button type="button" id="start-btn">▶ Start</button>
+            <button type="button" id="pause-btn">⏸ Pause</button>
+            <button type="button" id="reset-btn">↺ Reset</button>
+        </div>
+
+        <div class="presets" aria-label="Timer length">
+            <button type="button" class="preset-btn selected" data-minutes="25">25 min</button>
+            <button type="button" class="preset-btn" data-minutes="15">15 min</button>
+            <button type="button" class="preset-btn" data-minutes="5">5 min</button>
+            <button type="button" class="preset-btn" data-minutes="1">1 min</button>
+        </div>
+
+        <p class="done-message" id="done-message" aria-live="polite">🎉 Time's up! Great work!</p>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

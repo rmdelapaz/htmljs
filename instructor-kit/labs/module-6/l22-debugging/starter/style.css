@@ -1,0 +1,41 @@
+/* Snack Budget — L22 bug-hunt lab. The CSS has no planted bugs: all of them are in script.js. */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; background: #f1f5f9; color: #1e293b; line-height: 1.5; }
+.app { max-width: 560px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+h1 { margin: 0 0 .25rem; font-size: 1.8rem; }
+h2 { font-size: 1.15rem; margin: 0; }
+.lead { margin: 0 0 1rem; color: #475569; }
+
+.totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin: 0 0 1.25rem; }
+.totals div { background: #fff; border-radius: 8px; padding: .6rem .75rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.totals dt { font-size: .8rem; color: #475569; }
+.totals dd { margin: 0; font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.totals dd.over { color: #b91c1c; }
+
+.add-form { display: flex; gap: .5rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.field { display: flex; flex-direction: column; gap: .2rem; flex: 1 1 140px; }
+.field label { font-size: .85rem; font-weight: 600; }
+input { padding: .5rem .6rem; border: 2px solid #94a3b8; border-radius: 6px; font: inherit; }
+button { padding: .5rem 1rem; border: none; border-radius: 6px; background: #1d4ed8; color: #fff; font: inherit; cursor: pointer; }
+button:hover { background: #1e40af; }
+button.secondary { background: #fff; color: #1d4ed8; border: 2px solid #1d4ed8; padding: .35rem .8rem; }
+button.secondary:hover { background: #eff6ff; }
+:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+
+.list-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .5rem; }
+.count { font-size: .85rem; font-weight: 400; color: #475569; margin-left: .35rem; }
+.item-list { list-style: none; padding: 0; margin: 0; }
+.item-list li { display: flex; align-items: center; gap: .5rem; background: #fff; border-radius: 8px;
+    padding: .6rem .75rem; margin-bottom: .5rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.item-name { flex: 1; overflow-wrap: anywhere; }
+.item-price { font-variant-numeric: tabular-nums; color: #334155; }
+.item-list li.bought .item-name { text-decoration: line-through; color: #475569; }
+.toggle-btn { background: #15803d; padding: .25rem .6rem; font-size: .85rem; }
+.toggle-btn:hover { background: #166534; }
+.item-list li.bought .toggle-btn { background: #475569; }
+.delete-btn { background: #b91c1c; padding: .25rem .55rem; font-size: .85rem; }
+.delete-btn:hover { background: #991b1b; }
+.empty { color: #475569; font-style: italic; }
+.status { min-height: 1.5em; color: #15803d; font-weight: 600; }
+
+@media (max-width: 420px) { .totals dd { font-size: 1rem; } }

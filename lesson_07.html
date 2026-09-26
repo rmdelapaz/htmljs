@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Learn to write reusable JavaScript functions — declarations, expressions, arrow functions, parameters, return values, and default arguments.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 7: Functions - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -81,6 +87,7 @@
                         <li><a href="#arrow-functions" class="toc-link">Arrow Functions</a></li>
                         <li><a href="#best-practices" class="toc-link">Best Practices</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -124,12 +131,15 @@ greet();  // "Hello, world!" — call it as many times as you want
                 <p>The parentheses <code>()</code> after the function name are what <strong>call</strong> (invoke) it. Without them, you're just referencing the function itself, not running it.</p>
 
                 <pre><code class="language-javascript">
-console.log(greet);   // [Function: greet] — the function object
-console.log(greet()); // "Hello, world!" — runs the function
+console.log(greet);   // ƒ greet() {...} — the function itself (nothing runs)
+greet();              // "Hello, world!" — the () actually runs it
+
+// Careful: console.log(greet()) logs "Hello, world!" and THEN undefined,
+// because greet() doesn't return anything (more on return below)
                 </code></pre>
 
                 <h3>Hoisting</h3>
-                <p>Function declarations are <strong>hoisted</strong> — JavaScript moves them to the top of their scope before execution. This means you can call a function <em>before</em> it's defined in your code.</p>
+                <p>Function declarations are <strong>hoisted</strong>. Before running your code, JavaScript sets up every function declaration in that scope, so it behaves as if they'd been moved to the top. This means you can call a function <em>before</em> it's defined in your code.</p>
 
                 <pre><code class="language-javascript">
 // This works! Declaration is hoisted.
@@ -319,7 +329,7 @@ console.log(divide(10, 2));  // 5
                         </thead>
                         <tbody>
                             <tr><td>Syntax</td><td><code>function name() {}</code></td><td><code>const name = function() {}</code></td></tr>
-                            <tr><td>Hoisted?</td><td>Yes — can call before definition</td><td>No — must define before calling</td></tr>
+                            <tr><td>Callable before its line?</td><td>Yes (fully hoisted)</td><td>No — must define before calling</td></tr>
                             <tr><td>Named?</td><td>Always named</td><td>Can be anonymous</td></tr>
                             <tr><td>Use case</td><td>General-purpose functions</td><td>Callbacks, conditional definitions</td></tr>
                         </tbody>
@@ -327,8 +337,8 @@ console.log(divide(10, 2));  // 5
                 </div>
 
                 <pre><code class="language-javascript">
-// ❌ Function expressions are NOT hoisted
-// sayBye();  // Error: Cannot access 'sayBye' before initialization
+// ❌ Function expressions can't be called before their line
+// sayBye();  // ReferenceError: Cannot access 'sayBye' before initialization
 
 const sayBye = function() {
     console.log("Goodbye!");
@@ -373,7 +383,7 @@ console.log(getRandom());  // random number 0–99
 
 // Multiple parameters — parentheses required
 const greet = (first, last) => `Hello, ${first} ${last}!`;
-console.log(greet("Ray", "De La Paz"));  // "Hello, Ray De La Paz!"
+console.log(greet("Ray", "de la Paz"));  // "Hello, Ray de la Paz!"
 
 // Returning an object — wrap in parentheses
 const makeUser = (name, age) => ({ name, age, active: true });
@@ -382,7 +392,7 @@ console.log(makeUser("Alex", 28));
                 </code></pre>
 
                 <h3>Arrow Functions in Practice</h3>
-                <p>Arrow functions really shine as <strong>callbacks</strong> — short functions you pass to other functions.</p>
+                <p>Arrow functions really shine as <strong>callbacks</strong> — short functions you pass to other functions. Here's a sneak peek using two array methods, <code>map()</code> and <code>filter()</code>, which you'll learn properly in Lesson 11.</p>
 
                 <pre><code class="language-javascript">
 const numbers = [1, 2, 3, 4, 5];
@@ -413,7 +423,7 @@ console.log(evens);  // [2, 4]
                     C["Function Expression"] --> D["const name = function() { }"]
                     E["Arrow Function"] --> F["const name = () => { }"]
                     B --> G["Hoisted ✅"]
-                    D --> H["Not hoisted ❌"]
+                    D --> H["Can't call early ❌"]
                     F --> H
                     style A fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e293b
                     style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#1e293b
@@ -520,8 +530,9 @@ function getDiscount(price, isMember) {
 
 // 4. temperatureConverter(value, fromUnit) — Your choice!
 // Converts between Celsius and Fahrenheit.
-// temperatureConverter(32, "F")  → "32°F = 0°C"
-// temperatureConverter(100, "C") → "100°C = 212°F"
+// temperatureConverter(32, "F")  → "32°F = 0.0°C"
+// temperatureConverter(100, "C") → "100°C = 212.0°F"
+// (round to one decimal place with .toFixed(1))
 // If fromUnit is invalid, return "Invalid unit"
                     </code></pre>
 
@@ -593,7 +604,7 @@ console.log(temperatureConverter(72, "K"));   // "Invalid unit"
                         <p><strong>Question 1:</strong> What does a function return if it has no <code>return</code> statement?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="null is a specific value — JavaScript doesn't assign it automatically.">A) null</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="A function without an explicit return statement (or with just 'return;') returns undefined.">B) undefined</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! A function without an explicit return statement (or with just 'return;') returns undefined.">B) undefined</button>
                             <button class="quiz-option" data-correct="false" data-hint="0 is a number — functions don't default to returning numbers.">C) 0</button>
                             <button class="quiz-option" data-correct="false" data-hint="Functions without return still 'return' — they just return undefined.">D) Nothing (error)</button>
                         </div>
@@ -603,9 +614,9 @@ console.log(temperatureConverter(72, "K"));   // "Invalid unit"
                     <div class="quiz-question">
                         <p><strong>Question 2:</strong> Which can be called before it's defined in the code?</p>
                         <div class="quiz-options">
-                            <button class="quiz-option" data-correct="true" data-explanation="Function declarations are hoisted — JavaScript moves them to the top of their scope before execution. Expressions and arrows are not hoisted.">A) Function declaration</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Function declarations are hoisted — JavaScript moves them to the top of their scope before execution. Expressions and arrows are not hoisted.">A) Function declaration</button>
                             <button class="quiz-option" data-correct="false" data-hint="Function expressions are stored in variables, which are not hoisted with their values.">B) Function expression</button>
-                            <button class="quiz-option" data-correct="false" data-hint="Arrow functions are a type of expression — they follow the same no-hoisting rules.">C) Arrow function</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Arrow functions are a type of expression — they follow the same rules as function expressions.">C) Arrow function</button>
                             <button class="quiz-option" data-correct="false" data-hint="Only declarations are hoisted — expressions and arrows must be defined first.">D) All of the above</button>
                         </div>
                         <div class="quiz-feedback"></div>
@@ -615,12 +626,53 @@ console.log(temperatureConverter(72, "K"));   // "Invalid unit"
                         <p><strong>Question 3:</strong> What is the output of <code>const fn = n => n * 3; console.log(fn(4));</code>?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="n * 3 multiplies the parameter by 3, not adds 3.">A) 7</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="The arrow function multiplies its argument by 3. fn(4) computes 4 * 3 = 12.">B) 12</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! The arrow function multiplies its argument by 3. fn(4) computes 4 * 3 = 12.">B) 12</button>
                             <button class="quiz-option" data-correct="false" data-hint="This is valid arrow function syntax — no error occurs.">C) Error</button>
                             <button class="quiz-option" data-correct="false" data-hint="The implicit return means the expression's value (4 * 3) is returned automatically.">D) undefined</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+                    <div class="quiz-question">
+                        <p><strong>Question 4:</strong> What does this code log?</p>
+                        <pre><code class="language-javascript">function greet(name = "friend") {
+    return `Hi, ${name}!`;
+}
+console.log(greet());</code></pre>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="A missing argument would normally be undefined, but this parameter has a default value.">A) "Hi, undefined!"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="Calling a function with fewer arguments than parameters is allowed in JavaScript. It never throws for that.">B) An error: missing argument</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! No argument was passed, so the default parameter kicks in and name is &quot;friend&quot;.">C) "Hi, friend!"</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The function does have a return statement, so its value is logged.">D) undefined</button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <div class="quiz-question">
+                        <p><strong>Question 5:</strong> Which arrow function correctly returns an object?</p>
+                        <div class="quiz-options">
+                            <button class="quiz-option" data-correct="false" data-hint="Without parentheses, JavaScript reads { } as a code block, not an object, so nothing is returned.">A) <code>const make = n =&gt; { name: n };</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="return belongs inside curly braces. You can&#39;t write it straight after the arrow.">B) <code>const make = n =&gt; return { name: n };</code></button>
+                            <button class="quiz-option" data-correct="false" data-hint="Square brackets make an array, not an object, and this isn&#39;t valid syntax either.">C) <code>const make = n =&gt; [name: n];</code></button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Wrapping the object in parentheses tells JavaScript that { } is an object to return, not a block of code.">D) <code>const make = n =&gt; ({ name: n });</code></button>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Learning Journal -->
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Pick one small job you found yourself repeating in Lessons 5 and 6 and describe a function that would handle it: its name, its parameters, and what it returns. Would you write it as a declaration or an arrow function, and why? What is still fuzzy for you: parameters vs. arguments, <code>return</code>, or the arrow shortcuts?</em></p>
                 </div>
             </section>
 
@@ -632,7 +684,7 @@ console.log(temperatureConverter(72, "K"));   // "Invalid unit"
                     <h3>🎉 Key Takeaways</h3>
                     <ul>
                         <li><strong>Function declarations</strong> are hoisted and use the <code>function</code> keyword</li>
-                        <li><strong>Function expressions</strong> store a function in a variable and are <em>not</em> hoisted</li>
+                        <li><strong>Function expressions</strong> store a function in a variable and <em>can't</em> be called before they're defined</li>
                         <li><strong>Arrow functions</strong> (<code>=></code>) are concise expressions, ideal for callbacks</li>
                         <li><strong>Parameters</strong> are placeholders; <strong>arguments</strong> are the actual values passed in</li>
                         <li><strong>Default parameters</strong> provide fallback values for missing arguments</li>

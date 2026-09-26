@@ -2,24 +2,21 @@
 
 ## Course: Front-End JavaScript: Make Your Web Pages Come Alive
 ## Location: `\\wsl$\Ubuntu\home\practicalace\projects\htmljs`
-## Last Updated: 2026-04-16
+## Last Updated: 2026-09-26
 
 ---
 
 ## What to Do Next
-1. **All lessons complete!** Remaining tasks:
-2. Create course-specific favicon
-3. Browser testing
-4. Verify prev/next navigation links
-5. Deploy to Netlify
-6. Link prerequisite course URL (htmlcss Netlify URL) in index.html
+1. **Aligned with htmlcss (2026-09-26)** — full content review + corrections of all 22 lessons, quizzes (4–6 per lesson, 112 total), a lesson-specific 📓 learning journal in every lesson, fixed shared JS (theme toggle was undefined → every page's init crashed), instructor kit (6 modules) + 5-day syllabus, `_redirects` + 404 hiding the kit.
+2. Pending decision: a11y/contrast fixes in L15/L16 exercise CSS and the L21 QuickNote source (labels, focus ring, #94a3b8 text) — the kit's lab versions already fix these.
+3. Commit + push (GPG-signed, Ray), then confirm on rays-htmljs.netlify.app that /instructor-kit/ returns 404.
 
 ## Key Patterns
 - Nav logo: `Front-End JS Course`
 - Breadcrumb: Home > Module X > Lesson N: Title
 - Code language class: `language-javascript` (primary), `language-html` for HTML snippets
 - Prev/Next nav at bottom of each lesson
-- Each lesson has: objectives card, sticky TOC, sections, exercise with hint/solution, quiz, summary, what's next
+- Each lesson has: objectives card, sticky TOC, sections, exercise with hint/solution, quiz, 📓 journal (before summary), summary, what's next
 - Mermaid diagrams for visual concepts
 - Prerequisite course: HTML & CSS (projects/htmlcss)
 
@@ -62,14 +59,17 @@
 - [x] Lesson 22: Next Steps & Best Practices — debugging, code organization, common pitfalls, modern JS features, ecosystem overview, learning path, portfolio tips
 
 ## Outstanding Items
-- [x] Create index.html (course homepage)
-- [x] Create course-config.json
-- [x] Copy template CSS and JS files
-- [x] Create all lesson HTML files (1–22)
-- [x] Copy favicon.png and favicon.ico from course_template
-- [ ] Create course-specific favicon
-- [ ] Browser testing
-- [ ] Verify prev/next navigation links
-- [ ] Deploy to Netlify
-- [ ] Link prerequisite course URL (htmlcss Netlify URL) in index.html resources section
-- [x] Delete continue.md (redundant)
+- [x] Create index.html, course-config.json, all 22 lessons
+- [x] Favicon (shared template favicon, same as htmlcss)
+- [x] Browser testing — all lessons + kit swept in headless Chromium (no console errors, all Mermaid renders)
+- [x] Verify prev/next navigation links
+- [x] Deployed to Netlify (rays-htmljs.netlify.app)
+- [x] Prerequisite course URL linked (rays-htmlcss.netlify.app)
+- [x] Quizzes in every lesson (112 items) + learning journal (`initJournal()`, localStorage key `htmljsJournal:<page>`)
+- [x] Instructor kit: instructor-kit/ (source/module-1..6 → build-combined.py → 3 books + PDFs, slides/, labs/, setup-guide, final-assessment, sell-sheet, README, LICENSE); hidden from live site via _redirects
+- [x] 5-day syllabus: syllabus.html, syllabus-print.html, Front-End-JS-Syllabus-5day.pdf
+- [ ] L15/L16/L21 exercise a11y + contrast (see What to Do Next)
+
+## Notes
+- Lesson files use **CRLF** line endings (L05–L22 have no final newline) — preserve them when editing (Python: `open(f, newline='')`).
+- Kit books are generated: edit `instructor-kit/source/module-N/*.html`, run `python3 build-combined.py`, then re-render PDFs with headless chromium `--print-to-pdf --no-pdf-header-footer`.

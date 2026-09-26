@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facilitator Guide — Module 3</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">contains answers &amp; timing · not for students</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Instructor Kit · Facilitator Guide</div>
+    <h1>Module 3 — Working with Data</h1>
+    <p class="sub">How to teach the four lessons that move students from single values to real data: arrays, objects, the map/filter/reduce toolkit, and strings. Timing, live-demo scripts, the misconceptions to pre-empt, and how to run each lab.</p>
+    <div class="meta-row">
+      <span class="chip"><b>4</b> lessons</span>
+      <span class="chip"><b>~3.3 hrs</b> teaching</span>
+      <span class="chip">Lessons <b>L09–L12</b></span>
+      <span class="chip">Level <b>Beginner → Intermediate</b></span>
+      <span class="chip">Maps to <b>Day 2 PM (L09) → Day 3 AM</b></span>
+    </div>
+  </header>
+
+  <!-- HOW TO USE -->
+  <div class="sec"><h2>How to Use This Guide</h2><span class="rule"></span></div>
+  <ul class="tick">
+    <li>Each lesson has the same rhythm: <b>Frame</b> (why it matters) → <b>Teach</b> (live-code the concept) → <b>Lab</b> (students build) → <b>Check</b> (quiz + recap). The minute timings cover teaching, the quiz, and the lesson's <b>Learning Journal</b> prompt (in the lesson and the workbook); lab floor time sits on top of that. Budget 25–35 minutes per lab in this module and adjust ±10 min to your group.</li>
+    <li><b>Live-code everything, and predict before you run.</b> Type the code in front of the class, and before each <code class="inline">console.log</code> ask the room "what will this print?" This module is full of surprises (<code class="inline">[40, 100, 1].sort()</code>, <code class="inline">{x:1} === {x:1}</code>, <code class="inline">32.400000000000006</code>). A wrong prediction the class sees for itself sticks better than a warning.</li>
+    <li>Blue blocks are concepts; <span style="color:var(--lab);font-weight:600">teal</span> blocks are hands-on; <span style="color:var(--warn);font-weight:600">amber</span> blocks are watch-outs — the errors that eat class time if you don't pre-empt them.</li>
+    <li>Quiz answers here are for you. The student workbook has a 3-question subset of each lesson quiz, without answers, labelled with the lesson's question numbers; the separate <b>Answer Key</b> covers every question with matching numbers for grading.</li>
+  </ul>
+
+  <div class="note">
+    <div class="t">Before you start the module</div>
+    <p>Students need VS Code with Live Server, a browser with DevTools, and the Module 2 habits: writing functions, arrow functions, and <code class="inline">for</code>/<code class="inline">for...of</code> loops. Callbacks carry this whole module, so if arrow functions are shaky, spend five minutes rewriting <code class="inline">function (n) { return n * 2; }</code> as <code class="inline">n =&gt; n * 2</code> before L09. Copy <code class="inline">labs/module-3/</code> to the student machines (starters only). If anyone is behind on setup, pair them up; don't stop the room to fix one machine.</p>
+  </div>
+
+  <!-- AT A GLANCE -->
+  <div class="sec"><h2>Module at a Glance</h2><span class="rule"></span></div>
+  <table class="timing">
+    <thead><tr><th>Lesson</th><th>Topic</th><th>Time</th><th>Students leave able to…</th></tr></thead>
+    <tbody>
+      <tr><td class="t">L09</td><td>Arrays</td><td class="t">50m</td><td>Store, change, search, and loop over an ordered list</td></tr>
+      <tr><td class="t">L10</td><td>Objects</td><td class="t">50m</td><td>Model a real thing with named properties and methods</td></tr>
+      <tr><td class="t">L11</td><td>Array Methods</td><td class="t">55m</td><td>Chain filter → sort → map (and reduce) instead of loops</td></tr>
+      <tr><td class="t">L12</td><td>Strings &amp; Template Literals</td><td class="t">40m</td><td>Search, slice, clean, and format text</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.9rem;color:var(--ink-2)">The labs are <b>four stand-alone data exercises</b>, not one cumulative project: a to-do list, a contact book, a product-catalog pipeline, and a text-formatting toolkit. The lesson exercises are console exercises, so each lab page shows its output on the page as well as in the Console (via a provided <code class="inline">show()</code> helper). Students still get the full DevTools habit, and nobody gets stuck because they can't find the Console. Day 2 ends after L09; L10–L12 fill the Day 3 morning.</p>
+
+  <!-- LESSON 09 -->
+  <div class="sec"><h2>Lesson Plans</h2><span class="rule"></span></div>
+
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L09</span><h3>Arrays</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Create arrays with literal syntax (and know why to avoid <code class="inline">new Array(3)</code>)</li>
+          <li>Read and update elements by index; use <code class="inline">length</code> and <code class="inline">at(-1)</code></li>
+          <li>Add and remove with <code class="inline">push</code>/<code class="inline">pop</code>/<code class="inline">unshift</code>/<code class="inline">shift</code>; insert, remove, or replace with <code class="inline">splice</code></li>
+          <li>Search with <code class="inline">includes</code>, <code class="inline">indexOf</code>, <code class="inline">find</code>; copy and combine with <code class="inline">slice</code>, <code class="inline">concat</code>, and spread</li>
+          <li>Loop with <code class="inline">for</code>, <code class="inline">for...of</code>, and <code class="inline">forEach</code></li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (4m).</b> Write <code class="inline">const song1 = …; const song2 = …; const song3 = …;</code> and ask "what about a playlist of 500?" An array is one variable holding an ordered list. Draw numbered slots on the board, starting at <b>0</b>.</li>
+          <li><b>Create, read, update (8m).</b> Literal syntax, index access, <code class="inline">animals[99]</code> → <code class="inline">undefined</code> (no error!), last element via <code class="inline">length - 1</code> and <code class="inline">at(-1)</code>, and a quick array destructure <code class="inline">const [r, g, b] = rgb</code>. Show that <code class="inline">const</code> arrays can still be <code class="inline">push</code>ed: <code class="inline">const</code> locks the variable, not the contents.</li>
+          <li><b>The four end methods (6m).</b> push/pop at the end, unshift/shift at the start. Draw the array as a line of people: push = join the back, shift = serve the front. Point out that <code class="inline">push</code> returns the new <em>length</em> and <code class="inline">pop</code>/<code class="inline">shift</code> return the removed <em>element</em>.</li>
+          <li><b>splice vs slice (10m).</b> The lesson's hardest ten minutes. Run both on the same array and log the original after each:
+            <pre class="code"><span class="k">const</span> letters = [<span class="s">"a"</span>, <span class="s">"b"</span>, <span class="s">"c"</span>, <span class="s">"d"</span>, <span class="s">"e"</span>];
+letters.slice(1, 3);   <span class="c">// ["b", "c"] — letters unchanged</span>
+letters.splice(1, 2);  <span class="c">// ["b", "c"] — letters is now ["a", "d", "e"]</span></pre>
+            Same return value, completely different side effect. Mnemonic: <em>splice has a "p" for "permanent"</em>. Then show insert <code class="inline">splice(1, 0, "x")</code> and replace <code class="inline">splice(1, 1, "x")</code>.</li>
+          <li><b>Searching (6m).</b> <code class="inline">includes</code> → true/false, <code class="inline">indexOf</code> → position or <code class="inline">-1</code>, <code class="inline">find</code>/<code class="inline">findIndex</code> with a condition. First look at a callback here: <code class="inline">numbers.find(num =&gt; num &gt; 10)</code>. Read it aloud: "find the first num where num is greater than 10."</li>
+          <li><b>Combine &amp; copy (5m).</b> <code class="inline">concat</code>, then spread <code class="inline">[...front, ...back]</code> as the modern way; <code class="inline">[...original]</code> as a copy. Show the lesson's mutating vs non-mutating list.</li>
+          <li><b>Iterating (5m).</b> Same array three ways: <code class="inline">for</code> (need the index), <code class="inline">for...of</code> (default), <code class="inline">forEach</code> (callback with element + index; no <code class="inline">break</code>). End on the tax loop printing <code class="inline">32.400000000000006</code>. Name it and park it: "floating point. We'll format money with <code class="inline">toFixed(2)</code>."</li>
+          <li><b>Lab launch (2m).</b> Hand off to the To-Do List Manager.</li>
+          <li><b>Check &amp; journal (4m).</b> Quiz poll, then the journal prompt (splice vs slice in their own words).</li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script</div>
+        <ol class="steps">
+          <li>Open the Console and type <code class="inline">const todos = ["Buy groceries", "Walk the dog"]</code>. Ask: "How do I get the dog walk?" Take answers. Someone will say <code class="inline">todos[2]</code>. Run it: <code class="inline">undefined</code>. That's the zero-index lesson, learned the memorable way.</li>
+          <li><code class="inline">todos.push("Read")</code>. Point out the Console echoes <b>3</b>, the new length, not the array.</li>
+          <li><code class="inline">todos.indexOf("Walk the dog")</code> → 1, then <code class="inline">todos.splice(1, 1)</code>. This is exactly the <code class="inline">removeTodo</code> recipe from the lab. Say so.</li>
+          <li><code class="inline">todos.indexOf("Nap")</code> → <b>-1</b>. "Not found is -1, and that's why we check for it before splicing." Then show why: <code class="inline">todos.splice(-1, 1)</code> quietly removes the <em>last</em> item.</li>
+        </ol>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — To-Do List Manager</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Students write <code class="inline">addTodo</code>, <code class="inline">removeTodo</code>, <code class="inline">insertTodoAt</code>, <code class="inline">listTodos</code>, and <code class="inline">completeTodo</code> on a shared <code class="inline">todos</code> array, then uncomment the tests. Starter in <code class="inline">labs/module-3/l09-arrays/starter/</code>; solution in <code class="inline">labs/module-3/l09-arrays/solution/</code>. Tell students to use <code class="inline">show()</code> where the lesson says <code class="inline">console.log()</code>: it logs <em>and</em> prints on the page.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> the <code class="inline">-1</code> check before <code class="inline">splice</code> in <code class="inline">removeTodo</code>; <code class="inline">splice(index, 0, task)</code> (zero delete count) for inserting; <code class="inline">i + 1</code> in the numbered list; <code class="inline">shift</code> (not <code class="inline">pop</code>) in <code class="inline">completeTodo</code>. <b>Early finishers:</b> add a <code class="inline">moveTodo(list, from, to)</code> using two splices.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>splice vs slice.</b> The #1 confusion of the lesson (quiz Q3 targets it). If a student's array "mysteriously lost items," look for a <code class="inline">splice</code> where they meant <code class="inline">slice</code>.</li>
+          <li><b>Off-by-one.</b> The last index is <code class="inline">length - 1</code>; <code class="inline">arr[arr.length]</code> is always <code class="inline">undefined</code>. In loops, <code class="inline">i &lt;= arr.length</code> runs one step too far.</li>
+          <li><b><code class="inline">if (list.indexOf(x))</code>.</b> Wrong in both directions: "found at index 0" is falsy and "not found" (<code class="inline">-1</code>) is truthy. Compare to <code class="inline">-1</code> explicitly, or use <code class="inline">includes</code> for yes/no questions.</li>
+          <li><b>"But it's <code class="inline">const</code>!"</b> Students expect <code class="inline">const</code> arrays to be frozen. <code class="inline">push</code> works; only <code class="inline">todos = […]</code> fails.</li>
+          <li><b>Expecting <code class="inline">push</code> to return the array.</b> <code class="inline">const list = todos.push("x")</code> gives a number. That's why the lab functions <code class="inline">push</code> and then <code class="inline">return list</code> on its own line.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Run quiz Q1–Q4 as a quick poll. Key answers: first index = <b>A) 0</b>; add to the end = <b>B) push()</b>; <code class="inline">splice()</code> = <b>C) removes, inserts, or replaces at any position</b>; <code class="inline">["a","b","c"].includes("b")</code> = <b>B) true</b> (a boolean, not the index).</p>
+      </div>
+
+      <div class="blk"><div class="h">Journal (3–5 min)</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Prompt: a list they'd like to build, which array methods they'd use on it, and splice vs slice in their own words. Read a few splice/slice answers aloud. They're a fast diagnostic for who needs a two-minute recap tomorrow morning.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 10 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L10</span><h3>Objects</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Create objects with literal syntax (including shorthand properties)</li>
+          <li>Read and write properties with dot and bracket notation; add, update, delete</li>
+          <li>Write methods and use <code class="inline">this</code>, and explain why arrow functions don't work as methods that need it</li>
+          <li>Nest objects and arrays; work with arrays of objects</li>
+          <li>Destructure objects; iterate with <code class="inline">Object.keys/values/entries</code></li>
+          <li>Check for properties (<code class="inline">in</code>, <code class="inline">Object.hasOwn</code>, <code class="inline">?.</code>) and explain reference equality</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (4m).</b> Recap day 2: "Arrays store by <em>position</em>. What's at <code class="inline">user[2]</code>? No idea." Objects store by <em>name</em>: <code class="inline">user.email</code> says what it is.</li>
+          <li><b>Create &amp; access (8m).</b> Object literal, key rules (quotes for <code class="inline">"price-usd"</code>), shorthand <code class="inline">{ name, age }</code>. Dot notation by default; bracket notation for odd keys and <em>keys in variables</em>:
+            <pre class="code"><span class="k">const</span> field = <span class="s">"name"</span>;
+product[field];   <span class="c">// "Headphones" — uses the VALUE of field</span>
+product.field;    <span class="c">// undefined — looks for a key literally called "field"</span></pre></li>
+          <li><b>Add, update, delete (4m).</b> Assign to create, <code class="inline">delete</code> to remove, and the same <code class="inline">const</code> lesson as arrays.</li>
+          <li><b>Methods &amp; <code class="inline">this</code> (9m).</b> Build the <code class="inline">player</code> object live and call <code class="inline">addPoints</code> twice. <code class="inline">this</code> = "the object before the dot." Then run the lesson's <code class="inline">broken.greet()</code> arrow version and show the empty name. Arrow functions don't get their own <code class="inline">this</code>. Rule for this course: <b>methods use the shorthand <code class="inline">greet() { }</code> syntax; callbacks use arrows.</b></li>
+          <li><b>Nesting &amp; arrays of objects (6m).</b> <code class="inline">student.address.city</code>, <code class="inline">student.grades["CS 101"]</code>. Then the spreadsheet analogy: an array of objects is a table. Each object is a row, each key a column. This is the shape of the next two labs, and of most real-world data they'll handle.</li>
+          <li><b>Destructuring (5m).</b> Basic, rename (<code class="inline">user_name: username</code>), defaults, and in function parameters, which is the form they'll see most.</li>
+          <li><b>Iterating &amp; spread (5m).</b> <code class="inline">Object.keys</code>, <code class="inline">values</code>, <code class="inline">entries</code> with <code class="inline">for (const [key, value] of …)</code>. Merge settings with <code class="inline">{ ...defaults, ...userPrefs }</code>: later wins. Mention "shallow copy" once.</li>
+          <li><b>Checking &amp; comparing (4m).</b> <code class="inline">"email" in user</code> vs <code class="inline">!== undefined</code>; optional chaining <code class="inline">user.work?.zip</code>. Then the predict-first moment: <code class="inline">{ x: 1 } === { x: 1 }</code>. Draw the reference diagram below.</li>
+          <li><b>Lab launch (2m).</b> Hand off to the Contact Book.</li>
+          <li><b>Check &amp; journal (3m).</b></li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Board diagram — compared by reference</div>
+        <figure class="fig">
+          <svg viewBox="0 0 440 210" style="font-variant-ligatures:none" role="img" aria-label="Variables a and c point to the same object; b points to a second object with the same contents. a === c is true, a === b is false.">
+            <g font-family="'JetBrains Mono',monospace" font-size="14" font-weight="600" text-anchor="middle">
+              <rect x="30" y="22" width="64" height="34" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/><text x="62" y="44" fill="#1d4ed8">a</text>
+              <rect x="30" y="76" width="64" height="34" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/><text x="62" y="98" fill="#1d4ed8">c</text>
+              <rect x="30" y="132" width="64" height="34" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="2"/><text x="62" y="154" fill="#1d4ed8">b</text>
+              <rect x="252" y="34" width="168" height="48" rx="6" fill="#ffffff" stroke="#9aa7b8" stroke-width="1.5"/><text x="336" y="63" fill="#1e293b">{ x: 1, y: 2 }</text>
+              <rect x="252" y="126" width="168" height="48" rx="6" fill="#ffffff" stroke="#9aa7b8" stroke-width="1.5"/><text x="336" y="155" fill="#1e293b">{ x: 1, y: 2 }</text>
+            </g>
+            <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#5b6778">
+              <text x="30" y="14">variables</text><text x="252" y="26">object #1 (in memory)</text><text x="252" y="118">object #2 (in memory)</text>
+            </g>
+            <line x1="96" y1="39" x2="242" y2="53" stroke="#1d4ed8" stroke-width="2"/><polygon points="250,54 240,49 239,58" fill="#1d4ed8"/>
+            <line x1="96" y1="93" x2="242" y2="66" stroke="#1d4ed8" stroke-width="2"/><polygon points="250,64 239,62 242,71" fill="#1d4ed8"/>
+            <line x1="96" y1="149" x2="242" y2="150" stroke="#1d4ed8" stroke-width="2"/><polygon points="250,150 240,145 240,155" fill="#1d4ed8"/>
+            <g font-family="'JetBrains Mono',monospace" font-size="13" font-weight="600">
+              <text x="30" y="198" fill="#0f766e">a === c → true</text>
+              <text x="236" y="198" fill="#b91c1c">a === b → false</text>
+            </g>
+          </svg>
+          <figcaption>=== on objects asks "same object?", not "same contents?"</figcaption>
+        </figure>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script</div>
+        <ol class="steps">
+          <li>In the Console: <code class="inline">const a = { x: 1 }; const b = { x: 1 }; const c = a;</code> Ask for predictions on <code class="inline">a === b</code> and <code class="inline">a === c</code>. Run both.</li>
+          <li><code class="inline">c.x = 99;</code> then log <code class="inline">a.x</code>. Gasps are normal. "c isn't a copy, it's a second name for the same object." Then <code class="inline">const d = { ...a }; d.x = 5;</code> and <code class="inline">a.x</code> is still 99. That's a real copy.</li>
+          <li>Tie it to the lab: <code class="inline">findContact</code> returns the <em>actual</em> object in the array, which is why <code class="inline">Object.assign(contact, updates)</code> in <code class="inline">updateContact</code> changes the contact book itself.</li>
+        </ol>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Contact Book</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Students write <code class="inline">addContact</code>, <code class="inline">findContact</code>, <code class="inline">updateContact</code>, <code class="inline">displayContact</code>, and <code class="inline">listByGroup</code> over an array of contact objects. Files in <code class="inline">labs/module-3/l10-objects/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Set expectations:</b> the lesson's solution uses <code class="inline">.map()</code>, <code class="inline">.filter()</code>, and <code class="inline">.join()</code>, which come in L11–L12. Students may solve <code class="inline">listByGroup</code> with <code class="inline">for...of</code> + <code class="inline">push</code> and <code class="inline">displayContact</code> with a template literal. Accept both. The hint says so. <b>Circulate for:</b> <code class="inline">return contact || null</code> (not <code class="inline">undefined</code>); returning <code class="inline">true</code>/<code class="inline">false</code> from <code class="inline">addContact</code>. Note: the lesson's TODO test calls <code class="inline">listByGroup(contacts, "work")</code> while its solution calls <code class="inline">"family"</code>. The lab solution shows both (<code class="inline">["Bob","Dave"]</code> and <code class="inline">["Carol"]</code>, since Alice moved to <code class="inline">friend</code>).</p>
+      </div>
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Arrow functions as methods.</b> <code class="inline">greet: () =&gt; this.name</code> gives <code class="inline">undefined</code> or an empty string, not an error, so it's hard to spot. Quiz Q3 targets it.</li>
+          <li><b>Reference equality.</b> <code class="inline">{x:1} === {x:1}</code> is <code class="inline">false</code>; the same goes for arrays (<code class="inline">[1] === [1]</code>). Students later write <code class="inline">if (contact === { name: "Bob" })</code> and wonder why it never matches. Compare a property (<code class="inline">c.name === "Bob"</code>) instead.</li>
+          <li><b><code class="inline">obj.key</code> when the key is in a variable.</b> Always <code class="inline">undefined</code>. If a lookup "returns nothing," check for dot notation on a variable.</li>
+          <li><b>Missing commas between properties</b> in object literals, and trailing semicolons inside them. The SyntaxError line number points to the <em>next</em> property.</li>
+          <li><b>"Shallow" copies.</b> Spread copies one level; nested objects are still shared. Mention it; don't drill it.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: key in a variable = <b>B) bracket notation</b>; <code class="inline">Object.keys({a:1,b:2,c:3})</code> = <b>B) ["a", "b", "c"]</b>; arrow methods = <b>B) arrow functions don't have their own this</b>; <code class="inline">{ x: 1 } === { x: 1 }</code> = <b>B) false</b> (compared by reference).</p>
+      </div>
+      <div class="blk"><div class="h">Journal (3–5 min)</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Prompt: describe something as an object (four properties + one method), when to use bracket notation, and what still feels fuzzy about <code class="inline">this</code> or destructuring. If several people name <code class="inline">this</code>, that's expected. It keeps coming back, and it gets easier each time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 11 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L11</span><h3>Array Methods</h3><span class="dur">55 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Transform with <code class="inline">map</code>, keep matches with <code class="inline">filter</code>, collapse with <code class="inline">reduce</code></li>
+          <li>Answer questions with <code class="inline">find</code>, <code class="inline">some</code>, and <code class="inline">every</code></li>
+          <li>Sort numbers and objects with a compare function; know that <code class="inline">sort</code> mutates</li>
+          <li>Chain methods into a filter → sort → map pipeline and pick the right method for a task</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (4m).</b> Put the L09 tax loop on screen (empty array, <code class="inline">for...of</code>, <code class="inline">push</code>), then replace it with one line: <code class="inline">prices.map(price =&gt; price * 1.08)</code>. "You describe <em>what</em> to do to each item; the method does the looping."</li>
+          <li><b>forEach returns undefined (3m).</b> <code class="inline">const shouted = names.forEach(…)</code> → <code class="inline">undefined</code>. forEach is for side effects (logging, later the DOM), not for building arrays.</li>
+          <li><b>map (7m).</b> Same length out as in. Strings from objects (<code class="inline">users.map(u =&gt; u.name)</code>), then the wrapped-object return <code class="inline">u =&gt; ({ ...u, birthYear: … })</code>. Point at the parentheses: without them, the braces are a function body.</li>
+          <li><b>filter (6m).</b> Callback returns true = keep. Passing scores, in-stock products, and "remove all Walk dog" as the non-mutating alternative to splice.</li>
+          <li><b>reduce (10m).</b> Slow down. Run the lesson's logging version so the Console prints every step:
+            <pre class="code">numbers.reduce((sum, num) =&gt; {
+  console.log(<span class="s">`sum: ${sum}, num: ${num}`</span>);
+  <span class="k">return</span> sum + num;
+}, <span class="s">0</span>);   <span class="c">// ← the initial value (quiz Q3)</span></pre>
+            Act it out: the accumulator is a running total on a sticky note that gets handed from item to item. Then show the tally pattern (<code class="inline">{}</code> as the initial value) so they see reduce can build any value, not just a sum.</li>
+          <li><b>find, some, every (5m).</b> Questions, not transformations. <code class="inline">some</code> = "any?", <code class="inline">every</code> = "all?". Both stop early.</li>
+          <li><b>sort (7m).</b> Predict first: <code class="inline">[40, 100, 1, 5, 25].sort()</code>. Run it: <code class="inline">[1, 100, 25, 40, 5]</code>. The default sort compares <em>as strings</em>. Fix with <code class="inline">(a, b) =&gt; a - b</code>; flip for descending; <code class="inline">localeCompare</code> for names. Then show it mutated the original, and offer <code class="inline">toSorted()</code> / <code class="inline">[...arr].sort()</code>.</li>
+          <li><b>Chaining (6m).</b> Build the electronics pipeline one method at a time, logging after each step. Read it top-down as a sentence. Filter first, because after <code class="inline">map</code> to names the price is gone.</li>
+          <li><b>Lab launch (2m).</b> "No loops allowed" is the rule.</li>
+          <li><b>Check &amp; journal (5m).</b></li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script</div>
+        <ol class="steps">
+          <li>Paste the lab's 8-product array into the Console (it's in the starter). Ask for "just the names." Type <code class="inline">products.map(p =&gt; p.name)</code>.</li>
+          <li>"Only in-stock." Add <code class="inline">.filter(p =&gt; p.inStock)</code> <em>before</em> the map and run again. Count: 6.</li>
+          <li>"Total value of in-stock." <code class="inline">products.filter(p =&gt; p.inStock).reduce((sum, p) =&gt; sum + p.price, 0)</code> → <b>374.94000000000005</b>. Ask "is our math wrong?" No: decimals like 29.99 can't be stored exactly in binary. Add <code class="inline">.toFixed(2)</code> → <code class="inline">"374.94"</code>, and point out the quotes: <code class="inline">toFixed</code> returns a <em>string</em>, meant for display. Do math on the raw numbers and format at the end.</li>
+          <li>Deliberately break it: <code class="inline">.map(p =&gt; { p.name })</code> → an array of <code class="inline">undefined</code>. Curly braces need <code class="inline">return</code>.</li>
+        </ol>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Product Catalog Pipeline</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Six challenges on an 8-product array, each solved with array methods only. Files in <code class="inline">labs/module-3/l11-array-methods/</code>. Each challenge has its <code class="inline">show()</code> line pre-written and commented out. Students write the <code class="inline">const</code>, then uncomment.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Expected output to check at a glance:</b> 8 names · <b>6</b> in stock · <b>[Mousepad XL, Wireless Mouse, Mechanical Keyboard]</b> · total <b>"374.94"</b> · every → <b>true</b> · a <b>6-line</b> sale list from "Mousepad XL — $11.99 (was $14.99)" to "Headphones — $119.99 (was $149.99)". Challenge 6 is the stretch (filter → map → sort → map). Let strugglers stop at 5 and walk through 6 together at the end.</p>
+      </div>
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Default <code class="inline">sort()</code> on numbers</b> sorts alphabetically: <code class="inline">[1, 100, 25, 40, 5]</code>. Numbers always need <code class="inline">(a, b) =&gt; a - b</code>.</li>
+          <li><b><code class="inline">sort</code> mutates.</b> Quiz Q4. In the lab it's safe because <code class="inline">filter</code> already made a new array. Sorting <code class="inline">products</code> directly reorders the catalog for every later challenge. The solution page ends by proving the original order survived.</li>
+          <li><b>Floating-point output.</b> <code class="inline">374.94000000000005</code> and <code class="inline">32.400000000000006</code> aren't bugs. Format with <code class="inline">toFixed(2)</code> for display, and remember it returns a string (<code class="inline">"374.94" + 1</code> is <code class="inline">"374.941"</code>).</li>
+          <li><b>Braces without <code class="inline">return</code></b> in a callback, giving <code class="inline">[undefined, undefined, …]</code>. And returning an object literal needs <code class="inline">({ … })</code>.</li>
+          <li><b><code class="inline">reduce</code> without an initial value.</b> It works for sums on non-empty arrays, then crashes on <code class="inline">[]</code>, and misbehaves on arrays of objects (the first accumulator is a whole product). Always pass the second argument.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: <code class="inline">map()</code> returns <b>B) a new array with the same number of elements</b>; <code class="inline">[1,2,3].filter(n =&gt; n &gt; 1)</code> = <b>C) [2, 3]</b>; reduce's second argument = <b>B) the initial value of the accumulator</b>; modifies the original = <b>C) sort()</b>.</p>
+      </div>
+      <div class="blk"><div class="h">Journal (3–5 min)</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Prompt: a plain-English filter → sort → map pipeline on their own data, why filter comes first, and what's still unclear (the lesson itself guesses reduce). Normalize it: "Most developers needed a few tries before reduce clicked."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 12 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L12</span><h3>Strings &amp; Template Literals</h3><span class="dur">40 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Explain that strings are immutable: every method returns a new string</li>
+          <li>Use template literals for interpolation and multiline text</li>
+          <li>Search (<code class="inline">includes</code>, <code class="inline">startsWith</code>, <code class="inline">endsWith</code>, <code class="inline">indexOf</code>) and extract (<code class="inline">slice</code>, <code class="inline">at</code>)</li>
+          <li>Transform (<code class="inline">toUpperCase</code>, <code class="inline">trim</code>, <code class="inline">replace</code>/<code class="inline">replaceAll</code>) and split/join</li>
+          <li>Format with <code class="inline">padStart</code>, <code class="inline">padEnd</code>, and <code class="inline">repeat</code></li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame: immutability (3m).</b> <code class="inline">const g = "hello"; g.toUpperCase(); g</code> is still lowercase. "String methods hand you a new string. Catch it in a variable." Contrast with <code class="inline">push</code>/<code class="inline">splice</code>, which changed arrays.</li>
+          <li><b>Template literals (4m).</b> Quick review of <code class="inline">${}</code> with an expression and a ternary, then multiline. Note the lesson's warning: user text in an HTML template must be escaped before it goes near <code class="inline">innerHTML</code> (the next module comes back to this).</li>
+          <li><b>Searching (4m).</b> <code class="inline">includes</code> is case-sensitive, so use <code class="inline">toLowerCase()</code> first. <code class="inline">endsWith(".pdf")</code> for file types.</li>
+          <li><b>Extracting (5m).</b> String <code class="inline">slice</code> works exactly like array slice, including negatives. <code class="inline">"Hello, World!".slice(-6)</code>: predict, then run. Mention <code class="inline">substring</code> exists and prefer <code class="inline">slice</code>. <code class="inline">at(-1)</code> for the last character.</li>
+          <li><b>Transforming (6m).</b> Case, <code class="inline">trim</code> ("always trim user input"), <code class="inline">replace</code> (first only) vs <code class="inline">replaceAll</code>. Show <code class="inline">phone.replace(/\D/g, "")</code> as a preview only. See the regex primer below.</li>
+          <li><b>split / join (6m).</b> Opposites. Then the split → map → join pattern with <code class="inline">titleCase</code>. They already know <code class="inline">map</code> from this morning.</li>
+          <li><b>Padding &amp; repeat (4m).</b> Order numbers <code class="inline">"42".padStart(6, "0")</code>, the card mask, the progress bar.</li>
+          <li><b>Lab launch + regex primer (4m).</b> See below. Do it <em>before</em> students open the starter.</li>
+          <li><b>Check &amp; journal (4m).</b> Five quiz questions in this lesson. Then close Module 3.</li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Regex primer: say this before the lab</div>
+        <p style="font-size:.92rem;margin:.2rem 0">The lesson only <em>previews</em> regular expressions, but the lab's <code class="inline">slugify</code>, <code class="inline">countWords</code>, and <code class="inline">initials</code> use them. Without a minute of explanation, students copy them blindly or freeze. Put these on the board and read each one aloud:</p>
+        <pre class="code"><span class="s">/\s+/g</span>          <span class="c">// one or more (+) whitespace characters (\s), everywhere (g)</span>
+<span class="s">/-+/g</span>           <span class="c">// one or more hyphens, everywhere</span>
+<span class="s">/[^a-z0-9\s-]/g</span> <span class="c">// any ONE character NOT (^) in the set [a-z, 0-9, space, hyphen]</span>
+<span class="s">/\D/g</span>           <span class="c">// any non-digit (from the lesson's phone example)</span></pre>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0">Frame: "A regex is a pattern between slashes. You'll <b>read</b> these today, not write your own. <code class="inline">split(/\s+/)</code> splits on any run of spaces, which is why <code class="inline">"  lots   of   spaces "</code> gives 3 words instead of empty strings." Show the difference live: <code class="inline">"a  b".split(" ")</code> → <code class="inline">["a", "", "b"]</code> vs <code class="inline">"a  b".split(/\s+/)</code> → <code class="inline">["a", "b"]</code>. Curious students can explore patterns at regex101.com.</p>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Text Formatting Utility</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Students write <code class="inline">truncate</code>, <code class="inline">slugify</code>, <code class="inline">countWords</code>, <code class="inline">initials</code>, and <code class="inline">maskEmail</code>. Files in <code class="inline">labs/module-3/l12-strings/</code>. The starter's slugify TODO includes a plain-English reading of the two regexes it needs. The solution page prints each call next to its result, with quotes so stray spaces show.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Suggested order:</b> truncate → maskEmail → initials → countWords → slugify (easiest to hardest). <b>Circulate for:</b> <code class="inline">slice(0, maxLength - 3)</code> (the "..." counts toward the length: <code class="inline">"Hello..."</code> is 8); <code class="inline">countWords("")</code> returning 0, not 1; destructuring <code class="inline">const [local, domain] = email.split("@")</code> (L09/L10 skills coming back).</p>
+      </div>
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Calling a method and throwing the result away.</b> <code class="inline">name.trim();</code> on its own line does nothing. Strings are immutable (quiz Q1).</li>
+          <li><b>Regex before it's taught.</b> Covered by the primer above. Don't let it turn into a regex lesson; five minutes maximum.</li>
+          <li><b>Quotes vs backticks.</b> <code class="inline">"Hello ${name}"</code> prints the dollar sign literally. Only backticks interpolate.</li>
+          <li><b><code class="inline">replace</code> only changes the first match.</b> Use <code class="inline">replaceAll</code> (or a <code class="inline">g</code> regex).</li>
+          <li><b>Negative slice arguments.</b> <code class="inline">slice(-6)</code> counts from the end (quiz Q4). <code class="inline">substring</code> treats negatives as 0, another reason to stick with <code class="inline">slice</code>.</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: strings are <b>B) immutable: methods always return new strings</b>; <code class="inline">"hello world".split(" ")</code> = <b>B) ["hello", "world"]</b>; ends with ".pdf" = <b>B) str.endsWith(".pdf")</b>; <code class="inline">"Hello, World!".slice(-6)</code> = <b>D) "World!"</b>; <code class="inline">"7".padStart(3, "0")</code> = <b>A) "007"</b>.</p>
+      </div>
+      <div class="blk"><div class="h">Journal (3–5 min)</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Prompt: a string function for text on their own site, a prediction for <code class="inline">"JavaScript".slice(-6)</code> (it's <code class="inline">"Script"</code>), and the method they'll use most. Have them check the prediction in the Console before moving on.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRAP -->
+  <div class="sec"><h2>Closing the Module</h2><span class="rule"></span></div>
+  <div class="note lab">
+    <div class="t">Module 3 wrap-up (10 min)</div>
+    <p>Put the L11 solution page on the projector and ask the room to name the method behind each line of output. Recap the arc: <b>lists (arrays) → named things (objects) → transforming lists (map/filter/reduce) → text (strings).</b> Then the bridge: "Everything so far has lived in the Console and in a helper we told you to ignore. That helper puts text on the page with <code class="inline">document.querySelector</code> and <code class="inline">textContent</code>. In Module 4 you'll learn exactly how, and your data will drive real pages."</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Technical trainer, full-stack developer &amp; course developer — 30+ years</span>
+    </div>
+    <div class="ver">Instructor Kit · Module 3 · Facilitator Guide · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

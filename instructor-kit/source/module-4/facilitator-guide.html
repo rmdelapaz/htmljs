@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facilitator Guide — Module 4</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">contains answers &amp; timing · not for students</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Instructor Kit · Facilitator Guide</div>
+    <h1>Module 4 — The DOM</h1>
+    <p class="sub">How to teach the four lessons where JavaScript finally touches the page: the document tree, selecting and changing elements, responding to events, and building elements from scratch. Timing, live-demo scripts, the misconceptions to pre-empt, and how to run each lab.</p>
+    <div class="meta-row">
+      <span class="chip"><b>4</b> lessons</span>
+      <span class="chip"><b>~3.3 hrs</b> teaching</span>
+      <span class="chip">Lessons <b>L13–L16</b></span>
+      <span class="chip">Level <b>Intermediate</b></span>
+      <span class="chip">Maps to <b>Day 3 PM (L13–L14) → Day 4 AM</b></span>
+    </div>
+  </header>
+
+  <!-- HOW TO USE -->
+  <div class="sec"><h2>How to Use This Guide</h2><span class="rule"></span></div>
+  <ul class="tick">
+    <li>Each lesson has the same rhythm: <b>Frame</b> (why it matters) → <b>Teach</b> (live-code the concept) → <b>Lab</b> (students build) → <b>Check</b> (quiz + recap) → <b>Journal</b>. The minute timings in each teaching sequence add up to the lesson's length; adjust ±10 min to your group. Close each lesson with 3–4 minutes for the lesson's <b>Learning Journal</b> prompt (in the lesson and the workbook).</li>
+    <li><b>Live-code everything, with the console open.</b> Split the projector: editor on the left, browser + DevTools on the right. Every DOM change should be something students <em>see</em> happen, and every error something they see you read and fix.</li>
+    <li>Blue blocks are concepts; <span style="color:var(--lab);font-weight:600">teal</span> blocks are hands-on; <span style="color:var(--warn);font-weight:600">amber</span> blocks are watch-outs — the errors that eat class time if you don't pre-empt them.</li>
+    <li>Quiz answers here are for you. The student workbook has a 3-question subset of each lesson quiz, without answers, labelled with the lesson's question numbers; the separate <b>Answer Key</b> covers every question with matching numbers for grading.</li>
+  </ul>
+
+  <div class="note">
+    <div class="t">Before you start the module</div>
+    <p>Students need VS Code with Live Server, a browser with DevTools, and comfort with functions, arrays, objects and template literals from Modules 1–3. Open <code class="inline">labs/module-4/</code> and check each <code class="inline">starter/</code> folder opens with Live Server on your machine. From this module on, <b>every lab is a real page</b>: an <code class="inline">index.html</code> that loads <code class="inline">script.js</code> at the end of <code class="inline">&lt;body&gt;</code>. If anyone's script "does nothing," check the <code class="inline">&lt;script src&gt;</code> path and the Console before anything else.</p>
+  </div>
+
+  <!-- AT A GLANCE -->
+  <div class="sec"><h2>Module at a Glance</h2><span class="rule"></span></div>
+  <table class="timing">
+    <thead><tr><th>Lesson</th><th>Topic</th><th>Time</th><th>Students leave able to…</th></tr></thead>
+    <tbody>
+      <tr><td class="t">L13</td><td>Introduction to the DOM</td><td class="t">45m</td><td>Explain the document tree and walk it from the console</td></tr>
+      <tr><td class="t">L14</td><td>Selecting &amp; Modifying Elements</td><td class="t">50m</td><td>Select elements and change text, classes, styles, attributes</td></tr>
+      <tr><td class="t">L15</td><td>Events &amp; Event Listeners</td><td class="t">55m</td><td>Respond to clicks, keys and submits; delegate from a parent</td></tr>
+      <tr><td class="t">L16</td><td>Creating &amp; Removing Elements</td><td class="t">50m</td><td>Build, insert, clone and remove elements safely</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.9rem;color:var(--ink-2)">Each lab is a <b>standalone page</b> (no cumulative project this module): explore a page → edit a profile card → a task list → a notification system. The skills stack, though — the L16 notification system uses everything from L13–L15. Day 3 ends after L14; open Day 4 with a five-minute recap of selecting and modifying before L15.</p>
+
+  <!-- LESSON PLANS -->
+  <div class="sec"><h2>Lesson Plans</h2><span class="rule"></span></div>
+
+  <!-- LESSON 13 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L13</span><h3>Introduction to the DOM</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Explain what the DOM is and why JavaScript works on it, not on the HTML file</li>
+          <li>Describe how the browser builds the document tree; identify <code class="inline">window</code>, <code class="inline">document</code>, elements and nodes</li>
+          <li>Navigate with <code class="inline">parentElement</code>, <code class="inline">children</code>, and the <code class="inline">*ElementSibling</code> properties</li>
+          <li>Inspect the live DOM in DevTools and tell it apart from View Source</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (4m).</b> "Everything you've written so far only talked to the console. Today JavaScript touches the page." Give the lesson's analogy: <em>HTML is the blueprint, the DOM is the building, JavaScript is the contractor who remodels it after it's built.</em></li>
+          <li><b>Draw the tree (7m).</b> Put the lesson's small HTML page on screen and draw its tree on the board (or show the diagram below). Name <b>parent, child, sibling, text node</b> on the drawing. Point at the dashed whitespace node — it's the reason for the watch-out later.</li>
+          <li><b>Key objects &amp; node types (6m).</b> In the console: <code class="inline">window.innerWidth</code>, <code class="inline">document.title</code>, <code class="inline">document.body</code>. Then <code class="inline">h1.nodeType</code> (1) vs <code class="inline">h1.firstChild.nodeType</code> (3). "<code class="inline">document</code> is your front door to the page."</li>
+          <li><b>Traversing (8m).</b> Live-walk a list:
+            <pre class="code"><span class="k">const</span> list = document.querySelector(<span class="s">"ul"</span>);
+list.children;            <span class="c">// HTMLCollection of &lt;li&gt;</span>
+list.firstElementChild;   <span class="c">// the first &lt;li&gt;</span>
+list.firstChild;          <span class="c">// #text "\n  " — surprise!</span>
+list.children[<span class="s">1</span>].nextElementSibling;</pre>
+            Let the <code class="inline">firstChild</code> surprise land, then show the Element-vs-Node table: "use the Element versions."</li>
+          <li><b>DevTools &amp; source vs live DOM (5m).</b> Change the <code class="inline">h1</code> in the console, then open View Source (Ctrl + U): unchanged. Open Elements: changed. Show <code class="inline">$0</code>.</li>
+          <li><b>Lab (8m).</b> DOM Explorer — see below.</li>
+          <li><b>Check (3m).</b> Quiz Q1–Q5 as a quick poll.</li>
+          <li><b>Journal (4m).</b> The lesson's prompt: sketch a DOM tree of one of their own pages.</li>
+        </ol>
+      </div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 660 312" role="img" aria-label="DOM tree: document at the top, then html, which has head and body children; body holds a whitespace text node, h1 and p; the p holds text, a strong element, and more text."><line x1="330" y1="40" x2="330" y2="66" stroke="#94a3b8" stroke-width="1.5"/><line x1="330" y1="94" x2="100" y2="120" stroke="#94a3b8" stroke-width="1.5"/><line x1="330" y1="94" x2="420" y2="120" stroke="#94a3b8" stroke-width="1.5"/><line x1="100" y1="148" x2="100" y2="174" stroke="#94a3b8" stroke-width="1.5"/><line x1="420" y1="148" x2="215" y2="174" stroke="#94a3b8" stroke-width="1.5"/><line x1="420" y1="148" x2="320" y2="174" stroke="#94a3b8" stroke-width="1.5"/><line x1="420" y1="148" x2="520" y2="174" stroke="#94a3b8" stroke-width="1.5"/><line x1="100" y1="202" x2="100" y2="228" stroke="#94a3b8" stroke-width="1.5"/><line x1="320" y1="202" x2="318" y2="228" stroke="#94a3b8" stroke-width="1.5"/><line x1="520" y1="202" x2="430" y2="228" stroke="#94a3b8" stroke-width="1.5"/><line x1="520" y1="202" x2="536" y2="228" stroke="#94a3b8" stroke-width="1.5"/><line x1="520" y1="202" x2="612" y2="228" stroke="#94a3b8" stroke-width="1.5"/><line x1="536" y1="256" x2="536" y2="282" stroke="#94a3b8" stroke-width="1.5"/><rect x="280" y="12" width="100" height="28" rx="4" fill="#fdf0dc" stroke="#b45309" stroke-width="1.8"/><text x="330" y="31" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#7c2d12">document</text><rect x="290" y="66" width="80" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="330" y="85" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">html</text><rect x="60" y="120" width="80" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="100" y="139" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">head</text><rect x="380" y="120" width="80" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="420" y="139" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">body</text><rect x="60" y="174" width="80" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="100" y="193" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">title</text><rect x="173" y="174" width="84" height="28" rx="14" fill="#ffffff" stroke="#6f7c8e" stroke-width="1.8" stroke-dasharray="4 3"/><text x="215" y="193" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">"\n  "</text><rect x="285" y="174" width="70" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="320" y="193" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">h1</text><rect x="490" y="174" width="60" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="520" y="193" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">p</text><rect x="50" y="228" width="100" height="28" rx="14" fill="#d7efe9" stroke="#0f766e" stroke-width="1.8"/><text x="100" y="247" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#134e4a">"My Page"</text><rect x="280" y="228" width="76" height="28" rx="14" fill="#d7efe9" stroke="#0f766e" stroke-width="1.8"/><text x="318" y="247" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#134e4a">"Hello!"</text><rect x="366" y="228" width="128" height="28" rx="14" fill="#d7efe9" stroke="#0f766e" stroke-width="1.8"/><text x="430" y="247" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#134e4a">"Welcome to my "</text><rect x="504" y="228" width="64" height="28" rx="4" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.8"/><text x="536" y="247" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1e3a8a">strong</text><rect x="574" y="228" width="76" height="28" rx="14" fill="#d7efe9" stroke="#0f766e" stroke-width="1.8"/><text x="612" y="247" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#134e4a">" page."</text><rect x="491" y="282" width="90" height="28" rx="14" fill="#d7efe9" stroke="#0f766e" stroke-width="1.8"/><text x="536" y="301" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#134e4a">"awesome"</text><rect x="20" y="284" width="18" height="14" rx="3" fill="#e6edfe" stroke="#1d4ed8" stroke-width="1.5"/><text x="44" y="295" font-family="'JetBrains Mono',monospace" font-size="11" fill="#45536a">element</text><rect x="140" y="284" width="18" height="14" rx="3" fill="#d7efe9" stroke="#0f766e" stroke-width="1.5"/><text x="164" y="295" font-family="'JetBrains Mono',monospace" font-size="11" fill="#45536a">text node</text><rect x="260" y="284" width="18" height="14" rx="3" fill="#ffffff" stroke="#6f7c8e" stroke-width="1.5" stroke-dasharray="4 3"/><text x="284" y="295" font-family="'JetBrains Mono',monospace" font-size="11" fill="#45536a">whitespace text</text></svg>
+        <figcaption>The DOM tree for the lesson's page. Line breaks between tags become whitespace text nodes (dashed).</figcaption>
+      </figure>
+
+      <div class="blk"><div class="h">Live-demo script</div>
+        <ol class="steps">
+          <li>Open <code class="inline">labs/module-4/l13-dom-explorer/starter/index.html</code> with Live Server, F12, Console. Type <code class="inline">document.body.children</code> and expand it: "five element children — count them in the HTML."</li>
+          <li>Type <code class="inline">document.querySelector("#family").firstChild</code>. Read the output aloud: <em>"#text"</em>. Ask the room why. Then <code class="inline">.firstElementChild</code>.</li>
+          <li>Set <code class="inline">document.querySelector("h1").textContent = "Changed!"</code>, then Ctrl + U. "The file didn't change. The <em>DOM</em> did." Refresh to undo.</li>
+        </ol>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — DOM Explorer</div>
+        <p style="font-size:.92rem;margin:.2rem 0">In the lesson, students explore the lesson page itself. For class, use the practice page in <code class="inline">labs/module-4/l13-dom-explorer/starter/</code>: its <code class="inline">README.md</code> is the worksheet (the lesson's 10 console tasks + 3 "think about it" questions). The solution in <code class="inline">labs/module-4/l13-dom-explorer/solution/</code> runs every task and prints the results on the page and in the console — project it for the debrief.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> typing into the Console (not the Elements search box); forgetting the <code class="inline">.</code> in <code class="inline">".lesson-section"</code>; students who can't find <code class="inline">&lt;main&gt;</code> at <code class="inline">children[3]</code> — have them count <code class="inline">&lt;body&gt;</code>'s element children aloud.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Whitespace text nodes.</b> <code class="inline">firstChild</code>, <code class="inline">childNodes</code> and <code class="inline">nextSibling</code> include the line breaks between tags. Beginners assume <code class="inline">firstChild</code> is the first tag. Rule: <em>if you want an element, use the property with "Element" in its name.</em></li>
+          <li><b>"I edited the DOM, why didn't my file change?"</b> Console and Elements-panel edits live in memory only. Refresh throws them away. Real changes go in the <code class="inline">.js</code> file.</li>
+          <li><b>Script in <code class="inline">&lt;head&gt;</code> without <code class="inline">defer</code></b> → <code class="inline">document.querySelector</code> returns <code class="inline">null</code> because the body hasn't been parsed yet. Keep scripts at the end of <code class="inline">&lt;body&gt;</code> (or use <code class="inline">defer</code>).</li>
+          <li><b><code class="inline">children</code> is a live HTMLCollection</b>, not an array — it has <code class="inline">length</code> and indexes but no <code class="inline">forEach</code>. Plant the seed; L14 contrasts it with the static NodeList.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: the DOM is <b>B — an in-memory tree of objects</b>; entry point = <b>B — document</b>; <code class="inline">parentElement</code> = <b>B — the element that contains this one</b>; a JS-added <code class="inline">&lt;p&gt;</code> shows in <b>C — the Elements panel</b> (not View Source); <code class="inline">list.firstChild</code> isn't the <code class="inline">&lt;li&gt;</code> because <b>D — the whitespace before it is a text node</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 14 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L14</span><h3>Selecting &amp; Modifying Elements</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Select with <code class="inline">querySelector</code>, <code class="inline">getElementById</code> and <code class="inline">querySelectorAll</code></li>
+          <li>Change text safely with <code class="inline">textContent</code>; know when <code class="inline">innerHTML</code> is dangerous</li>
+          <li>Add, remove and toggle classes with <code class="inline">classList</code>; set inline styles with <code class="inline">style</code></li>
+          <li>Read and write attributes and <code class="inline">data-*</code> values with <code class="inline">dataset</code></li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (3m).</b> "Last lesson we looked. Now we grab and change." Hook: "If you know CSS selectors, you already know how to find elements."</li>
+          <li><b>Selecting one (7m).</b> <code class="inline">querySelector("h1")</code>, <code class="inline">(".card")</code>, <code class="inline">("#main-nav")</code>, an attribute selector. Then a typo'd selector → <code class="inline">null</code>. Then <code class="inline">null.textContent</code> → the famous <em>"Cannot read properties of null"</em>. Read that error together.</li>
+          <li><b>Selecting many (6m).</b> <code class="inline">querySelectorAll</code> returns a NodeList: <code class="inline">forEach</code> works, <code class="inline">map</code> doesn't. Spread it: <code class="inline">[...items].map(...)</code>. Show that it's a <em>snapshot</em>: add an <code class="inline">&lt;li&gt;</code>, the old NodeList's <code class="inline">length</code> doesn't change; <code class="inline">list.children.length</code> does.</li>
+          <li><b>Text &amp; the XSS talk (8m).</b> <code class="inline">textContent = "&lt;em&gt;Not italic&lt;/em&gt;"</code> shows the tags literally. Then the lesson's attack string in <code class="inline">innerHTML</code>:
+            <pre class="code"><span class="k">const</span> userInput = <span class="s">'&lt;img src="x" onerror="alert(\'hacked!\')"&gt;'</span>;
+box.innerHTML = userInput;    <span class="c">// ❌ the alert fires</span>
+box.textContent = userInput;  <span class="c">// ✅ harmless text</span></pre>
+            Stress: a <code class="inline">&lt;script&gt;</code> tag inserted with <code class="inline">innerHTML</code> does <em>not</em> run — it's the <code class="inline">onerror</code> attribute that does. That's why "it didn't run my script tag" is not proof of safety.</li>
+          <li><b>classList (5m).</b> <code class="inline">add</code>, <code class="inline">remove</code>, <code class="inline">toggle</code>, <code class="inline">contains</code>. Then <code class="inline">card.className = "active"</code> and watch the <code class="inline">card</code> class vanish.</li>
+          <li><b>Inline styles (4m).</b> camelCase (<code class="inline">backgroundColor</code>). Show <code class="inline">h1.style.fontSize</code> → <code class="inline">""</code>, then <code class="inline">getComputedStyle(h1).fontSize</code> → <code class="inline">"32px"</code>. Land the rule: <em>prefer classes over inline styles.</em></li>
+          <li><b>Attributes &amp; dataset (4m).</b> <code class="inline">getAttribute("href")</code> vs <code class="inline">link.href</code> (resolved URL). <code class="inline">data-item-id</code> → <code class="inline">dataset.itemId</code>; values are always strings.</li>
+          <li><b>Lab (8m).</b> Profile Card Editor.</li>
+          <li><b>Check (2m).</b> Quiz Q1–Q5.</li>
+          <li><b>Journal (3m).</b> End of Day 3 — give the full time.</li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script</div>
+        <ol class="steps">
+          <li>Open <code class="inline">labs/module-4/l14-profile-card/starter/</code>. In <code class="inline">script.js</code>, do task 6 (<code class="inline">card.style.backgroundColor = "#eff6ff"</code>), save, then click <b>Toggle dark mode</b>. The text goes light but the card stays light blue — unreadable.</li>
+          <li>Ask "why?" Inspect the card: the <code class="inline">style="…"</code> attribute beats the <code class="inline">.dark</code> class. Add <code class="inline">card.style.backgroundColor = ""</code> before the toggle, save, click again. Fixed.</li>
+          <li>Say it: "Inline styles win the cascade. Toggle classes for looks; use <code class="inline">style</code> only for truly dynamic values."</li>
+        </ol>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Dynamic Profile Card Editor</div>
+        <p style="font-size:.92rem;margin:.2rem 0">The lesson's <code class="inline">profile.html</code>, split into <code class="inline">index.html</code> + <code class="inline">style.css</code> + <code class="inline">script.js</code>. Students complete TODOs 1–9 and the <code class="inline">updateProfile()</code> bonus. Starter in <code class="inline">labs/module-4/l14-profile-card/starter/</code> (button listeners provided — events are next lesson); solution in <code class="inline">labs/module-4/l14-profile-card/solution/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> <code class="inline">dataset.user-id</code> (a subtraction, not a property!); setting <code class="inline">href</code> but not the link text (task 4 needs both); the bonus using destructuring <code class="inline">{ name, bio, location, website }</code> in the parameter list.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b><code class="inline">innerHTML</code> with user text = XSS.</b> Demo with <code class="inline">&lt;img src=x onerror=…&gt;</code>, never with <code class="inline">&lt;script&gt;</code> (it won't run and students conclude "it's safe"). "User input" includes form fields, URL parameters, API data, <code class="inline">localStorage</code>.</li>
+          <li><b><code class="inline">innerHTML +=</code> rebuilds everything</b> inside the container — listeners are wiped and typed input values are lost. L16 shows the better way.</li>
+          <li><b><code class="inline">element.style</code> reads only inline styles.</b> Reading <code class="inline">.style.color</code> to "check the current color" returns <code class="inline">""</code> for anything set in the stylesheet. Use <code class="inline">getComputedStyle</code>.</li>
+          <li><b>Static NodeList vs live HTMLCollection.</b> <code class="inline">querySelectorAll</code> is a snapshot; <code class="inline">children</code> updates itself. Re-query after adding elements.</li>
+          <li><b><code class="inline">null</code> from a wrong selector.</b> Missing <code class="inline">#</code> or <code class="inline">.</code> is the usual cause; the error appears one line <em>later</em>, where the property is read.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: no match → <b>C — null</b>; avoid <code class="inline">innerHTML</code> with user input because <b>B — it can execute malicious scripts (XSS)</b>; add a class safely = <b>A — classList.add</b>; <code class="inline">data-item-id</code> → <b>B — dataset.itemId</b>; stylesheet-only font size → <code class="inline">style.fontSize</code> is <b>D — "" (empty string)</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 15 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L15</span><h3>Events &amp; Event Listeners</h3><span class="dur">55 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Attach listeners with <code class="inline">addEventListener</code> for click, input, submit and keydown</li>
+          <li>Use the event object: <code class="inline">target</code>, <code class="inline">currentTarget</code>, <code class="inline">key</code></li>
+          <li>Cancel default behavior with <code class="inline">preventDefault()</code>; explain capturing and bubbling</li>
+          <li>Delegate events from a parent with <code class="inline">closest()</code>; remove listeners correctly</li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (3m).</b> Open Day 4 with a 60-second recap of selecting and modifying. Then the doorbell analogy: <em>the event is someone pressing the bell; the listener is what you decide to do when it rings.</em></li>
+          <li><b>addEventListener (5m).</b> One button, one listener. Then the classic bug live: <code class="inline">addEventListener("click", handleClick())</code> — it runs once on load and never again. "Pass the function; don't call it."</li>
+          <li><b>Event types &amp; the event object (7m).</b> <code class="inline">input</code> on a text box (every keystroke) vs <code class="inline">change</code> (on commit); <code class="inline">keydown</code> logging <code class="inline">event.key</code>. Log <code class="inline">event.target</code> and <code class="inline">event.currentTarget</code> on a card containing a button.</li>
+          <li><b>preventDefault (5m).</b> A form without it: the page reloads and the console clears. Add <code class="inline">event.preventDefault()</code> — it stays. Tick the Console's "Preserve log" to show the reload happening.</li>
+          <li><b>Propagation (8m).</b> The lesson's outer/inner/button example. Ask the room to <em>predict</em> the log order before clicking (that's also the journal prompt). Then add a capture listener on <code class="inline">#outer</code> and watch it jump to first. Use the diagram below.</li>
+          <li><b>Delegation (8m).</b> One listener on the list, <code class="inline">event.target.closest(".delete-btn")</code>. Add a new button after the fact — it just works. Then show why <code class="inline">matches()</code> fails when the click lands on an icon <code class="inline">&lt;span&gt;</code> inside the button.</li>
+          <li><b>Removing listeners (4m).</b> Named function in, same named function out. <code class="inline">{ once: true }</code>. Mention <code class="inline">AbortController</code> as "good to know."</li>
+          <li><b>Lab (10m).</b> Interactive Task List.</li>
+          <li><b>Check (2m).</b> Quiz Q1–Q6.</li>
+          <li><b>Journal (3m).</b></li>
+        </ol>
+      </div>
+
+      <figure class="fig">
+        <svg viewBox="0 0 560 290" role="img" aria-label="Event propagation: a click on a button travels down from document through html, body, div#outer and div#inner in the capturing phase, reaches the button in the target phase, then bubbles back up to document."><rect x="130" y="16" width="300" height="262" rx="6" fill="#f4f6fa" stroke="#bcc7d6" stroke-width="1.5"/><text x="140" y="35" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">document</text><rect x="148" y="46" width="264" height="222" rx="6" fill="#eef2f8" stroke="#bcc7d6" stroke-width="1.5"/><text x="158" y="65" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">html</text><rect x="166" y="76" width="228" height="182" rx="6" fill="#f4f6fa" stroke="#bcc7d6" stroke-width="1.5"/><text x="176" y="95" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">body</text><rect x="184" y="106" width="192" height="142" rx="6" fill="#eef2f8" stroke="#bcc7d6" stroke-width="1.5"/><text x="194" y="125" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">div#outer</text><rect x="202" y="136" width="156" height="102" rx="6" fill="#f4f6fa" stroke="#bcc7d6" stroke-width="1.5"/><text x="212" y="155" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#45536a">div#inner</text><rect x="220" y="166" width="120" height="50" rx="6" fill="#d7efe9" stroke="#0f766e" stroke-width="2"/><text x="280" y="187" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="600" fill="#134e4a">button</text><text x="280" y="205" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#134e4a">② target</text><line x1="96" y1="24" x2="96" y2="182" stroke="#1d4ed8" stroke-width="2.5"/><polygon points="96,194 90,180 102,180" fill="#1d4ed8"/><text transform="rotate(-90 76 110)" x="76" y="110" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#1d4ed8">① capturing ↓ (capture: true)</text><line x1="464" y1="194" x2="464" y2="36" stroke="#b45309" stroke-width="2.5"/><polygon points="464,24 458,38 470,38" fill="#b45309"/><text transform="rotate(90 484 110)" x="484" y="110" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="#b45309">③ bubbling ↑ (the default)</text></svg>
+        <figcaption>A click travels down (capturing), reaches the target, then bubbles back up. Listeners run on the way up unless you pass { capture: true }.</figcaption>
+      </figure>
+
+      <div class="blk"><div class="h">Live-demo script</div>
+        <ol class="steps">
+          <li>Paste the lesson's three nested listeners into a blank page. "Before I click — what prints first?" Take three guesses, then click: <em>Button, Inner div, Outer div.</em></li>
+          <li>Add <code class="inline">event.stopPropagation()</code> in the button listener, click: only "Button." Remove it again and say why: "It breaks delegation. Prefer checking <code class="inline">event.target</code>."</li>
+          <li>Open <code class="inline">labs/module-4/l15-task-list/solution/</code>, add a task, then type <code class="inline">&lt;img src=x onerror=alert(1)&gt;</code> as a task. It shows as plain text: "That's why we use <code class="inline">textContent</code> for anything a user typed."</li>
+        </ol>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Interactive Task List</div>
+        <p style="font-size:.92rem;margin:.2rem 0">The lesson's <code class="inline">tasks.html</code> as <code class="inline">index.html</code> + <code class="inline">style.css</code> + <code class="inline">script.js</code>. Students handle <code class="inline">submit</code> with <code class="inline">preventDefault()</code>, build each <code class="inline">&lt;li&gt;</code> (fixed markup via <code class="inline">innerHTML</code>, the user's text via <code class="inline">textContent</code>), delegate complete/delete with <code class="inline">closest()</code>, and write <code class="inline">updateCounter()</code>. Bonus: Escape clears the input; "d" toggles <code class="inline">body.dark-mode</code>. Files in <code class="inline">labs/module-4/l15-task-list/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> listeners attached to each new button inside the submit handler (works, but misses the point — steer to delegation); counters that don't update after delete; the emoji buttons keeping their <code class="inline">aria-label</code>s ("Mark done", "Delete task") so screen readers announce them.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Calling instead of passing:</b> <code class="inline">handleClick()</code> vs <code class="inline">handleClick</code>. The most common event bug of the day.</li>
+          <li><b><code class="inline">removeEventListener</code> needs the same function reference.</b> A new arrow function that looks identical is a different object, so nothing is removed and there's no error.</li>
+          <li><b>focus, blur, mouseenter, mouseleave don't bubble</b>, so delegating them from a parent silently does nothing. Use <code class="inline">focusin</code>/<code class="inline">focusout</code> or <code class="inline">mouseover</code>/<code class="inline">mouseout</code>.</li>
+          <li><b><code class="inline">target</code> vs <code class="inline">currentTarget</code>.</b> With delegation, <code class="inline">target</code> may be a child (an icon, a <code class="inline">&lt;span&gt;</code>). That's why <code class="inline">closest()</code> beats <code class="inline">matches()</code>.</li>
+          <li><b>Document-level shortcuts fire while typing.</b> The "d" shortcut must check that the input isn't focused, or every "d" in a task name toggles dark mode.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: <code class="inline">addEventListener</code> takes <b>B — an event type string and a callback</b>; <code class="inline">event.target</code> = <b>B — the element actually interacted with</b>; <code class="inline">preventDefault()</code> <b>C — cancels the browser's built-in behavior</b>; delegation's advantage = <b>C — one listener for current and future children</b>; fire once = <b>B — <code class="inline">addEventListener("click", handler, { once: true })</code></b>; icon-span fix = <b>A — <code class="inline">event.target.closest(".delete-btn")</code></b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSON 16 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L16</span><h3>Creating &amp; Removing Elements</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Create and configure elements with <code class="inline">createElement</code> before inserting them</li>
+          <li>Insert with <code class="inline">append</code>, <code class="inline">prepend</code>, <code class="inline">before</code>, <code class="inline">after</code>; remove with <code class="inline">remove()</code>, <code class="inline">replaceWith()</code>, <code class="inline">replaceChildren()</code></li>
+          <li>Copy elements with <code class="inline">cloneNode(true)</code> and the <code class="inline">&lt;template&gt;</code> element</li>
+          <li>Choose between <code class="inline">innerHTML</code> and <code class="inline">createElement</code>; batch inserts with a <code class="inline">DocumentFragment</code></li>
+        </ul>
+      </div>
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (3m).</b> "So far we changed elements that were already there. Now we build new ones." Show the lesson's four-step flow: <em>create → configure → add children → insert.</em></li>
+          <li><b>createElement (6m).</b> Create a <code class="inline">&lt;p&gt;</code> in the console, log it, point out it's <em>not on the page</em>. Configure it (text, class, <code class="inline">dataset</code>), then <code class="inline">document.body.append(p)</code> — now it appears.</li>
+          <li><b>Inserting (7m).</b> On a numbered list: <code class="inline">append</code>, <code class="inline">prepend</code>, <code class="inline">before</code>, <code class="inline">after</code>. Then append an <em>existing</em> item somewhere else — it <b>moves</b>. "One element, one place."</li>
+          <li><b>Removing &amp; clearing (5m).</b> <code class="inline">el.remove()</code>, <code class="inline">replaceWith()</code>, and <code class="inline">list.replaceChildren()</code> to empty a container. Mention <code class="inline">removeChild</code> only as "what you'll see in old tutorials."</li>
+          <li><b>Cloning (5m).</b> <code class="inline">cloneNode(false)</code> vs <code class="inline">cloneNode(true)</code>; a quick <code class="inline">&lt;template&gt;</code> + <code class="inline">template.content.cloneNode(true)</code>. Note: clones don't copy <code class="inline">addEventListener</code> listeners — another reason to delegate.</li>
+          <li><b>innerHTML vs createElement (5m).</b> Walk the lesson's comparison table. Demo the <code class="inline">innerHTML +=</code> trap: type into an input inside a container, run <code class="inline">container.innerHTML += "&lt;p&gt;hi&lt;/p&gt;"</code> — the typed text is gone.</li>
+          <li><b>DocumentFragment (4m).</b> Build 100 items in a fragment, append once, then log <code class="inline">fragment.childNodes.length</code> → 0. "The fragment is a shopping bag; you empty it onto the page."</li>
+          <li><b>Lab (10m).</b> Notification System.</li>
+          <li><b>Check (2m).</b> Quiz Q1–Q5.</li>
+          <li><b>Journal (3m).</b> This prompt also asks them to look back over the whole module.</li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script</div>
+        <ol class="steps">
+          <li>In the console: <code class="inline">const p = document.createElement("p"); p</code> → <code class="inline">&lt;p&gt;&lt;/p&gt;</code>. "Where is it on the page?" Nowhere. <code class="inline">p.textContent = "Hi!"; document.body.append(p)</code>.</li>
+          <li>Run <code class="inline">document.body.append(p)</code> a second time. "Did we get two?" No — it moved to the same spot. <code class="inline">document.body.append(p.cloneNode(true))</code> — now two.</li>
+          <li>Open <code class="inline">labs/module-4/l16-notifications/solution/</code>, click a few buttons, press <b>b</b> for the batch, then Clear All. Point at <code class="inline">aria-live="polite"</code> on the area: "screen readers announce each new toast."</li>
+        </ol>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Dynamic Notification System</div>
+        <p style="font-size:.92rem;margin:.2rem 0">The lesson's <code class="inline">notifications.html</code> as <code class="inline">index.html</code> + <code class="inline">style.css</code> + <code class="inline">script.js</code>. Students write <code class="inline">showNotification(type, message)</code> with <code class="inline">createElement</code> + <code class="inline">textContent</code>, delegate the controls and the close buttons with <code class="inline">closest()</code>, clear with <code class="inline">replaceChildren()</code>, auto-remove after 5 seconds, and count with <code class="inline">updateCount()</code>. Bonus: the <b>"b"</b> key adds five at once through a <code class="inline">DocumentFragment</code>. Files in <code class="inline">labs/module-4/l16-notifications/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> the close button missing <code class="inline">aria-label="Dismiss notification"</code>; the count not updating after the auto-remove timer; students trying Ctrl + Shift + N for the bonus — Chrome reserves it (new incognito window) and the page never sees the key. That's why the lesson uses "b".</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>"I created it but I can't see it."</b> They forgot to insert it. <code class="inline">createElement</code> only builds it in memory.</li>
+          <li><b>Appending moves, it doesn't copy.</b> Looping <code class="inline">list.append(sameItem)</code> five times gives one item. Create a new element (or clone) each time.</li>
+          <li><b>Building with <code class="inline">innerHTML +=</code> in a loop</b> — slow, wipes listeners, and an XSS hole if the text came from a user. <code class="inline">createElement</code> + <code class="inline">textContent</code> + <code class="inline">append</code> instead.</li>
+          <li><b>The fragment is empty after insertion.</b> Students who try to reuse it get nothing the second time. Build a new fragment per batch.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Key answers: <code class="inline">createElement("div")</code> returns <b>B — a new &lt;div&gt; in memory, not yet in the DOM</b>; appending an existing element <b>B — moves it</b>; modern removal = <b>C — <code class="inline">element.remove()</code></b>; <code class="inline">cloneNode(true)</code> vs <code class="inline">false</code> = <b>A — deep vs shallow</b>; <code class="inline">DocumentFragment</code> <b>C — batches many insertions into one DOM update</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRAP -->
+  <div class="sec"><h2>Closing the Module</h2><span class="rule"></span></div>
+  <div class="note lab">
+    <div class="t">Module 4 wrap-up (10 min)</div>
+    <p>Have two or three students demo their task list or notification system on the projector, and ask each to point at one line that uses delegation and one that uses <code class="inline">textContent</code> for user text. Recap the arc: <b>see the tree → grab and change → respond to users → build and remove.</b> Preview Module 5: "You now have the full DOM toolkit. Next we put it to work on real features — forms with validation, timers, saving data, and live data from APIs."</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Technical trainer, full-stack developer &amp; course developer — 30+ years</span>
+    </div>
+    <div class="ver">Instructor Kit · Module 4 · Facilitator Guide · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>

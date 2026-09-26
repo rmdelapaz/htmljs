@@ -4,21 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Learn JavaScript objects — how to store data with named keys using properties, methods, dot and bracket notation, nesting, and destructuring.">
-    <meta name="author" content="Ray De La Paz">
+    <meta name="author" content="Ray de la Paz">
     <title>Lesson 10: Objects - Front-End JavaScript</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         window.__mermaid = mermaid;
+        const isDark = localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            themeVariables: isDark
+                ? { primaryColor: '#334155', primaryTextColor: '#e2e8f0', primaryBorderColor: '#6366f1', lineColor: '#94a3b8', secondaryColor: '#1e293b', tertiaryColor: '#0f172a' }
+                : { primaryColor: '#eff6ff', primaryTextColor: '#1e293b', primaryBorderColor: '#3b82f6', lineColor: '#64748b', secondaryColor: '#f8fafc', tertiaryColor: '#f1f5f9' }
+        });
     </script>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <div class="progress-indicator" role="progressbar" aria-label="Page scroll progress">
-        <div class="progress-bar"></div>
-    </div>
 
     <nav class="main-nav">
         <div class="nav-container">
@@ -86,6 +92,7 @@
                         <li><a href="#iterating" class="toc-link">Iterating Over Objects</a></li>
                         <li><a href="#checking" class="toc-link">Checking Properties &amp; Comparing</a></li>
                         <li><a href="#exercise" class="toc-link">Hands-on Exercise</a></li>
+                        <li><a href="#journal" class="toc-link">Learning Journal</a></li>
                         <li><a href="#summary" class="toc-link">Summary</a></li>
                     </ol>
                 </nav>
@@ -359,7 +366,8 @@ const broken = {
     }
 };
 
-broken.greet();          // "Hi, I'm undefined"
+broken.greet();          // NOT "Hi, I'm Oops" — `this` here is the outer scope
+                         // (in a browser script it's window, so you get "Hi, I'm ")
 broken.greetCorrect();   // "Hi, I'm Oops"
                     </code></pre>
                 </div>
@@ -452,9 +460,10 @@ const book = {
     pages: 412
 };
 
-// Without destructuring
-const title = book.title;
-const author = book.author;
+// Without destructuring (shown as comments so the
+// names don't clash with the next line)
+// const title = book.title;
+// const author = book.author;
 
 // With destructuring — cleaner!
 const { title, author, year, pages } = book;
@@ -581,7 +590,8 @@ const settings = { ...defaults, ...userPrefs };
 console.log(settings);
 // { theme: "dark", fontSize: 18, lang: "en" }
 
-// Copy an object
+// Copy an object (a SHALLOW copy — nested objects/arrays inside
+// are still shared; use structuredClone(obj) for a deep copy)
 const copy = { ...defaults };
 copy.theme = "blue";
 console.log(defaults.theme);  // "light" — original unchanged
@@ -601,9 +611,10 @@ console.log("name" in user);    // true
 console.log("email" in user);   // true (key exists!)
 console.log("phone" in user);   // false
 
-// hasOwnProperty — same idea, method version
-console.log(user.hasOwnProperty("age"));    // true
-console.log(user.hasOwnProperty("phone"));  // false
+// Object.hasOwn — checks the object's OWN keys (the modern choice)
+console.log(Object.hasOwn(user, "age"));    // true
+console.log(Object.hasOwn(user, "phone"));  // false
+// You'll also see the older form: user.hasOwnProperty("age")
 
 // ⚠️ Be careful with undefined checks
 console.log(user.email !== undefined);  // false — but the key DOES exist!
@@ -645,7 +656,8 @@ const c = a;
 console.log(a === b);  // false — different objects!
 console.log(a === c);  // true  — same reference
 
-// To compare contents, use JSON.stringify (simple objects only)
+// Quick-and-dirty content check with JSON.stringify
+// (simple data only — and the keys must be in the same order!)
 console.log(JSON.stringify(a) === JSON.stringify(b));  // true
                     </code></pre>
                 </div>
@@ -695,7 +707,7 @@ const contacts = [
 // console.log(findContact(contacts, "Bob"));
 // updateContact(contacts, "Alice", { phone: "555-9999", group: "friend" });
 // displayContact(findContact(contacts, "Alice"));
-// console.log(listByGroup(contacts, "work"));
+// console.log(listByGroup(contacts, "family")); // ["Bob", "Dave"]
                     </code></pre>
 
                     <details>
@@ -703,8 +715,8 @@ const contacts = [
                         <p><strong>addContact:</strong> Use <code>find()</code> to check for duplicates by name first, then <code>push()</code> if safe.</p>
                         <p><strong>findContact:</strong> Use <code>find()</code> with a name comparison. Return <code>null</code> instead of <code>undefined</code> for clarity.</p>
                         <p><strong>updateContact:</strong> Find the contact first. Then use <code>Object.assign(contact, updates)</code> or the spread operator to apply changes.</p>
-                        <p><strong>displayContact:</strong> Use <code>Object.entries()</code> or template literals to format the output.</p>
-                        <p><strong>listByGroup:</strong> Use <code>filter()</code> to get matching contacts, then <code>map()</code> to extract just the names.</p>
+                        <p><strong>displayContact:</strong> A template literal that reads each property is all you need. (The solution loops over <code>Object.entries()</code> with <code>map()</code> and <code>join()</code> — another sneak peek at Lessons 11–12.)</p>
+                        <p><strong>listByGroup:</strong> Loop with <code>for...of</code> and <code>push()</code> each matching name into a new array. (Sneak peek: the solution uses <code>filter()</code> and <code>map()</code>, which you'll learn properly in the next lesson.)</p>
                     </details>
 
                     <details>
@@ -763,7 +775,7 @@ addContact(contacts, {
     name: "Dave", phone: "555-0404",
     email: "dave@example.com", group: "family"
 });
-// Added successfully
+// (returns true — nothing is logged)
 
 addContact(contacts, {
     name: "Alice", phone: "555-0000",
@@ -791,7 +803,7 @@ console.log(listByGroup(contacts, "family"));
                         <p><strong>Question 1:</strong> Which notation must you use when the key is stored in a variable?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="Dot notation treats whatever follows the dot as a literal key name, not a variable.">A) Dot notation</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="Bracket notation evaluates the expression inside the brackets, so obj[myVar] looks up the key stored in myVar.">B) Bracket notation</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Bracket notation evaluates the expression inside the brackets, so obj[myVar] looks up the key stored in myVar.">B) Bracket notation</button>
                             <button class="quiz-option" data-correct="false" data-hint="Parentheses are for function calls, not property access.">C) Parentheses notation</button>
                             <button class="quiz-option" data-correct="false" data-hint="Either works for simple string keys, but only bracket notation handles variables.">D) Either works</button>
                         </div>
@@ -802,7 +814,7 @@ console.log(listByGroup(contacts, "family"));
                         <p><strong>Question 2:</strong> What does <code>Object.keys({ a: 1, b: 2, c: 3 })</code> return?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="Object.values() returns the values. Object.keys() returns the keys.">A) [1, 2, 3]</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="Object.keys() returns an array of all the property names (keys) in the object.">B) [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Object.keys() returns an array of all the property names (keys) in the object.">B) [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</button>
                             <button class="quiz-option" data-correct="false" data-hint="That's what Object.entries() returns — pairs of keys and values.">C) [[&quot;a&quot;, 1], [&quot;b&quot;, 2], [&quot;c&quot;, 3]]</button>
                             <button class="quiz-option" data-correct="false" data-hint="Object.keys() returns an array, not a number.">D) 3</button>
                         </div>
@@ -813,7 +825,7 @@ console.log(listByGroup(contacts, "family"));
                         <p><strong>Question 3:</strong> Why shouldn't you use arrow functions as object methods that use <code>this</code>?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="Arrow functions work fine in objects — the issue is specifically with 'this'.">A) Arrow functions can't be properties</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="Arrow functions don't have their own 'this' — they inherit it from the enclosing scope. In an object method, you usually want 'this' to refer to the object, which requires a regular function.">B) Arrow functions don't have their own this</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Arrow functions don't have their own 'this' — they inherit it from the enclosing scope. In an object method, you usually want 'this' to refer to the object, which requires a regular function.">B) Arrow functions don't have their own this</button>
                             <button class="quiz-option" data-correct="false" data-hint="Arrow functions can return values just fine. The issue is about 'this' binding.">C) Arrow functions can't return values</button>
                             <button class="quiz-option" data-correct="false" data-hint="Arrow functions are valid syntax and will run — they just won't have the right 'this'.">D) Arrow functions cause syntax errors in objects</button>
                         </div>
@@ -824,12 +836,27 @@ console.log(listByGroup(contacts, "family"));
                         <p><strong>Question 4:</strong> What does <code>{ x: 1 } === { x: 1 }</code> evaluate to?</p>
                         <div class="quiz-options">
                             <button class="quiz-option" data-correct="false" data-hint="Even though they look the same, JavaScript compares objects by reference, not by content.">A) true</button>
-                            <button class="quiz-option" data-correct="true" data-explanation="Objects are compared by reference — these are two separate objects in memory, so they're not equal even though they have the same contents.">B) false</button>
+                            <button class="quiz-option" data-correct="true" data-explanation="Correct! Objects are compared by reference — these are two separate objects in memory, so they're not equal even though they have the same contents.">B) false</button>
                             <button class="quiz-option" data-correct="false" data-hint="This comparison is valid JavaScript and returns a boolean.">C) TypeError</button>
-                            <button class="quiz-option" data-correct="false" data-hint="This always evaluates to false — it depends on the objects being the exact same reference, not the contents.">D) It depends on the values</button>
+                            <button class="quiz-option" data-correct="false" data-hint="The values don't matter here — === only asks whether both sides are the exact same object in memory.">D) It depends on the values</button>
                         </div>
                         <div class="quiz-feedback"></div>
                     </div>
+                </div>
+            </section>
+
+            <section id="journal" class="lesson-section">
+                <h2>📓 Learning Journal</h2>
+                <div class="card card-info">
+                    <p>Take five minutes to add to your learning journal. Write down:</p>
+                    <ul>
+                        <li><strong>Key concepts</strong> you learned</li>
+                        <li><strong>What clicked</strong> — the idea or technique that made sense</li>
+                        <li><strong>Questions or confusion</strong>, so you know what to revisit</li>
+                        <li><strong>Ideas to try</strong> on your own pages</li>
+                        <li><strong>How you feel</strong> about your progress</li>
+                    </ul>
+                    <p><strong>✍️ This lesson's prompt:</strong> <em>Describe something from your own site or life as an object — a recipe, a pet, a product — with at least four properties and one method. When would you reach for bracket notation instead of dot notation? What part of <code>this</code> or destructuring still feels fuzzy?</em></p>
                 </div>
             </section>
 

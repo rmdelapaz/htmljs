@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facilitator Guide — Module 1</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="../../kit.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="lbl">Instructor copy —</span>
+  <button type="button" onclick="window.print()">🖨 Print / Save as PDF</button>
+  <span class="hint">contains answers &amp; timing · not for students</span>
+</div>
+
+<div class="sheet">
+
+  <header class="mast">
+    <div class="kit-eyebrow">Instructor Kit · Facilitator Guide</div>
+    <h1>Module 1 — JavaScript Foundations</h1>
+    <p class="sub">How to teach the four lessons that take students who already know HTML &amp; CSS to their first real JavaScript: the Console, a linked script file, variables and data types, and operators. This is the start of the course — get every DevTools window open and every <code class="inline">app.js</code> linked before you move on.</p>
+    <div class="meta-row">
+      <span class="chip"><b>4</b> lessons</span>
+      <span class="chip"><b>~2.75 hrs</b> teaching</span>
+      <span class="chip">Lessons <b>L01–L04</b></span>
+      <span class="chip">Level <b>Beginner</b></span>
+      <span class="chip">Maps to <b>Day 1 AM</b></span>
+    </div>
+  </header>
+
+  <!-- HOW TO USE -->
+  <div class="sec"><h2>How to Use This Guide</h2><span class="rule"></span></div>
+  <ul class="tick">
+    <li>Same rhythm as every module: <b>Frame</b> (why it matters) → <b>Teach</b> (live-code the concept) → <b>Lab</b> (students build) → <b>Check</b> (quiz + recap). Every lesson has a 5-question quiz and ends with 3–5 minutes for the lesson's <b>Learning Journal</b> prompt (in the lesson and the workbook). The minute timings in each teaching sequence add up to the lesson's length; adjust ±10 min to your group.</li>
+    <li><b>Live-code everything.</b> Type into the Console and into <code class="inline">app.js</code> in front of the class — never paste finished code. Each lesson has a short <b>live-demo script</b>: type it exactly, in order, and say what you expect <em>before</em> you press Enter.</li>
+    <li>Blue blocks are concepts; <span style="color:var(--lab);font-weight:600">teal</span> blocks are hands-on; <span style="color:var(--warn);font-weight:600">amber</span> blocks are watch-outs. In Module 1 the watch-outs are mostly "where did my output go?" problems — the Console, the file link, and JavaScript's type surprises.</li>
+    <li>Quiz answers here are for you. The student workbook has a 3-question subset of each lesson quiz, without answers, labelled with the lesson's question numbers; the separate <b>Answer Key</b> covers every question with matching numbers for grading.</li>
+  </ul>
+
+  <div class="note">
+    <div class="t">Before you start — Day 1 setup check (10 min, before L01)</div>
+    <p>Students come from the HTML &amp; CSS course, so they should already have <b>VS Code</b> with the <b>Live Server</b> extension. Confirm it in the first ten minutes: everyone opens any folder in VS Code, right-clicks an <code class="inline">.html</code> file → <b>Open with Live Server</b>, and sees it at <code class="inline">http://127.0.0.1:5500/…</code>. Anyone missing Live Server installs it from the Extensions panel (search "Live Server" by Ritwick Dey).</p>
+    <p>Then have <b>everyone open DevTools and the Console</b> on that page, on their own OS — this is the most-used shortcut of the whole course:</p>
+    <table class="timing">
+      <thead><tr><th>Browser</th><th>Windows / Linux</th><th>Mac</th></tr></thead>
+      <tbody>
+        <tr><td>Any browser</td><td class="t">F12 → Console tab</td><td class="t">Cmd+Option+I → Console tab</td></tr>
+        <tr><td>Chrome / Edge</td><td class="t">Ctrl+Shift+J</td><td class="t">Cmd+Option+J</td></tr>
+        <tr><td>Firefox</td><td class="t">Ctrl+Shift+K</td><td class="t">Cmd+Option+K</td></tr>
+        <tr><td>Safari</td><td class="t">—</td><td class="t">enable Settings → Advanced → "Show features for web developers", then Cmd+Option+C</td></tr>
+      </tbody>
+    </table>
+    <p>Recommend Chrome or Edge for class so your screen matches theirs. If anyone is behind, pair them up — do not stop the room to fix one laptop.</p>
+  </div>
+
+  <!-- AT A GLANCE -->
+  <div class="sec"><h2>Module at a Glance</h2><span class="rule"></span></div>
+  <table class="timing">
+    <thead><tr><th>Lesson</th><th>Topic</th><th>Time</th><th>Students leave able to…</th></tr></thead>
+    <tbody>
+      <tr><td class="t">L01</td><td>Welcome to JavaScript</td><td class="t">30m</td><td>Explain JS's role beside HTML/CSS and change a live page from the Console</td></tr>
+      <tr><td class="t">L02</td><td>Linking Scripts &amp; the Console</td><td class="t">40m</td><td>Link an external <code class="inline">app.js</code> and read its console output</td></tr>
+      <tr><td class="t">L03</td><td>Variables &amp; Data Types</td><td class="t">50m</td><td>Store values with <code class="inline">const</code>/<code class="inline">let</code> and check types with <code class="inline">typeof</code></td></tr>
+      <tr><td class="t">L04</td><td>Operators &amp; Expressions</td><td class="t">45m</td><td>Calculate, compare with <code class="inline">===</code>, and combine conditions</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.9rem;color:var(--ink-2)">The module is one story: <b>see what JavaScript does → connect it to a page → store data → work with data.</b> From L02 on, the labs build <b>one cumulative project</b>, the <code class="inline">js-practice</code> folder: L02 creates it, L03 adds a user profile to <code class="inline">app.js</code>, L04 adds a tip calculator. Everything is console output in this module — putting results on the page comes in Module 4.</p>
+
+  <!-- LESSON PLANS -->
+  <div class="sec"><h2>Lesson Plans</h2><span class="rule"></span></div>
+
+  <!-- L01 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L01</span><h3>Welcome to JavaScript</h3><span class="dur">30 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Explain what JavaScript is and what role it plays alongside HTML and CSS</li>
+          <li>Describe the difference between front-end and back-end JavaScript</li>
+          <li>Understand how the browser executes JavaScript</li>
+          <li>Identify real-world examples of JavaScript in action on web pages</li>
+          <li>Outline what they'll build throughout this course</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (3m).</b> "Your pages look great, but they don't <em>do</em> anything." Open a site the class uses and click a menu or type in a search box — that's JavaScript. Add the third layer to the house analogy they know: HTML is the skeleton, CSS the paint and furniture, <b>JavaScript the electricity, plumbing, and elevator</b>.</li>
+          <li><b>The three layers (5m).</b> Structure / presentation / behavior. Sell the head start: "You already know two-thirds of this."</li>
+          <li><b>JavaScript in action (3m).</b> Rapid-fire list from the room: dropdowns, live search, infinite scroll, form checks, a cart that remembers you. Land the aside: <b>JavaScript ≠ Java</b> — the name was a 1990s marketing decision.</li>
+          <li><b>How browsers run it (4m).</b> Every browser has a built-in engine (V8, SpiderMonkey, JavaScriptCore) — nothing to install. Walk the load story: parse HTML → load CSS and JS → display → <em>wait for the user</em> → react. That last loop is why front-end JS is called <b>event-driven</b>.</li>
+          <li><b>History &amp; ECMAScript (2m).</b> Ten days in 1995; ES6 (2015) is where "modern JS" starts. ECMAScript = the rulebook; JavaScript = what browsers run.</li>
+          <li><b>Front-end vs back-end + roadmap (3m).</b> This course is front-end (the browser); Node.js is the server side, for later. Preview the six modules.</li>
+          <li><b>Lab — Spot JavaScript in the Wild (6m).</b> Console worksheet (below).</li>
+          <li><b>Check + journal (4m).</b> Quiz poll, then the journal prompt.</li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script</div>
+        <p style="font-size:.92rem;margin:.2rem 0">On the practice page (<code class="inline">labs/module-1/l01-welcome-to-javascript/starter/index.html</code>), open the Console and type each line, predicting out loud first:</p>
+        <pre class="code">document.title
+document.title = <span class="s">"I changed this with JavaScript!"</span>
+document.body.style.backgroundColor = <span class="s">"lightyellow"</span></pre>
+        <p style="font-size:.92rem;margin:.2rem 0">Point at the browser tab after line 2, then refresh: everything comes back. "You changed <em>your copy</em> of the page, never the site's files." Repeat on a real site the class knows for the wow.</p>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Spot JavaScript in the Wild</div>
+        <p style="font-size:.92rem;margin:.2rem 0">No files to write. Students follow the guided console worksheet in <code class="inline">labs/module-1/l01-welcome-to-javascript/README.md</code>: run the three statements on the practice page, refresh, then repeat on a site they use and list three features they think JavaScript drives. The solution page replays the statements from a script (with the output mirrored on screen) if you want to show the result on the projector.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> the Console tab (not Elements) selected; the cursor in the Console's input line at the bottom; straight quotes, not curly ones.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>"Allow pasting" block.</b> Chrome and Firefox refuse the first paste into the Console and ask you to type <code class="inline">allow pasting</code>. It's a real anti-scam feature, not an error. Tell students to <em>type</em> the lines — better practice anyway.</li>
+          <li><b>"I broke the website!"</b> Some students fear the change is permanent. Refresh proves it isn't — and that answers quiz Q4.</li>
+          <li><b>Curly quotes</b> copied from a document cause <code class="inline">SyntaxError: Invalid or unexpected token</code>. Retype the quotes.</li>
+          <li><b>Going too deep.</b> Don't explain the DOM, <code class="inline">document</code>, or the engine internals yet. Today they only need "JavaScript can read and change the page."</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding — quiz (from the lesson) + journal</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Answers: <b>Q1</b> C) Adding interactivity and behavior; <b>Q2</b> B) False; <b>Q3</b> C) Nothing extra — browsers have a built-in JavaScript engine; <b>Q4</b> A) The text in the browser tab changed, just for your copy of the page; <b>Q5</b> D) The official specification (rulebook) that JavaScript follows. Full set in the Answer Key. Then give 3–5 minutes for the lesson's <b>Learning Journal</b> prompt: <em>Pick a website you use every day and list three things on it that you now think are powered by JavaScript. For each one, explain why HTML and CSS alone couldn't do it. Name one feature you'd love to add to your own site — and one thing about how JavaScript works that still feels fuzzy.</em> Students who prefer paper can use the workbook's Journal box; the online box saves only on that device.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- L02 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L02</span><h3>Linking Scripts &amp; the Console</h3><span class="dur">40 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Add JavaScript to an HTML page using the <code class="inline">&lt;script&gt;</code> tag</li>
+          <li>Tell inline scripts from external script files — and why external wins</li>
+          <li>Use <code class="inline">console.log()</code> and the other console methods</li>
+          <li>Open and use the DevTools Console for testing and debugging</li>
+          <li>Explain why script placement matters (head vs. body, <code class="inline">defer</code>)</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (2m).</b> "Last lesson you typed JavaScript into the Console. Now we make it part of the page, so it runs every time the page loads."</li>
+          <li><b>Inline script (4m).</b> Add a <code class="inline">&lt;script&gt;console.log("Hello from JavaScript!")&lt;/script&gt;</code> before <code class="inline">&lt;/body&gt;</code>. The message is in the Console, <em>not on the page</em> — say that twice.</li>
+          <li><b>External file (6m).</b> Move the code to <code class="inline">app.js</code> and link it with <code class="inline">&lt;script src="app.js"&gt;&lt;/script&gt;</code>. Compare it to linking CSS with <code class="inline">&lt;link&gt;</code>: separation of concerns, reuse, caching, errors that name a file and line. Then show the trap: code <em>between</em> the tags of a <code class="inline">src</code> script is ignored.</li>
+          <li><b>Placement &amp; <code class="inline">defer</code> (7m).</b> Use the diagram below and the demo script: a script in the <code class="inline">&lt;head&gt;</code> runs before the body exists. Two fixes: before <code class="inline">&lt;/body&gt;</code> (our course default) or <code class="inline">defer</code> in the head. Both are correct.</li>
+          <li><b>The Console as a playground (4m).</b> Shortcuts recap, then type <code class="inline">2 + 2</code>, <code class="inline">"Hello" + " " + "World"</code>, <code class="inline">Math.random()</code>.</li>
+          <li><b>Console methods (4m).</b> <code class="inline">log</code>, <code class="inline">info</code>, <code class="inline">warn</code> (yellow), <code class="inline">error</code> (red), <code class="inline">table</code>, <code class="inline">group</code>, <code class="inline">time</code>. Pitch <code class="inline">console.log()</code> as their #1 debugging tool.</li>
+          <li><b>Comments (3m).</b> <code class="inline">//</code> and <code class="inline">/* */</code>. Comment the <em>why</em>, not the <em>what</em> — quiz Q5 tests exactly this.</li>
+          <li><b>Lab — Your First JS Project (6m).</b> Build <code class="inline">js-practice</code>.</li>
+          <li><b>Check + journal (4m).</b></li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Diagram — when does app.js run?</div>
+        <figure class="fig">
+          <svg viewBox="0 0 560 250" role="img" aria-label="When app.js runs: in the head without defer it runs before the body is parsed; before the closing body tag or with defer it runs after the HTML is parsed.">
+            <g font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600">
+              <text x="160" y="18" fill="#6f7c8e" letter-spacing="1">TIME →</text>
+              <!-- row 1 -->
+              <text x="10" y="52" fill="#16202e">&lt;head&gt;</text>
+              <text x="10" y="66" fill="#6f7c8e" font-weight="500">no defer</text>
+              <rect x="160" y="40" width="40" height="22" rx="3" fill="#e6edfe" stroke="#1d4ed8"/>
+              <rect x="200" y="40" width="60" height="22" rx="3" fill="#e9edf3" stroke="#bcc7d6"/>
+              <text x="230" y="55" text-anchor="middle" fill="#45536a">fetch</text>
+              <rect x="260" y="40" width="70" height="22" rx="3" fill="#fdf0dc" stroke="#b45309"/>
+              <text x="295" y="55" text-anchor="middle" fill="#b45309">run JS</text>
+              <rect x="330" y="40" width="210" height="22" rx="3" fill="#e6edfe" stroke="#1d4ed8"/>
+              <text x="435" y="55" text-anchor="middle" fill="#1d4ed8">parse &lt;body&gt;</text>
+              <text x="160" y="80" fill="#b45309" font-weight="500">✗ JS runs before the &lt;h1&gt; exists — finds null</text>
+              <!-- row 2 -->
+              <text x="10" y="122" fill="#16202e">before</text>
+              <text x="10" y="136" fill="#16202e">&lt;/body&gt;</text>
+              <rect x="160" y="110" width="250" height="22" rx="3" fill="#e6edfe" stroke="#1d4ed8"/>
+              <text x="285" y="125" text-anchor="middle" fill="#1d4ed8">parse all the HTML</text>
+              <rect x="410" y="110" width="60" height="22" rx="3" fill="#e9edf3" stroke="#bcc7d6"/>
+              <text x="440" y="125" text-anchor="middle" fill="#45536a">fetch</text>
+              <rect x="470" y="110" width="70" height="22" rx="3" fill="#d7efe9" stroke="#0f766e"/>
+              <text x="505" y="125" text-anchor="middle" fill="#0f766e">run JS</text>
+              <text x="160" y="150" fill="#0f766e" font-weight="500">✓ every element exists (course default)</text>
+              <!-- row 3 -->
+              <text x="10" y="192" fill="#16202e">&lt;head&gt;</text>
+              <text x="10" y="206" fill="#6f7c8e" font-weight="500">+ defer</text>
+              <rect x="160" y="180" width="310" height="22" rx="3" fill="#e6edfe" stroke="#1d4ed8"/>
+              <text x="315" y="195" text-anchor="middle" fill="#1d4ed8">parse all the HTML</text>
+              <rect x="200" y="206" width="60" height="12" rx="3" fill="#e9edf3" stroke="#bcc7d6"/>
+              <text x="266" y="216" fill="#45536a" font-weight="500" font-size="10">fetch in parallel</text>
+              <rect x="470" y="180" width="70" height="22" rx="3" fill="#d7efe9" stroke="#0f766e"/>
+              <text x="505" y="195" text-anchor="middle" fill="#0f766e">run JS</text>
+              <text x="160" y="238" fill="#0f766e" font-weight="500">✓ runs after parsing, in order (external files only)</text>
+            </g>
+          </svg>
+          <figcaption>Where the &lt;script&gt; tag sits decides when app.js runs.</figcaption>
+        </figure>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script — placement</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Put this in <code class="inline">app.js</code> and move the <code class="inline">&lt;script&gt;</code> tag between the three positions. No DOM skills needed — <code class="inline">document.body</code> is either there or it isn't:</p>
+        <pre class="code"><span class="c">// app.js</span>
+console.log(<span class="s">"Is the body ready?"</span>, document.body);</pre>
+        <p style="font-size:.92rem;margin:.2rem 0">In the <code class="inline">&lt;head&gt;</code>: <b><code class="inline">null</code></b>. Before <code class="inline">&lt;/body&gt;</code>: the <code class="inline">&lt;body&gt;</code> element. Back in the head with <code class="inline">defer</code>: the element again. That one line makes the whole placement rule concrete.</p>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Your First JS Project</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Students create a <code class="inline">js-practice</code> folder with <code class="inline">index.html</code> and <code class="inline">app.js</code>, link the script before <code class="inline">&lt;/body&gt;</code>, and try every console method from the lesson. Starter in <code class="inline">labs/module-1/l02-linking-scripts/starter/</code>; solution in <code class="inline">labs/module-1/l02-linking-scripts/solution/</code>. This folder carries through L03 and L04 — tell them to keep it.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> both files in the <em>same</em> folder; <code class="inline">src="app.js"</code> spelled exactly like the file; the page opened with Live Server; the Console open. Expected output: log, yellow warning, red "not a real one!" error, info, <code class="inline">5 + 3 = 8</code>, <code class="inline">10 * 4 = 40</code>, and a three-row table.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Nothing in the Console.</b> Check in order: file saved? <code class="inline">src</code> matches the file name, including case (<code class="inline">App.js</code> ≠ <code class="inline">app.js</code> on Linux servers)? Both files in the same folder? The Network tab shows a 404 for a wrong path — there is no other error.</li>
+          <li><b>Code inside a <code class="inline">src</code> script</b> is silently ignored. Use a second <code class="inline">&lt;script&gt;</code> tag.</li>
+          <li><b>Script in the <code class="inline">&lt;head&gt;</code> without <code class="inline">defer</code></b> — fine for console-only code today, but the source of "can't find my element" bugs in Module 4. Build the before-<code class="inline">&lt;/body&gt;</code> habit now.</li>
+          <li><b>The red line scares people.</b> <code class="inline">console.error("…not a real one!")</code> is the demo. A <em>real</em> error starts with <code class="inline">Uncaught</code> and names a file and line — teach them to click that link.</li>
+          <li><b>The grey <code class="inline">undefined</code></b> after typing <code class="inline">console.log("hi")</code> in the Console is the return value of <code class="inline">console.log</code>, not a problem.</li>
+          <li><b>Filtered console.</b> If warnings or info are missing, the log-level dropdown ("Default levels") or the filter box is hiding them.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding — quiz (from the lesson) + journal</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Answers: <b>Q1</b> B) Just before the closing <code class="inline">&lt;/body&gt;</code> tag; <b>Q2</b> A) Prints a message to the browser's Developer Tools Console; <b>Q3</b> C) Downloads the script in parallel and runs it after HTML parsing completes; <b>Q4</b> D) app.js runs, but the console.log() inside the tags is ignored; <b>Q5</b> A) <code class="inline">// Start at 3 lives so new players aren't punished too early</code>. Full set in the Answer Key. Journal prompt: <em>Imagine a script in the <code class="inline">&lt;head&gt;</code> (without <code class="inline">defer</code>) tries to find your page's <code class="inline">&lt;h1&gt;</code>. Explain what goes wrong and two ways to fix it. Which will you use, and why? What's still unclear about when scripts run?</em></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- L03 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L03</span><h3>Variables &amp; Data Types</h3><span class="dur">50 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Declare variables using <code class="inline">let</code>, <code class="inline">const</code>, and <code class="inline">var</code> — and explain the difference</li>
+          <li>Identify the primitive types: string, number, boolean, null, undefined, symbol, bigint</li>
+          <li>Use <code class="inline">typeof</code> to check a value's type</li>
+          <li>Follow naming rules and conventions (camelCase, <code class="inline">UPPER_SNAKE_CASE</code>, <code class="inline">is</code>/<code class="inline">has</code> booleans)</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (2m).</b> Programs remember things: a name, a score, a cart, "is logged in." Variables are how; types say what kind of thing.</li>
+          <li><b>Variables as labeled boxes (5m).</b> <code class="inline">let username = "Ray";</code> — the label is the name, the value is inside. <code class="inline">=</code> is <b>assignment</b> ("store this"), not "equals." Reassign <code class="inline">mood</code> from <code class="inline">"happy"</code> to <code class="inline">"excited"</code>.</li>
+          <li><b><code class="inline">const</code> / <code class="inline">let</code> / <code class="inline">var</code> (8m).</b> Reassign a <code class="inline">const</code> live and read the <code class="inline">TypeError</code> aloud. Rule of thumb: <b><code class="inline">const</code> by default, <code class="inline">let</code> when it changes, never <code class="inline">var</code></b> in new code.</li>
+          <li><b>Naming (4m).</b> Hard rules (letters, digits, <code class="inline">_</code>, <code class="inline">$</code>; no leading digit; case-sensitive; no reserved words) vs conventions. Poll the class on <code class="inline">2ndPlace</code>, <code class="inline">user-name</code>, <code class="inline">$totalScore</code> — that's quiz Q5.</li>
+          <li><b>Data types (9m).</b> String (three kinds of quotes, <code class="inline">.length</code>, template literals with <code class="inline">${…}</code>), number (one type for integers and decimals; <code class="inline">NaN</code>, <code class="inline">Infinity</code>), boolean, <code class="inline">null</code> (deliberately empty) vs <code class="inline">undefined</code> (not assigned yet). Symbol and bigint: name them, skip them.</li>
+          <li><b><code class="inline">typeof</code> (4m).</b> Run it on each type; save <code class="inline">typeof null</code> → <code class="inline">"object"</code> for last and tell the 1995 story. Check null with <code class="inline">=== null</code>.</li>
+          <li><b>Type conversion (6m).</b> Explicit: <code class="inline">Number("42")</code>, <code class="inline">String(19.99)</code>, <code class="inline">Boolean("")</code>. Implicit: <code class="inline">"5" + 3</code> vs <code class="inline">"5" - 3</code> — the biggest gotcha of the day.</li>
+          <li><b>Lab — Build a User Profile (8m).</b></li>
+          <li><b>Check + journal (4m).</b></li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script</div>
+        <pre class="code"><span class="k">const</span> SITE_NAME = <span class="s">"My Website"</span>;
+<span class="k">let</span> count = 0;
+count = 1;                <span class="c">// fine — let can change</span>
+SITE_NAME = <span class="s">"Other"</span>;      <span class="c">// TypeError: Assignment to constant variable.</span>
+
+<span class="k">let</span> futureValue;
+console.log(futureValue);      <span class="c">// undefined</span>
+console.log(<span class="k">typeof</span> <span class="k">null</span>);    <span class="c">// "object" — the famous bug</span>
+console.log(<span class="s">"5"</span> + 3);         <span class="c">// "53"</span>
+console.log(<span class="s">"5"</span> - 3);         <span class="c">// 2</span></pre>
+        <p style="font-size:.92rem;margin:.2rem 0">Pause before each <code class="inline">console.log</code> and take predictions from the room. Wrong predictions are the point.</p>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Build a User Profile</div>
+        <p style="font-size:.92rem;margin:.2rem 0">In <code class="inline">js-practice/app.js</code>, students declare seven profile variables (<code class="inline">firstName</code> … <code class="inline">nickname = null</code>), log each with its <code class="inline">typeof</code>, build a template-literal greeting, update the <code class="inline">let</code> values, then try reassigning a <code class="inline">const</code>. Starter (L02 checkpoint + the lesson's TODO block) in <code class="inline">labs/module-1/l03-variables-data-types/starter/</code>; solution in <code class="inline">labs/module-1/l03-variables-data-types/solution/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Circulate for:</b> <code class="inline">const</code> on firstName/lastName/email and <code class="inline">let</code> on the rest; backticks (not quotes) around template literals; the <code class="inline">const</code> reassignment left <em>commented out</em> afterwards, because an uncaught <code class="inline">TypeError</code> stops the rest of the file.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Floating-point output.</b> <code class="inline">149.99 - 29.99</code> prints <code class="inline">120.00000000000001</code>. Not their bug: decimals are stored in binary. Format money with <code class="inline">.toFixed(2)</code> — the lesson solution does, and L04 relies on it.</li>
+          <li><b>"Identifier has already been declared."</b> Students paste several lesson snippets into one <code class="inline">app.js</code> and declare <code class="inline">price</code> or <code class="inline">name</code> twice. That's a <code class="inline">SyntaxError</code>, and <em>nothing</em> in the file runs — not even the lines above it. (The Console lets you re-run <code class="inline">let</code> lines; a file doesn't. Say this out loud, or the difference will confuse them.)</li>
+          <li><b><code class="inline">const</code> with objects and arrays.</b> Someone will find that <code class="inline">const colors = ["red"]; colors.push("blue");</code> works. <code class="inline">const</code> locks the <em>variable</em>, not the contents — you can't point it at a new array, but you can change what's inside. Acknowledge it, then park it for Module 3.</li>
+          <li><b>Quotes vs backticks.</b> <code class="inline">"Hello ${name}"</code> prints the <code class="inline">${name}</code> literally. Only backticks interpolate.</li>
+          <li><b><code class="inline">=</code> read as "equals."</b> Keep saying "gets" or "stores": <code class="inline">age = 31</code> is "age gets 31." Comparison is next lesson.</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding — quiz (from the lesson) + journal</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Answers: <b>Q1</b> C) const; <b>Q2</b> B) "object"; <b>Q3</b> B) "53"; <b>Q4</b> A) undefined; <b>Q5</b> D) <code class="inline">$totalScore</code>. Full set in the Answer Key. Journal prompt: <em>Think about your own website from the HTML &amp; CSS course. List five pieces of information it could store in variables. For each, choose a data type and <code class="inline">const</code> or <code class="inline">let</code>, and explain why. Then describe <code class="inline">null</code> vs <code class="inline">undefined</code> in your own words. Which part still feels shaky?</em></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- L04 -->
+  <section class="lesson">
+    <div class="lesson-head"><span class="lcode">L04</span><h3>Operators &amp; Expressions</h3><span class="dur">45 min</span></div>
+    <div class="lesson-body">
+      <div class="blk"><div class="h">Objectives</div>
+        <ul class="tick">
+          <li>Use arithmetic operators, including <code class="inline">%</code> (remainder) and <code class="inline">**</code></li>
+          <li>Apply assignment shorthand (<code class="inline">+=</code>, <code class="inline">-=</code>, <code class="inline">*=</code> …)</li>
+          <li>Compare values and explain the critical difference between <code class="inline">==</code> and <code class="inline">===</code></li>
+          <li>Combine conditions with <code class="inline">&amp;&amp;</code>, <code class="inline">||</code>, <code class="inline">!</code>; know truthy and falsy</li>
+          <li>Predict how an expression evaluates using operator precedence</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Teaching sequence</div>
+        <ol class="steps">
+          <li><b>Frame (2m).</b> Variables store data; operators <em>do</em> something with it. An <b>expression</b> is any code that works out to a value — <code class="inline">2 + 3</code> is <code class="inline">5</code>.</li>
+          <li><b>Arithmetic (5m).</b> The table from the lesson, then <code class="inline">%</code>: <code class="inline">10 % 3</code> is the <b>remainder</b>, 1. Even/odd with <code class="inline">n % 2</code>. <code class="inline">count++</code> / <code class="inline">count--</code>.</li>
+          <li><b>Assignment shorthand (3m).</b> <code class="inline">score += 25</code> means <code class="inline">score = score + 25</code>. Trace a short chain on the board (that's quiz Q4).</li>
+          <li><b>Comparison — <code class="inline">==</code> vs <code class="inline">===</code> (8m).</b> The heart of the lesson; see the demo script. Rule: <b>always <code class="inline">===</code> and <code class="inline">!==</code></b>.</li>
+          <li><b>Logical operators (5m).</b> <code class="inline">age &gt;= 21 &amp;&amp; hasID</code>, <code class="inline">isWeekend || isHoliday</code>, <code class="inline">!isLoggedIn</code>. Short-circuiting in one sentence, and <code class="inline">"" || "Guest"</code> → <code class="inline">"Guest"</code> as a preview.</li>
+          <li><b>Truthy &amp; falsy (4m).</b> The falsy list: <code class="inline">false</code>, <code class="inline">0</code>, <code class="inline">-0</code>, <code class="inline">0n</code>, <code class="inline">""</code>, <code class="inline">null</code>, <code class="inline">undefined</code>, <code class="inline">NaN</code>. Everything else is truthy — including <code class="inline">"0"</code>, <code class="inline">[]</code>, and <code class="inline">{}</code>.</li>
+          <li><b>String <code class="inline">+</code> &amp; precedence (4m).</b> <code class="inline">+</code> joins strings; prefer template literals. <code class="inline">2 + 3 * 4</code> is 14, not 20. "Use parentheses generously."</li>
+          <li><b>Lab — Tip Calculator (10m).</b></li>
+          <li><b>Check + journal (4m).</b></li>
+        </ol>
+      </div>
+
+      <div class="blk"><div class="h">Live-demo script — the equality ladder</div>
+        <pre class="code">5 === 5          <span class="c">// true</span>
+5 === <span class="s">"5"</span>        <span class="c">// false — different types</span>
+5 == <span class="s">"5"</span>         <span class="c">// true  — == converts first</span>
+<span class="s">""</span> == 0          <span class="c">// true  (!)</span>
+<span class="s">"0"</span> == 0         <span class="c">// true</span>
+<span class="s">""</span> == <span class="s">"0"</span>        <span class="c">// false — so == isn't even consistent</span>
+<span class="k">null</span> == <span class="k">undefined</span> <span class="c">// true</span></pre>
+        <p style="font-size:.92rem;margin:.2rem 0">Type these in the Console and let the class vote before each Enter. By line 6 the room will argue — then retype lines 4–6 with <code class="inline">===</code> and they all come out <code class="inline">false</code>. That settles the rule.</p>
+      </div>
+
+      <div class="blk lab"><div class="h">Lab — Tip Calculator</div>
+        <p style="font-size:.92rem;margin:.2rem 0">Students add a console tip calculator to <code class="inline">js-practice/app.js</code>: three <code class="inline">const</code> inputs, three calculations, four template-literal lines, and the <b>bonus</b> <code class="inline">isExpensive</code> comparison. Starter (L03 checkpoint + the lesson's TODO block) in <code class="inline">labs/module-1/l04-operators-expressions/starter/</code>; solution in <code class="inline">labs/module-1/l04-operators-expressions/solution/</code>.</p>
+        <p style="font-size:.9rem;color:var(--ink-2);margin:.2rem 0"><b>Expected output:</b> <code class="inline">Bill: $85.50</code> · <code class="inline">Tip (20%): $17.10</code> · <code class="inline">Total: $102.60</code> · <code class="inline">Per person: $34.20</code> · <code class="inline">Expensive? true</code>. Anyone showing <code class="inline">34.199999999999996</code> has forgotten <code class="inline">.toFixed(2)</code> — send them to the lesson's hint.</p>
+      </div>
+
+      <div class="blk warn"><div class="h">Watch-outs</div>
+        <ul class="tick">
+          <li><b>Floating-point results.</b> <code class="inline">102.6 / 3</code> is <code class="inline">34.199999999999996</code>. It's normal; format for display with <code class="inline">.toFixed(2)</code>. Note that <code class="inline">.toFixed()</code> returns a <b>string</b> — format at the end, don't do more math on it.</li>
+          <li><b><code class="inline">%</code> is not "percent."</b> Beginners write <code class="inline">billAmount * 20%</code>. <code class="inline">%</code> is remainder; a percentage is <code class="inline">* tipPercentage / 100</code>.</li>
+          <li><b>The <code class="inline">$${…}</code> pattern.</b> In <code class="inline">`Bill: $${billAmount.toFixed(2)}`</code> the first <code class="inline">$</code> is a literal dollar sign and <code class="inline">${</code> starts the placeholder. Students often drop one.</li>
+          <li><b><code class="inline">==</code> "works" in their tests.</b> <code class="inline">5 == 5</code> is true either way, so they think it doesn't matter. Show a mixed-type case every time.</li>
+          <li><b><code class="inline">const</code> for results.</b> The lesson declares <code class="inline">tipAmount</code> etc. with <code class="inline">const</code> because they're calculated once. If a student uses <code class="inline">let</code>, that runs fine — just ask "does this value ever change?"</li>
+        </ul>
+      </div>
+
+      <div class="blk"><div class="h">Check for understanding — quiz (from the lesson) + journal</div>
+        <p style="font-size:.9rem;margin:.2rem 0">Answers: <b>Q1</b> B) 1; <b>Q2</b> A) false; <b>Q3</b> B) true; <b>Q4</b> C) 30; <b>Q5</b> D) <code class="inline">"0"</code>. Full set in the Answer Key. Journal prompt: <em>Before running them, predict what <code class="inline">"5" + 3</code>, <code class="inline">"5" - 3</code>, <code class="inline">5 == "5"</code>, and <code class="inline">5 === "5"</code> give, and why. Check in the console. Which surprised you? Explain why the course says always use <code class="inline">===</code>. Think of a rule for your own site you could write with <code class="inline">&amp;&amp;</code> or <code class="inline">||</code> — what's still confusing about combining conditions?</em></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRAP -->
+  <div class="sec"><h2>Closing the Module</h2><span class="rule"></span></div>
+  <div class="note lab">
+    <div class="t">Module 1 wrap-up (5 min)</div>
+    <p>Everyone should now have a working <code class="inline">js-practice</code> folder whose console prints a profile and a tip calculation. Have one or two students read their tip-calculator output aloud. Recap the arc: <b>what JS does → link a script → store data → work with data.</b> Preview Module 2 (this afternoon): "Your code can calculate and compare. Next it makes decisions with <code class="inline">if</code>/<code class="inline">else</code>, repeats work with loops, and packages logic into functions."</p>
+  </div>
+
+  <div class="foot">
+    <div class="who">
+      <span class="bio">Technical trainer, full-stack developer &amp; course developer — 30+ years</span>
+    </div>
+    <div class="ver">Instructor Kit · Module 1 · Facilitator Guide · v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>
